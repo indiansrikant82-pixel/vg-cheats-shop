@@ -735,7 +735,8 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
   <div id="rateRows"></div>
   <div id="videoEditRow" style="display:none">
     <p class="rate-sub" style="margin:12px 0 6px">🎬 Video / Thumbnail link + Telegram + Discord:</p>
-    <input id="vurl" placeholder="Video mp4 OR YouTube link (dono chalega)" style="width:100%;padding:10px;margin:4px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff">
+    <input id="vurl" placeholder="Card clip video mp4 / YouTube (chhota clip)" style="width:100%;padding:10px;margin:4px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff">
+    <input id="vfullurl" placeholder="FULL setup video mp4 / YouTube (VIDEO button ke liye)" style="width:100%;padding:10px;margin:4px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff">
     <input id="thurl" placeholder="Thumbnail: https://.../photo.jpg (shows when no video)" style="width:100%;padding:10px;margin:4px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff">
     <input id="turl" placeholder="Telegram: https://t.me/..." style="width:100%;padding:10px;margin:4px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff">
     <input id="durl" placeholder="Discord: https://discord.gg/..." style="width:100%;padding:10px;margin:4px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff">
@@ -764,6 +765,7 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
   <label>Features (one per line)</label><textarea id="np_feat" rows="3" placeholder="PREMIUM QUALITY&#10;FAST SERVICE" style="width:100%;padding:10px;margin:6px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff"></textarea>
   <label>Device (PC / ANDROID / IOS)</label><select id="np_device" style="width:100%;padding:10px;margin:6px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff"><option>ANDROID</option><option>IOS</option><option>PC</option></select>
   <label>Video link (mp4, can be empty)</label><input id="np_video" placeholder="https://.../video.mp4">
+  <label>Full setup video link (VIDEO button ke liye)</label><input id="np_vfull" placeholder="https://.../full.mp4 or YouTube">
   <label>Thumbnail link (photo — shows when no video)</label><input id="np_thumb" placeholder="https://.../photo.jpg">
   <label>Telegram channel link</label><input id="np_tg" placeholder="https://t.me/...">
   <label>Discord server link</label><input id="np_dc" placeholder="https://discord.gg/...">
@@ -1059,10 +1061,11 @@ if(EMAIL_ON){try{emailjs.init(EMAILJS_PUBLIC_KEY);}catch(e){}}
    3. Project settings (⚙) → General → paste the 4 SDK config lines here
    Owners must register Gmail users in Users first */
 const FIREBASE_CFG={
- apiKey:"PASTE_API_KEY",
- authDomain:"PASTE_AUTH_DOMAIN",
- projectId:"PASTE_PROJECT_ID",
- appId:"PASTE_APP_ID"
+ apiKey:"AIzaSyCdfAoCyAYlqo88rcWwvKEwMTF-dLDKtEo",
+ authDomain:"vgshop-6009a.firebaseapp.com",
+ databaseURL:"https://vgshop-6009a-default-rtdb.firebaseio.com",
+ projectId:"vgshop-6009a",
+ appId:"1:927760978781:web:855b1a81fb425247820eb4"
 };
 const GOOGLE_ON=FIREBASE_CFG.apiKey!=="PASTE_API_KEY";
 if(GOOGLE_ON){try{firebase.initializeApp(FIREBASE_CFG);}catch(e){}}
@@ -1257,6 +1260,19 @@ function saveThumb(pid,url){
  all[pid]=url;localStorage.setItem('vg_thumbs',JSON.stringify(all));
  cloudSet('vg_thumbs');
 }
+function getVfull(p){
+ try{
+  const all=JSON.parse(localStorage.getItem('vg_vfull')||'{}');
+  if(all[p.id])return fixMedia(all[p.id]);
+ }catch(e){}
+ return fixMedia(p.vfull||'');
+}
+function saveVfull(pid,url){
+ let all={};
+ try{all=JSON.parse(localStorage.getItem('vg_vfull')||'{}');}catch(e){}
+ all[pid]=url;localStorage.setItem('vg_vfull',JSON.stringify(all));
+ cloudSet('vg_vfull');
+}
 function enterSite(){
  document.body.classList.add('enter');
  setTimeout(()=>{
@@ -1323,7 +1339,7 @@ function storageOK(){try{localStorage.setItem('vg_t','1');localStorage.removeIte
    Firebase config lagate hi Owner ka approve turant buyer ko dikhega.
    Database → Realtime Database → Create → Rules me read/write true karo. */
 let DB=null;
-const CLOUD_KEYS=['vg_rates','vg_videos','vg_thumbs','vg_links','vg_custom_panels','vg_users','vg_wallet','vg_keypool','vg_orders','vg_site','vg_owner_email','vg_owner_gmails','vg_panelinfo','vg_avatars','vg_order'];
+const CLOUD_KEYS=['vg_rates','vg_videos','vg_thumbs','vg_links','vg_custom_panels','vg_users','vg_wallet','vg_keypool','vg_orders','vg_site','vg_owner_email','vg_owner_gmails','vg_panelinfo','vg_avatars','vg_vfull','vg_order'];
 function cloudInit(){
  if(!GOOGLE_ON||typeof firebase==='undefined'||!firebase.database)return;
  try{
@@ -1750,7 +1766,7 @@ function drawRates(){
  document.getElementById('rateEditBar').style.display=rateEdit?'flex':'none';
  const vr=document.getElementById('videoEditRow');
  vr.style.display=rateEdit?'block':'none';
- if(rateEdit){document.getElementById('vurl').value=getVideo(p);document.getElementById('thurl').value=getThumb(p);document.getElementById('turl').value=getTg(p);document.getElementById('durl').value=getDc(p);}
+ if(rateEdit){document.getElementById('vurl').value=getVideo(p);document.getElementById('vfullurl').value=getVfull(p);document.getElementById('thurl').value=getThumb(p);document.getElementById('turl').value=getTg(p);document.getElementById('durl').value=getDc(p);}
 }
 function collectRateForm(){
  const p=findPanel(ratePid);if(!p)return null;
@@ -1772,6 +1788,7 @@ function saveMedia(){
  const c=collectRateForm();
  if(c){saveRates(ratePid,c.rates);saveInfo(ratePid,c.name,c.desc,c.by,c.features,c.pfile,c.device);}
  saveVideo(ratePid,document.getElementById('vurl').value.trim());
+ saveVfull(ratePid,document.getElementById('vfullurl').value.trim());
  saveThumb(ratePid,document.getElementById('thurl').value.trim());
  let all={};
  try{all=JSON.parse(localStorage.getItem('vg_links')||'{}');}catch(e){}
@@ -1858,7 +1875,7 @@ function openPfile(pid){
 function playPanelVid(btn,pid){
  try{
   const card=btn.closest('.card');
-  const p=findPanel(pid),vid=p?getVideo(p):'';
+  const p=findPanel(pid),vid=p?(getVfull(p)||getVideo(p)):'';
   const yid=ytId(vid);
   if(yid){window.open('https://www.youtube.com/watch?v='+yid,'_blank');return;}
   const v=card?card.querySelector('video'):null;
@@ -2279,12 +2296,13 @@ function savePanel(){
   features:document.getElementById('np_feat').value.split('\n').map(s=>s.trim()).filter(Boolean),
   device:document.getElementById('np_device').value||'ANDROID',
   video:document.getElementById('np_video').value.trim(),
+  vfull:document.getElementById('np_vfull').value.trim(),
   thumb:document.getElementById('np_thumb').value.trim(),
   tg:document.getElementById('np_tg').value.trim()||'https://t.me/panelstore_main',
   dc:document.getElementById('np_dc').value.trim()||'https://discord.gg/wKTzG3kDBQ',
   rates:rates});
  localStorage.setItem('vg_custom_panels',JSON.stringify(arr));
- ['np_name','np_desc','np_by','np_pfile','np_feat','np_video','np_thumb','np_tg','np_dc'].forEach(i=>document.getElementById(i).value='');
+ ['np_name','np_desc','np_by','np_pfile','np_feat','np_video','np_vfull','np_thumb','np_tg','np_dc'].forEach(i=>document.getElementById(i).value='');
  closePanelForm();renderProducts();
  showToast('✅ New panel added');
 }
@@ -2673,7 +2691,7 @@ async function resetAllData(){
  const c2=await askUser('Final warning! Type of confirmation: really delete everything?','Delete All');
  if(!c2)return;
  try{
-  ['vg_users','vg_rates','vg_videos','vg_thumbs','vg_links','vg_custom_panels','vg_wallet','vg_keypool','vg_orders','vg_site','vg_owner_email','vg_owner_gmails','vg_panelinfo','vg_avatars','vg_order','vg_mytheme','vg_remember'].forEach(k=>localStorage.removeItem(k));
+  ['vg_users','vg_rates','vg_videos','vg_thumbs','vg_links','vg_custom_panels','vg_wallet','vg_keypool','vg_orders','vg_site','vg_owner_email','vg_owner_gmails','vg_panelinfo','vg_avatars','vg_vfull','vg_order','vg_mytheme','vg_remember'].forEach(k=>localStorage.removeItem(k));
  }catch(e){}
  location.reload();
 }
@@ -3000,18 +3018,8 @@ function assembleFx(el){
 renderSite();
 try{document.getElementById('uname').value=localStorage.getItem('vg_remember')||'';}catch(e){}
 observeReveals();
+try{cloudInit();}catch(e){}
 try{if(window._restoreSession){window._restoreSession=false;enterShop();}}catch(e){}
 </script>
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCdfAoCyAYlqo88rcWwvKEwMTF-dLDKtEo",
-  authDomain: "vgshop-6009a.firebaseapp.com",
-  databaseURL: "https://vgshop-6009a-default-rtdb.firebaseio.com",
-  projectId: "vgshop-6009a",
-  storageBucket: "vgshop-6009a.firebasestorage.app",
-  messagingSenderId: "927760978781",
-  appId: "1:927760978781:web:855b1a81fb425247820eb4",
-  measurementId: "G-TREKMHPKXM"
-};
 </body>
 </html>
