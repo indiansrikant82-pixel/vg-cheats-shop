@@ -827,6 +827,7 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
 <div id="userModal">
   <h2>👥 Users — ID + % OFF</h2>
   <p class="rate-sub">Owner creates Admin/Reseller ID-password + gives discount %</p>
+  <div class="btn-row" style="justify-content:center;margin-bottom:6px"><span id="cloudLine" style="font-size:.8rem;color:#9ab">Cloud: checking...</span><button class="linkbtn" onclick="testCloud()">🧪 Test Sync</button></div>
   <label>👑 Owner Gmail (for Google login)</label>
   <div class="btn-row"><input id="o_email" placeholder="owner@gmail.com" style="flex:2"><button class="linkbtn" style="flex:1;text-decoration:none;background:#1a2456;padding:8px 14px;border-radius:12px" onclick="saveOwnerEmail()">Save</button></div>
   <label>New username</label><input id="nu_name" placeholder="e.g.: reseller1">
@@ -983,6 +984,11 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
   <p class="rate-sub">One key per line (key or user:pass). Customer gets 1 key on approval.</p>
   <label>Keys (remaining: <b id="keyLeft">0</b>)</label>
   <textarea id="keyArea" rows="6" placeholder="KEY-AAAA-1111&#10;user1:pass1&#10;KEY-BBBB-2222"></textarea>
+  <div class="btn-row" style="margin-top:6px">
+    <button class="linkbtn" onclick="document.getElementById('keyFileInput').click()">📂 File se Import</button>
+    <button class="linkbtn" onclick="importKeyAuthJson()">📋 JSON se Import</button>
+  </div>
+  <input type="file" id="keyFileInput" accept=".json,.txt,.csv" style="display:none">
   <label>File / download link (optional — comes with the key)</label>
   <input id="keyFile" placeholder="https://drive.google.com/...">
   <label>⚡ Bulk generate (for this plan only)</label>
@@ -1339,9 +1345,21 @@ function storageOK(){try{localStorage.setItem('vg_t','1');localStorage.removeIte
    Firebase config lagate hi Owner ka approve turant buyer ko dikhega.
    Database → Realtime Database → Create → Rules me read/write true karo. */
 let DB=null;
+window._cloudState='off';
+window._cloudErr='';
+function cloudState(s,e){
+ window._cloudState=s;
+ if(e)window._cloudErr=String(e).slice(0,120);
+ try{
+  const d=document.getElementById('cloudDot');
+  if(d){d.innerText=s==='online'?'☁ Online':(s==='error'?'☁ Error':'☁ Off');d.style.color=s==='online'?'#00ff9d':'#ff5e7a';}
+ }catch(_){}
+}
 const CLOUD_KEYS=['vg_rates','vg_videos','vg_thumbs','vg_links','vg_custom_panels','vg_users','vg_wallet','vg_keypool','vg_orders','vg_site','vg_owner_email','vg_owner_gmails','vg_panelinfo','vg_avatars','vg_vfull','vg_order'];
 function cloudInit(){
- if(!GOOGLE_ON||typeof firebase==='undefined'||!firebase.database)return;
+ cloudState('connecting');
+ if(!GOOGLE_ON){cloudState('off');return;}
+ if(typeof firebase==='undefined'||!firebase.database){cloudState('error','lib not loaded');return;}
  try{
   if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CFG);
   DB=firebase.database();
@@ -1349,9 +1367,9 @@ function cloudInit(){
    DB.ref('.info/connected').on('value',snap=>{
     const on=snap.val()===true;
     if(on&&!window._cloudToast){window._cloudToast=true;showToast('☁ Cloud connected!');}
-    cloudDot(on);
-   });
-  }catch(e){cloudDot(false);}
+    cloudState(on?'online':'connecting');
+   },e=>cloudState('error',e&&e.message||e));
+  }catch(e){cloudState('error',e&&e.message||e);}
   CLOUD_KEYS.forEach(k=>{
    try{
     DB.ref('vgcheats/'+k).on('value',snap=>{
@@ -1398,6 +1416,8 @@ function cloudRefresh(k){
   else if(k==='vg_wallet'){try{updateWho();}catch(e){}try{if(document.getElementById('profPage').classList.contains('open'))openProfile();}catch(e){}}
   else if(k==='vg_rates'||k==='vg_custom_panels'||k==='vg_videos'||k==='vg_thumbs'||k==='vg_links'||k==='vg_panelinfo'||k==='vg_order'){if(document.getElementById('shop').classList.contains('show'))renderProducts();}
   else if(k==='vg_site'){renderSite();}
+  else if(k==='vg_users'){try{if(document.getElementById('userModal').classList.contains('open'))drawUsers();}catch(e){}}
+  else if(k==='vg_keypool'){try{drawRates();}catch(e){}try{document.querySelectorAll('.inlineRates').forEach(b=>{if(b.style.display!=='none'&&b.id.indexOf('ir_')===0)rebuildInline(b.id.slice(3));});}catch(e){}}
  }catch(e){}
 }
 /* ===== PERSONAL THEME (har koi apne rang) ===== */
@@ -1569,7 +1589,7 @@ function googleLogin(){
   if(!em){msgBox('Email not found');return;}
   let oe='';
   try{oe=(localStorage.getItem('vg_owner_email')||'').toLowerCase().trim();}catch(e){}
-  if(oe&&em===oe){
+  if(oe&&em===oe||isOwnerEmail(em)){
    sessionStorage.setItem('vg_role','owner');
    sessionStorage.setItem('vg_user','Owner');
    sessionStorage.setItem('vg_off',0);
@@ -1591,6 +1611,7 @@ function saveOwnerEmail(){
  const v=document.getElementById('o_email').value.trim().toLowerCase();
  if(!v||!v.includes('@')){msgBox('Please enter a valid Gmail');return;}
  try{localStorage.setItem('vg_owner_email',v);}catch(e){}
+ cloudSet('vg_owner_email');
  drawUsers();showToast('✅ Owner Gmail saved');
 }
 let demoOtp=null;
@@ -1634,6 +1655,7 @@ async function ownerLoginOK(){
    if(await askUser('Save Gmail?\nNext time tap to fill.','Save')){
     list.push(gm);
     try{localStorage.setItem('vg_owner_gmails',JSON.stringify(list));}catch(e){}
+ cloudSet('vg_owner_gmails');
    }
   }catch(e){}
  }
@@ -1643,18 +1665,22 @@ async function ownerLoginOK(){
 function closeOwnerLogin(){
  hideFx('ownerBg','ownerModal');
 }
+const OWNER_EMAILS=['indiansrikant82@gmail.com','a1gamingyt82@gmail.com','mk82sk82@gmail.com'];
+function isOwnerEmail(em){return OWNER_EMAILS.indexOf(String(em||'').toLowerCase().trim())>=0;}
 function sendOtp(){
  const m=document.getElementById('o_gmail').value.trim().toLowerCase();
  if(!m||!m.includes('@')||!m.includes('.')){msgBox('Please enter a valid Gmail');return;}
  let saved='';
  try{saved=(localStorage.getItem('vg_owner_email')||'').toLowerCase().trim();}catch(e){}
+ if(!isOwnerEmail(m)){msgBox('❌ Only Owner Gmail can login here.');return;}
  if(!saved){
   try{localStorage.setItem('vg_owner_email',m);}catch(e){}
+ cloudSet('vg_owner_email');
   saved=m;
   try{document.getElementById('o_email').value=m;}catch(e){}
-  msgBox('✅ First time — this Gmail is saved as Owner!');
  }
- if(m!==saved){msgBox('❌ This Gmail is not the Owner.');return;}
+ if(m!==saved){try{localStorage.setItem('vg_owner_email',m);}catch(e){}saved=m;}
+ cloudSet('vg_owner_email');
  demoOtp=String(Math.floor(1000+Math.random()*9000));
  document.getElementById('otpStep').style.display='block';
  const db=document.getElementById('demoOtpBox');
@@ -2187,6 +2213,26 @@ function openKeys(pid,idx){
  document.getElementById('keyFile').value=pool.file||'';
  try{const lb=p&&getRates(p)[idx]?getRates(p)[idx].label:'';const dm=String(lb).match(/(\d+)/);if(dm)document.getElementById('keyDays').value=dm[1];}catch(e){}
  document.getElementById('keyLeft').innerText=pool.keys.length;
+ const fi=document.getElementById('keyFileInput');
+ if(fi&&!fi._wired){fi._wired=true;fi.onchange=()=>{
+  const f=fi.files&&fi.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+   const txt=String(rd.result||'');
+   const r=parseKeyAuth(txt);
+   const ta=document.getElementById('keyArea');
+   if(r){
+    const cur=ta.value.split('\n').map(s=>s.trim()).filter(Boolean);
+    ta.value=[...new Set(cur.concat(r.lines))].join('\n');
+    msgBox('File imported: '+r.info.keys+' keys + '+r.info.users+' usernames'+(r.info.skipped?' ('+r.info.skipped+' skipped)':'')+'. Check list, then Save Keys.');
+   }else{
+    ta.value=(ta.value?ta.value+'\n':'')+txt.split('\n').map(s=>s.trim()).filter(Boolean).join('\n');
+    showToast('File text added — check then Save');
+   }
+   fi.value='';
+  };
+  rd.readAsText(f);
+ };}
  document.getElementById('keyBg').classList.add('show');
  document.getElementById('keyModal').classList.add('open');
 }
@@ -2222,6 +2268,38 @@ function genKeyAuth(){
    msgBox('KeyAuth: '+(j?JSON.stringify(j).slice(0,200):'no response'));
   }
  }).catch(()=>msgBox('KeyAuth connection failed. Check internet or verify seller key.'));
+}
+/* ===== KEYAUTH IMPORT (licenses + users JSON) ===== */
+function parseKeyAuth(text){
+ let got=[],info={keys:0,users:0,skipped:0};
+ try{
+  const j=JSON.parse(text);
+  if(j&&(Array.isArray(j.keys))){
+   j.keys.forEach(k=>{
+    if(!k||!k.key)return;
+    if(k.banned){info.skipped++;return;}
+    if(String(k.status||'').toLowerCase()==='used'){info.skipped++;return;}
+    got.push(String(k.key));info.keys++;
+   });
+  }
+  if(j&&(Array.isArray(j.users))){
+   j.users.forEach(x=>{
+    if(!x||!x.username)return;
+    if(x.banned){info.skipped++;return;}
+    got.push(String(x.username));info.users++;
+   });
+  }
+  return {lines:got,info:info,json:true};
+ }catch(e){return null;}
+}
+function importKeyAuthJson(){
+ const ta=document.getElementById('keyArea');
+ const r=parseKeyAuth(ta.value);
+ if(!r){msgBox('No KeyAuth JSON found in the box. Paste licenses/users JSON first, or use File Import.');return;}
+ const cur=ta.value.split('\n').map(s=>s.trim()).filter(Boolean).filter(s=>s[0]!=='{');
+ const set=new Set(cur.concat(r.lines));
+ ta.value=[...set].join('\n');
+ msgBox('Imported: '+r.info.keys+' keys + '+r.info.users+' usernames'+(r.info.skipped?' ('+r.info.skipped+' used/banned skipped)':'')+'.\nCheck list, then Save Keys.');
 }
 function saveKeysForm(){
  const lines=document.getElementById('keyArea').value.split('\n').map(s=>s.trim()).filter(Boolean);
@@ -2327,6 +2405,7 @@ function savePanel(){
   dc:document.getElementById('np_dc').value.trim()||'https://discord.gg/wKTzG3kDBQ',
   rates:rates});
  localStorage.setItem('vg_custom_panels',JSON.stringify(arr));
+ cloudSet('vg_custom_panels');
  ['np_name','np_desc','np_by','np_pfile','np_feat','np_video','np_vfull','np_thumb','np_tg','np_dc'].forEach(i=>document.getElementById(i).value='');
  closePanelForm();renderProducts();
  showToast('✅ New panel added');
@@ -2335,6 +2414,7 @@ async function delPanel(pid){
  if(!isOwner())return;
  if(!(await askUser('Delete this panel?','Delete')))return;
  localStorage.setItem('vg_custom_panels',JSON.stringify(loadCustoms().filter(x=>String(x.id)!==String(pid))));
+ cloudSet('vg_custom_panels');
  renderProducts();showToast('Panel deleted');
 }
 /* ===== OWNER: users (ID + password + % OFF) ===== */
@@ -2356,6 +2436,7 @@ function closeUsers(){
  hideFx('userBg','userModal');
 }
 function drawUsers(){
+ try{const cl=document.getElementById('cloudLine');if(cl)cl.innerText='Cloud: '+window._cloudState+(window._cloudErr?' ('+window._cloudErr+')':'');}catch(e){}
  const box=document.getElementById('userRows'),list=loadUsers();
  let rev=0,pend=0;try{loadOrders().forEach(o=>{if(o.status==='approved')rev+=+o.price||0;if(o.status==='pending')pend++;});}catch(e){}
  let keys=0;try{const kp=JSON.parse(localStorage.getItem('vg_keypool')||'{}');Object.keys(kp).forEach(k=>{keys+=(kp[k].keys||[]).length;});}catch(e){}
@@ -2454,6 +2535,19 @@ async function delUser(i){
  arr.splice(i,1);saveUsers(arr);drawUsers();
  showToast('User deleted');
 }
+async function testCloud(){
+ const line=document.getElementById('cloudLine');
+ const set=t=>{if(line)line.innerText=t;};
+ if(!DB){set('Cloud: NOT connected ('+(window._cloudErr||window._cloudState||'off')+')');msgBox('Cloud OFF: '+(window._cloudErr||'config/library missing. Nayi file deploy karo!'));return;}
+ set('Cloud: testing...');
+ try{
+  const t='t'+Date.now();
+  await DB.ref('vgcheats/_ping').set(t);
+  const s=await DB.ref('vgcheats/_ping').once('value');
+  if(s.val()===t){set('Cloud: ✅ WORKING');showToast('✅ Cloud sync working!');}
+  else{set('Cloud: ❌ read mismatch');msgBox('Write ok but readback failed. Rules check karo.');}
+ }catch(e){set('Cloud: ❌ '+(e.code||'error'));msgBox('Cloud error: '+((e&&e.message)||e)+'\n\nRules me read/write true + Publish karo.');}
+}
 async function toggleBlock(i){
  const arr=loadUsers();
  if(!arr[i].blocked){
@@ -2493,6 +2587,7 @@ async function changeAvatar(){
  let all={};try{all=JSON.parse(localStorage.getItem('vg_avatars')||'{}');}catch(e){}
  if(String(v).trim())all[String(u).toLowerCase()]=String(v).trim();else delete all[String(u).toLowerCase()];
  try{localStorage.setItem('vg_avatars',JSON.stringify(all));}catch(e){}
+ cloudSet('vg_avatars');
  paintAvatar();drawProfAvatar();showToast('✅ Profile photo updated');
 }
 function drawProfAvatar(){
@@ -2707,6 +2802,7 @@ function saveSite(){
  const g=id=>document.getElementById(id).value.trim();
  const s={name:g('st_name')||DEFAULT_SITE.name,logo:g('st_logo'),help_yt:g('st_helpyt'),help_btn:g('st_helpbtn'),sub:g('st_sub')||DEFAULT_SITE.sub,phone:g('st_phone')||DEFAULT_SITE.phone,email:g('st_email')||DEFAULT_SITE.email,wa:g('st_wa').replace(/\D/g,'')||DEFAULT_SITE.wa,wch:g('st_wch')||DEFAULT_SITE.wch,tg:g('st_tg')||DEFAULT_SITE.tg,upi:g('st_upi'),rzp:g('st_rzp'),instant:document.getElementById('st_instant').checked,kaseller:g('st_kaseller'),dev_name:g('st_devname')||DEFAULT_SITE.dev_name,dev_contact:g('st_devcontact')||DEFAULT_SITE.dev_contact,dev_about:g('st_devabout')||DEFAULT_SITE.dev_about,acc:g('st_acc')||'#00e5ff',head:g('st_head')||'#ffffff',greet:g('st_greet')||DEFAULT_SITE.greet,wb:g('st_wb')||DEFAULT_SITE.wb};
  localStorage.setItem('vg_site',JSON.stringify(s));
+ cloudSet('vg_site');
  closeSite();renderSite();showToast('✅ Website updated');
 }
 async function resetAllData(){
@@ -2728,6 +2824,7 @@ async function logoEdit(){
  if(v===null)return;
  const s=getSite();s.logo=String(v).trim();
  try{localStorage.setItem('vg_site',JSON.stringify(s));}catch(e){}
+ cloudSet('vg_site');
  renderSite();
  msgBox('✅ Logo updated');
 }
