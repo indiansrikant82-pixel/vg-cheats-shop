@@ -680,7 +680,7 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
       <button id="navContact" onclick="goContact(this)">Contact</button>
     </div>
   </nav>
-  <div class="supstrip"><span id="livePanels">Live Panels: 0</span><span>24/7 Support</span></div>
+  <div class="supstrip"><span id="livePanels">Live Panels: 0</span><span id="cloudDot">☁ Off</span><span>24/7 Support</span></div>
   <div id="ownerBar" style="display:none">
     <button id="addPanelBtn" class="btn-shop" onclick="openPanelForm()">＋ Add New Panel</button>
     <button id="usersBtn" style="display:none" onclick="openUsers()">👥 Users (ID + % OFF)</button>
@@ -1345,6 +1345,13 @@ function cloudInit(){
  try{
   if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CFG);
   DB=firebase.database();
+  try{
+   DB.ref('.info/connected').on('value',snap=>{
+    const on=snap.val()===true;
+    if(on&&!window._cloudToast){window._cloudToast=true;showToast('☁ Cloud connected!');}
+    cloudDot(on);
+   });
+  }catch(e){cloudDot(false);}
   CLOUD_KEYS.forEach(k=>{
    try{
     DB.ref('vgcheats/'+k).on('value',snap=>{
@@ -1353,6 +1360,14 @@ function cloudInit(){
      try{
       const nv=(typeof v==='string')?v:JSON.stringify(v);
       if(localStorage.getItem(k)!==nv){localStorage.setItem(k,nv);cloudRefresh(k);}
+     }catch(e){}
+    });
+    DB.ref('vgcheats/'+k).once('value',snap=>{
+     try{
+      if(!snap.exists()){
+       const raw=localStorage.getItem(k);
+       if(raw!==null&&raw!=='[]'&&raw!=='{}'){let v=raw;try{v=JSON.parse(raw);}catch(e){}DB.ref('vgcheats/'+k).set(v);}
+      }
      }catch(e){}
     });
    }catch(e){}
@@ -1364,7 +1379,17 @@ function cloudSet(k){
  try{
   const raw=localStorage.getItem(k);
   let v=raw;try{v=JSON.parse(raw);}catch(e){}
-  DB.ref('vgcheats/'+k).set(v);
+  DB.ref('vgcheats/'+k).set(v).catch(e=>{
+   const now=Date.now();
+   if(!window._cloudErrT||now-window._cloudErrT>10000){window._cloudErrT=now;showToast('Cloud save failed: '+((e&&e.message)||e));}
+  });
+ }catch(e){}
+}
+function cloudDot(on){
+ try{
+  const d=document.getElementById('cloudDot');if(!d)return;
+  d.innerText=on?'☁ Online':'☁ Off';
+  d.style.color=on?'#00ff9d':'#ff5e7a';
  }catch(e){}
 }
 function cloudRefresh(k){
