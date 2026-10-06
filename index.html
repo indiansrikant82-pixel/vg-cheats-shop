@@ -557,7 +557,7 @@ nav{position:sticky;top:0;z-index:60}
 .vwrap img{width:100%;max-height:190px;object-fit:cover;display:block;background:#000}
 .vwrap{position:relative}
 .playov{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;border:2px solid rgba(255,255,255,.7);background:rgba(0,0,0,.45);color:#fff;font-size:22px;cursor:pointer;backdrop-filter:blur(4px)}
-.playov:hover{transform:translate(-50%,-50%) scale(1.1)}
+.playov:hover{box-shadow:0 0 24px rgba(255,255,255,.7)}
 .brandline{font-size:.72rem;letter-spacing:3px;color:#9be9ff;text-transform:uppercase;margin-bottom:8px;text-shadow:0 0 10px rgba(0,229,255,.5)}
 .devbadge{display:inline-block;font-size:.68rem;font-weight:bold;letter-spacing:1px;border:1px solid rgba(0,229,255,.5);color:#9be9ff;border-radius:12px;padding:3px 12px;margin-left:8px;vertical-align:middle}
 .mvrow{display:flex;gap:6px;justify-content:center;margin:0 0 8px}
@@ -859,6 +859,7 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
 <div id="siteModal">
   <h2>⚙ Site Settings</h2>
   <p class="rate-sub">Change full website text/links from here</p>
+  <div id="siteSaved" style="font-size:.8rem;min-height:18px;color:#9ab">Auto-save ON — saves as you type</div>
   <label>Shop name</label><input id="st_name" placeholder="VG CHEATS">
   <label>Home welcome text (e.g.: Welcome to)</label><input id="st_greet" placeholder="Welcome to">
   <label>Login welcome text (e.g.: Welcome Back)</label><input id="st_wb" placeholder="Welcome Back">
@@ -1305,7 +1306,7 @@ function oosGo(which){
  const p=findPanel(oosPid);if(!p)return;
  if(which==='wa'){
   const s=getSite(),wa=(s.wa||'').replace(/\D/g,'')||'918521189842';
-  window.open('https://wa.me/'+wa+'?text='+encodeURIComponent('Hello! '+getName(p)+' ('+getRates(p)[oosIdx].label+') is out of stock. Please inform me when available.'),'_blank');
+  openLink('https://wa.me/'+wa+'?text='+encodeURIComponent('Hello! '+getName(p)+' ('+getRates(p)[oosIdx].label+') is out of stock. Please inform me when available.'),'_blank');
  }else if(which==='tg')openTg(oosPid);
  else openDc(oosPid);
  closeOos();
@@ -1490,6 +1491,23 @@ function clearSession(){try{localStorage.removeItem('vg_session');sessionStorage
   }else if(s){localStorage.removeItem('vg_session');}
  }catch(e){}
 })();
+/* ===== BULLETPROOF LINK OPENER (har button ke liye) ===== */
+function openLink(url){
+ if(!url)return false;
+ try{
+  const w=openLink(url,'_blank');
+  if(w)return true;
+ }catch(e){}
+ try{
+  const a=document.createElement('a');
+  a.href=url;a.target='_blank';a.rel='noopener';
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{try{a.remove();}catch(e){}},800);
+  return true;
+ }catch(e){}
+ try{msgBox('Open this link:\n'+url);}catch(e){}
+ return false;
+}
 /* ===== SELF REGISTER (reseller) ===== */
 /* ===== FORGOT PASSWORD (Gmail OTP - new password) ===== */
 let fpOtp=null,fpEmail='';
@@ -1776,11 +1794,11 @@ function getTg(p){return getLinks(p.id).tg||p.tg||'https://t.me/panelstore_main'
 function getDc(p){return getLinks(p.id).dc||p.dc||'https://discord.gg/wKTzG3kDBQ';}
 function openTg(id){
  const p=findPanel(id);if(!p)return;
- window.open(getTg(p),'_blank');
+ openLink(getTg(p),'_blank');
 }
 function openDc(id){
  const p=findPanel(id);if(!p)return;
- window.open(getDc(p),'_blank');
+ openLink(getDc(p),'_blank');
 }
 let ratePid=null,rateEdit=false;
 function openRates(pid,edit){
@@ -1921,18 +1939,18 @@ function toggleFeat(pid,btn){
 function openPfile(pid){
  const p=findPanel(pid);if(!p)return;
  const f=getPfile(p);
- if(f)window.open(f,'_blank');else openTg(pid);
+ if(f)openLink(f,'_blank');else openTg(pid);
 }
 function playPanelVid(btn,pid){
  try{
   const card=btn.closest('.card');
   const p=findPanel(pid),vid=p?(getVfull(p)||getVideo(p)):'';
   const yid=ytId(vid);
-  if(yid){window.open('https://www.youtube.com/watch?v='+yid,'_blank');return;}
+  if(yid){openLink('https://www.youtube.com/watch?v='+yid,'_blank');return;}
   const v=card?card.querySelector('video'):null;
   if(v&&v.getAttribute('src')){v.scrollIntoView({behavior:'smooth',block:'center'});v.play();return;}
-  if(vid){window.open(vid,'_blank');return;}
-  window.open('https://www.youtube.com/results?search_query='+encodeURIComponent((p?getName(p):'Panel')+' review'),'_blank');return;
+  if(vid){openLink(vid,'_blank');return;}
+  openLink('https://www.youtube.com/results?search_query='+encodeURIComponent((p?getName(p):'Panel')+' review'),'_blank');return;
  }catch(e){}
  openTg(pid);
 }
@@ -2034,7 +2052,7 @@ function deliverPaid(txn){
  const kb=document.getElementById('payKeyBox');
  if(keys.length){document.getElementById('payKey').innerHTML=keys.join('<br>');kb.style.display='';}else kb.style.display='none';
  const fr=document.getElementById('payFileRow');
- if(keys.length&&file){document.getElementById('payFileBtn').onclick=function(){window.open(file,'_blank');};fr.style.display='';}else fr.style.display='none';
+ if(keys.length&&file){document.getElementById('payFileBtn').onclick=function(){openLink(file,'_blank');};fr.style.display='';}else fr.style.display='none';
  document.getElementById('payStep2Msg').innerText=keys.length?'Your key for '+payInfo.label+' — take a screenshot!':(getSite().instant===false?'Payment received! Owner will verify & approve. Track in My Orders.':'Keys out of stock! Send Order ID on WhatsApp — instant key.');
  document.getElementById('payStep1').style.display='none';
  document.getElementById('payStep2').style.display='';
@@ -2054,7 +2072,7 @@ function closePay(){
 }
 function payViaApp(){
  paidDone();
- if(payInfo&&payInfo.upiUrl)window.open(payInfo.upiUrl,'_blank');
+ if(payInfo&&payInfo.upiUrl)openLink(payInfo.upiUrl,'_blank');
 }
 function copyUpi(){
  const t=document.getElementById('payUpi').innerText;
@@ -2102,7 +2120,7 @@ function renderOrdersPage(){
   +`<div class="drow"><span>Payment Txn ID</span><span>${o.txn||'UPI (manual)'}</span></div>`
   +`<div class="drow"><span>Status</span><span class="chip ${o.status}">${o.status.toUpperCase()}</span></div>`
   +(o.status==="approved"?keysBoxHtml(o):"")
-  +(o.status==='approved'&&safeFile?`<div><button class="linkbtn" onclick="window.open('${safeFile}','_blank')">📥 Download File</button></div>`:'')
+  +(o.status==='approved'&&safeFile?`<div><button class="linkbtn" onclick="openLink('${safeFile}','_blank')">📥 Download File</button></div>`:'')
   +(own&&o.status==='pending'?`<div class="btn-row" style="margin-top:8px"><button class="buybtn" onclick="approveOrder('${o.id}')">Approve ✅</button><button class="delbtn" onclick="rejectOrder('${o.id}')">Reject ✖</button></div>`:'')
   +(own?`<div style="margin-top:8px"><button class="linkbtn" onclick="delOrder('${o.id}')">🗑 Delete this order</button></div>`:'')
   +`</div>`;
@@ -2125,7 +2143,7 @@ function openOrderDetail(id){
  ];
  let h=rows.map(r=>`<div class="drow"><span>${r[0]}</span><span>${r[1]}</span></div>`).join('');
  if(o.status==="approved")h+=keysBoxHtml(o);
- if(o.status==='approved'&&(o.file||'').trim())h+=`<div style="margin-top:10px"><button class="linkbtn" onclick="window.open('${(o.file||'').replace(/'/g,'')}','_blank')">📥 Download File</button></div>`;
+ if(o.status==='approved'&&(o.file||'').trim())h+=`<div style="margin-top:10px"><button class="linkbtn" onclick="openLink('${(o.file||'').replace(/'/g,'')}','_blank')">📥 Download File</button></div>`;
  document.getElementById('odetBody').innerHTML=h;
  document.getElementById('odetBg').classList.add('show');
  document.getElementById('odetModal').classList.add('open');
@@ -2332,7 +2350,7 @@ function sendShot(){
  if(!payInfo)return;
  const s=getSite(),wa=(s.wa||'').replace(/\D/g,'')||'918521189842';
  const msg='Hello! I have paid:\n• '+payInfo.nm+' ('+payInfo.label+') — ₹'+payInfo.price+'\nOrder ID: '+payInfo.oid+'\nUser: '+sessionStorage.getItem('vg_user')+'\n(Sending payment screenshot 👆)';
- window.open('https://wa.me/'+wa+'?text='+encodeURIComponent(msg),'_blank');
+ openLink('https://wa.me/'+wa+'?text='+encodeURIComponent(msg),'_blank');
  closePay();
 }
 function planPool(pid,label){
@@ -2691,7 +2709,7 @@ function topupPaid(){
  const amt=topupInfo.amt,oid=topupInfo.oid;
  topupInfo=null;closeTopup();refreshStats();
  const s=getSite(),wa=(s.wa||'').replace(/\D/g,'')||'918521189842';
- window.open('https://wa.me/'+wa+'?text='+encodeURIComponent('Hello! I paid ₹'+amt+' for wallet top-up.\nOrder ID: '+oid+'\nUser: '+me+(mob?'\nMobile: '+mob:'')+'\n(Sending payment screenshot 👆)'),'_blank');
+ openLink('https://wa.me/'+wa+'?text='+encodeURIComponent('Hello! I paid ₹'+amt+' for wallet top-up.\nOrder ID: '+oid+'\nUser: '+me+(mob?'\nMobile: '+mob:'')+'\n(Sending payment screenshot 👆)'),'_blank');
  showToast('Opening WhatsApp — send screenshot');
 }
 async function editBal(i){
@@ -2794,16 +2812,34 @@ function openSite(){
  }catch(e){}
  document.getElementById('siteBg').classList.add('show');
  document.getElementById('siteModal').classList.add('open');
+ try{
+  document.querySelectorAll('#siteModal input,#siteModal select').forEach(el=>{
+   el.oninput=()=>autoSiteSave();el.onchange=()=>autoSiteSave();
+  });
+ }catch(e){}
 }
 function closeSite(){
  hideFx('siteBg','siteModal');
 }
-function saveSite(){
+function saveSite(quiet){
  const g=id=>document.getElementById(id).value.trim();
  const s={name:g('st_name')||DEFAULT_SITE.name,logo:g('st_logo'),help_yt:g('st_helpyt'),help_btn:g('st_helpbtn'),sub:g('st_sub')||DEFAULT_SITE.sub,phone:g('st_phone')||DEFAULT_SITE.phone,email:g('st_email')||DEFAULT_SITE.email,wa:g('st_wa').replace(/\D/g,'')||DEFAULT_SITE.wa,wch:g('st_wch')||DEFAULT_SITE.wch,tg:g('st_tg')||DEFAULT_SITE.tg,upi:g('st_upi'),rzp:g('st_rzp'),instant:document.getElementById('st_instant').checked,kaseller:g('st_kaseller'),dev_name:g('st_devname')||DEFAULT_SITE.dev_name,dev_contact:g('st_devcontact')||DEFAULT_SITE.dev_contact,dev_about:g('st_devabout')||DEFAULT_SITE.dev_about,acc:g('st_acc')||'#00e5ff',head:g('st_head')||'#ffffff',greet:g('st_greet')||DEFAULT_SITE.greet,wb:g('st_wb')||DEFAULT_SITE.wb};
  localStorage.setItem('vg_site',JSON.stringify(s));
  cloudSet('vg_site');
- closeSite();renderSite();showToast('✅ Website updated');
+ renderSite();
+ if(quiet){
+  try{
+   const el=document.getElementById('siteSaved');
+   if(el){el.innerText='✓ Saved '+new Date().toLocaleTimeString();el.style.color='#00ff9d';}
+  }catch(e){}
+  return;
+ }
+ closeSite();showToast('✅ Website updated');
+}
+let _siteT=null;
+function autoSiteSave(){
+ clearTimeout(_siteT);
+ _siteT=setTimeout(()=>{try{saveSite(true);}catch(e){}},800);
 }
 async function resetAllData(){
  if(!isOwner())return;
@@ -2816,7 +2852,7 @@ async function resetAllData(){
  }catch(e){}
  location.reload();
 }
-function openSiteTg(){window.open(getSite().tg,'_blank');}
+function openSiteTg(){openLink(getSite().tg,'_blank');}
 function logoClick(e){toggleMenu(e);}
 async function logoEdit(){
  if(!isOwner())return;
@@ -2834,18 +2870,22 @@ async function supportGo(){
  if(now-_supLock<2500)return;
  _supLock=now;
  const r=await askUser('Need support?\nJoin Discord Server\nDirect Dm On WhatsApp msg','Discord','WhatsApp');
- if(r===true){window.open('https://discord.gg/wKTzG3kDBQ','_blank');}
+ if(r===true){openLink('https://discord.gg/wKTzG3kDBQ','_blank');}
  else if(r===false){
   const s=getSite(),wa=(s.wa||'').replace(/\D/g,'')||'918521189842';
-  window.open('https://wa.me/'+wa+'?text='+encodeURIComponent('Hello VG CHEATS Support!\nI need help.\nUser: '+sessionStorage.getItem('vg_user')),'_blank');
+  openLink('https://wa.me/'+wa+'?text='+encodeURIComponent('Hello VG CHEATS Support!\nI need help.\nUser: '+sessionStorage.getItem('vg_user')),'_blank');
  }
 }
-function openWch(){window.open(getSite().wch||'https://whatsapp.com/channel/0029Vb8Qx2IFnSz40l4Yv41w','_blank');}
+function openWch(){
+ const link=getSite().wch||'https://whatsapp.com/channel/0029Vb8Qx2IFnSz40l4Yv41w';
+ const w=openLink(link,'_blank');
+ if(!w)msgBox('Open this link: '+link);
+}
 function sendDM(){
  const n=document.getElementById('cname').value.trim(),m=document.getElementById('cmsg').value.trim();
  if(!m){msgBox('Please write a message first');return;}
  const s=getSite(),wa=(s.wa||'').replace(/\D/g,'')||'918521189842';
- window.open('https://wa.me/'+wa+'?text='+encodeURIComponent('Hello! I am '+(n||'customer')+'. \n'+m),'_blank');
+ openLink('https://wa.me/'+wa+'?text='+encodeURIComponent('Hello! I am '+(n||'customer')+'. \n'+m),'_blank');
  showToast('📩 Opening WhatsApp...');
 }
 /* hero title scatter on mouse */
@@ -3120,9 +3160,10 @@ function assembleFx(el){
  });
  // card mouse tilt + spotlight
  document.addEventListener('mousemove',e=>{
+  const inMedia=e.target.closest?e.target.closest('.vwrap'):null;
   const t=e.target.closest?e.target.closest('.card'):null;
   document.querySelectorAll('.card').forEach(c=>{
-   if(c===t){
+   if(c===t&&!inMedia){
     const r=c.getBoundingClientRect();
     if(r.width===0)return;
     const lite=(matchMedia&&matchMedia('(max-width:600px)').matches)||('ontouchstart' in window);
