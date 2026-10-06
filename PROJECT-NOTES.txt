@@ -1,0 +1,24 @@
+VG CHEATS — PROJECT NOTES (saved: 05-10-2026)
+====================================================
+Main file: index.html (single-file website, sab kuch isi me hai)
+Media: login-bg.mp4 (login background video), logo.png (jab add karo)
+
+JO BAN GAYA HAI:
+1. Login: Admin / Reseller / Public roles + Register + Gmail OTP Owner + Google btn (config pending)
+2. Owner/Admin/Reseller/Public access; Users manager (ID+password+role+%OFF+block/delete)
+3. Shop: video/thumbnail panels, rates popup + Buy, Discord/Telegram per panel
+4. Payment: UPI QR (exact amount) + Razorpay auto-verify (key pending) + Orders + approval
+5. Keys pool per plan + bulk generate + stock display + out-of-stock popup
+6. My Orders full page + order detail + key delivery after approval
+7. Glassmorphism UI, bg effects, tilt cards, hero 3D, shatter open/close (selective)
+8. English UI, stylish popups, logout, contact DM, site settings (owner full control)
+
+PENDING / KEYS NEEDED:
+A. Firebase config (Google login) — file me FIREBASE_CFG
+B. Razorpay Key ID (auto payment) — Site Settings me
+C. KeyAuth/AuthLx seller key (auto key gen) — Site Settings me
+D. logo.png file + hosting (Netlify/Vercel) + domain
+
+DATA: sab browser localStorage me (vg_users, vg_rates, vg_videos, vg_thumbs,
+vg_links, vg_custom_panels, vg_keypool, vg_orders, vg_site, vg_owner_email).
+Same phone+browser me yaad rahega.
