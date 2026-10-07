@@ -587,6 +587,31 @@ nav{position:sticky;top:0;z-index:60}
 .rate-row.oneline .qstep button{width:16px;height:16px;font-size:.65rem}
 .rate-row.oneline .qstep b{font-size:.72rem;min-width:14px}
 .oostxt{color:#ff5e7a;font-weight:bold;font-size:.72rem;letter-spacing:1px;white-space:nowrap}
+/* ===== MOBILE: ALL EFFECTS OFF + PC: lighter ===== */
+body.no-fx .bubbles,body.no-fx .flow,body.no-fx .corner,body.no-fx .orb,body.no-fx #glow,body.no-fx .orbit,body.no-fx .hgrid,body.no-fx .ring,body.no-fx .horb,body.no-fx #bgCanvas,body.no-fx #devilCanvas,body.no-fx #fxSmoke,body.no-fx .hero3d,body.no-fx .puff,body.no-fx .wisp{display:none!important}
+body.no-fx *,body.no-fx *::before,body.no-fx *::after{animation:none!important;transition:none!important;will-change:auto!important}
+body.no-fx .card,body.no-fx .login-card,body.no-fx nav,body.no-fx #contact,body.no-fx .stat,body.no-fx .sbox,body.no-fx .fpanel,body.no-fx .tape{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+body.no-fx .card,body.no-fx .login-card,body.no-fx .btn,body.no-fx .btn-shop,body.no-fx .buybtn,body.no-fx nav button{box-shadow:none!important;text-shadow:none!important}
+body.no-fx .h-anim span,body.no-fx .h-anim>span .hl{animation:none!important}
+body.no-fx .reveal{opacity:1!important;transform:none!important}
+body.no-fx{scroll-behavior:auto!important}
+body.no-fx .vwrap video{preload:none}
+/* PC: thoda halka — kam blur, kam glow, kam shadow */
+.card,.login-card,nav,#contact,.stat,.sbox,.fpanel{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.orb{opacity:.42;filter:blur(50px)}
+.flow{filter:blur(50px);opacity:.35}
+.corner{filter:blur(35px);opacity:.4}
+.bubbles span:nth-child(7),.bubbles span:nth-child(8){display:none}
+@media(max-width:820px){
+ .bubbles,.flow,.corner,.orb,#glow,.hero3d,.hgrid,.orbit,.horb,#bgCanvas,#devilCanvas,#fxSmoke,.puff,.wisp{display:none!important}
+ .card,.login-card,nav,#contact,.stat,.sbox,.fpanel,.tape{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none!important}
+ *{animation-duration:.01ms!important;animation-iteration-count:1!important}
+ .reveal{opacity:1!important;transform:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{animation:none!important;transition:none!important}
+ .bubbles,.flow,.corner,.orb,#glow,.hero3d,#bgCanvas,#devilCanvas,#fxSmoke{display:none!important}
+}
 .buybtn.sm{padding:5px 9px;font-size:.68rem;white-space:nowrap;flex-shrink:0}
 .genbtn{background:linear-gradient(45deg,#7c4dff,#b388ff);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:10px;width:30px;height:30px;font-size:.85rem;cursor:pointer;flex-shrink:0;box-shadow:0 0 12px rgba(124,77,255,.5)}
 .genbtn:hover{transform:scale(1.1)}
@@ -1046,6 +1071,29 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+/* ===== FX MODE: phone = NO effects, PC = lite effects (lag fix) ===== */
+function vgIsPhone(){
+ try{
+  var w=Math.min(screen.width||9999,innerWidth||9999);
+  var ua=(navigator.userAgent||'').toLowerCase();
+  var uaMob=/android|iphone|ipad|ipod|mobile|phone/.test(ua);
+  var smallTouch=(('ontouchstart' in window)||navigator.maxTouchPoints>0)&&w<=820;
+  if(w<=768||uaMob&&w<=920||smallTouch)return true;
+ }catch(e){}
+ return false;
+}
+function vgApplyFx(){
+ try{
+  var lite=vgIsPhone()||(matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+  document.body.classList.toggle('no-fx',!!lite);
+  window.VG_NO_FX=!!lite;
+  ['bgCanvas','devilCanvas','fxSmoke','glow'].forEach(function(id){var n=document.getElementById(id);if(n)n.style.display=lite?'none':'';});
+  document.querySelectorAll('.bubbles,.flow,.corner,.orb,.hero3d').forEach(function(n){n.style.display=lite?'none':'';});
+  if(lite)document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('vis');});
+ }catch(e){}
+}
+try{if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',vgApplyFx);else vgApplyFx();}catch(e){}
+try{addEventListener('resize',function(){clearTimeout(window._vgFxT);window._vgFxT=setTimeout(vgApplyFx,250);});}catch(e){}
 /* Razorpay Key ID Owner Site Settings me dalega (Settings → Razorpay Key ID).
    Bina key ke payment nahi chalega — koi bina pay kiye access nahi payega. */
 /* ===== GMAIL OTP (FREE — 200 free emails/month) =====
@@ -2903,6 +2951,7 @@ function splitHero(){
  });
  const letters=h.querySelectorAll('.hl');
  h.onmousemove=e=>{
+  if(window.VG_NO_FX||document.body.classList.contains('no-fx'))return;
   letters.forEach(s=>{
    try{
     const r=s.getBoundingClientRect();
@@ -2914,11 +2963,12 @@ function splitHero(){
  };
  h.onmouseleave=()=>{letters.forEach(s=>{try{s.style.transform='';}catch(e){}});};
 }
-/* ===== HERO 3D + TAPE + REVEAL ===== */
+/* ===== HERO 3D + TAPE + REVEAL (phone par mousemove OFF) ===== */
 (function(){
  const hero=document.getElementById('homeSec'),scene=document.getElementById('hero3d');
  if(hero&&scene){
   hero.addEventListener('mousemove',e=>{
+   if(window.VG_NO_FX||document.body.classList.contains('no-fx'))return;
    const r=hero.getBoundingClientRect();
    scene.style.setProperty('--px',((e.clientX-r.left)/r.width-0.5).toFixed(3));
    scene.style.setProperty('--py',((e.clientY-r.top)/r.height-0.5).toFixed(3));
@@ -2928,6 +2978,7 @@ function splitHero(){
 })();
 let revealObs=null;
 function observeReveals(){
+ if(window.VG_NO_FX||document.body.classList.contains('no-fx')){document.querySelectorAll('.reveal').forEach(el=>el.classList.add('vis'));return;}
  if(!('IntersectionObserver' in window)){document.querySelectorAll('.reveal').forEach(el=>el.classList.add('vis'));return;}
  if(!revealObs)revealObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){if(e.target.hasAttribute('data-count')){animateCount(e.target);revealObs.unobserve(e.target);}else{e.target.classList.add('vis');revealObs.unobserve(e.target);}}}),{threshold:.12});
  document.querySelectorAll('.reveal:not(.vis)').forEach(el=>revealObs.observe(el));
@@ -2978,6 +3029,7 @@ function tilePieces(el){
 }
 function shatter(el){
  try{
+  if(window.VG_NO_FX||document.body.classList.contains('no-fx'))return;
   const P=tilePieces(el);if(!P)return;
   el.style.visibility='hidden';
   P.tiles.forEach(t=>{
@@ -2999,6 +3051,7 @@ function hideFx(bg,modal){
 /* ===== ASSEMBLE ON OPEN (toote tukde judte hue, gol ghumte) ===== */
 function assembleFx(el){
  try{
+  if(window.VG_NO_FX||document.body.classList.contains('no-fx'))return;
   const P=tilePieces(el);if(!P)return;
   el.style.visibility='hidden';
   P.tiles.forEach(t=>{
@@ -3016,6 +3069,7 @@ function assembleFx(el){
 }
 (function(){
  const obs=new MutationObserver(muts=>{
+  if(window.VG_NO_FX||document.body.classList.contains('no-fx'))return;
   for(const m of muts){
    const t=m.target;
    if(t.classList&&(t.classList.contains('open')||t.classList.contains('show')))assembleFx(t);
@@ -3032,8 +3086,9 @@ function assembleFx(el){
  });
  try{console.log('%cSTOP! Ye area sirf Owner ke liye hai.','color:red;font-size:20px');}catch(e){}
 })();
-/* ===== DEVIL TOUCH BURST (login bg) ===== */
+/* ===== DEVIL TOUCH BURST (login bg — phone par OFF) ===== */
 (function(){
+ if(window.VG_NO_FX||document.body.classList.contains('no-fx'))return;
  const cv=document.getElementById('devilCanvas'),sec=document.getElementById('loginSec');
  if(!cv||!sec)return;
  const ctx=cv.getContext('2d');
@@ -3051,6 +3106,7 @@ function assembleFx(el){
  }
  for(let i=0;i<28;i++)embers.push(newEmber(true));
  function burst(x,y,big){
+  if(window.VG_NO_FX||document.body.classList.contains('no-fx'))return;
   const n=big?34:8;
   for(let i=0;i<n;i++){
    const a=Math.random()*6.28,sp=(big?Math.random()*7+2:Math.random()*2+.5);
@@ -3109,12 +3165,14 @@ function assembleFx(el){
   ctx.globalAlpha=1;ctx.shadowBlur=0;
  })();
 })();
-/* ===== SMOKE LOOP (GPU layers — kabhi nahi rukega) ===== */
+/* ===== SMOKE LOOP (GPU layers — phone par OFF, PC par halka) ===== */
 (function(){
+ if(window.VG_NO_FX||document.body.classList.contains('no-fx'))return;
  const box=document.createElement('div');
+ box.id='fxSmoke';
  box.style.cssText='position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;';
  document.body.insertBefore(box,document.body.firstChild);
- for(let i=0;i<16;i++){
+ for(let i=0;i<8;i++){
   const s=document.createElement('span');
   const sz=120+Math.random()*300;
   s.className='puff';
@@ -3125,7 +3183,7 @@ function assembleFx(el){
   s.style.opacity=(.5+Math.random()*.5).toFixed(2);
   box.appendChild(s);
  }
- for(let i=0;i<7;i++){
+ for(let i=0;i<3;i++){
   const w=document.createElement('span');
   w.className='wisp';
   w.style.width=(50+Math.random()*40)+'vw';
@@ -3138,13 +3196,14 @@ function assembleFx(el){
   box.appendChild(w);
  }
 })();
-/* ===== BG particles + mouse effects ===== */
+/* ===== BG particles + mouse effects (phone par OFF, PC par halka) ===== */
 (function(){
+ if(window.VG_NO_FX||document.body.classList.contains('no-fx')){try{document.getElementById('bgCanvas').style.display='none';}catch(e){}return;}
  const cv=document.getElementById('bgCanvas'),ctx=cv.getContext('2d');
  let W,H,pts=[];
  function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
  resize();addEventListener('resize',resize);
- for(let i=0;i<45;i++)pts.push({x:Math.random()*2000,y:Math.random()*2000,r:Math.random()*2+0.5,s:Math.random()*0.6+0.2,o:Math.random()*0.7+0.2});
+ for(let i=0;i<22;i++)pts.push({x:Math.random()*2000,y:Math.random()*2000,r:Math.random()*2+0.5,s:Math.random()*0.6+0.2,o:Math.random()*0.7+0.2});
  (function anim(){
   ctx.clearRect(0,0,W,H);
   pts.forEach(p=>{
@@ -3156,10 +3215,12 @@ function assembleFx(el){
  })();
  const glow=document.getElementById('glow');
  addEventListener('mousemove',e=>{
+  if(window.VG_NO_FX)return;
   glow.style.left=e.clientX+'px';glow.style.top=e.clientY+'px';
  });
- // card mouse tilt + spotlight
+ // card mouse tilt + spotlight (phone par OFF)
  document.addEventListener('mousemove',e=>{
+  if(window.VG_NO_FX||document.body.classList.contains('no-fx'))return;
   const inMedia=e.target.closest?e.target.closest('.vwrap'):null;
   const t=e.target.closest?e.target.closest('.card'):null;
   document.querySelectorAll('.card').forEach(c=>{
