@@ -1464,7 +1464,16 @@ function cloudInit(){
      if(v===null||v===undefined)return;
      try{
       const nv=(typeof v==='string')?v:JSON.stringify(v);
-      if(localStorage.getItem(k)!==nv){localStorage.setItem(k,nv);cloudRefresh(k);}
+      const cur=localStorage.getItem(k);
+      if(cur===nv){try{localStorage.removeItem('vg_push_'+k);}catch(e){}return;}
+      let mk=null;try{mk=JSON.parse(localStorage.getItem('vg_push_'+k)||'null');}catch(e){}
+      if(mk&&mk.v===cur&&(Date.now()-(mk.t||0))<15*60*1000&&(mk.n||0)<3){
+       try{let lv=cur;try{lv=JSON.parse(cur);}catch(e){}DB.ref('vgcheats/'+k).set(lv);}catch(e){}
+       try{localStorage.setItem('vg_push_'+k,JSON.stringify({v:mk.v,n:(mk.n||0)+1,t:mk.t}));}catch(e){}
+       return;
+      }
+      try{localStorage.removeItem('vg_push_'+k);}catch(e){}
+      localStorage.setItem(k,nv);cloudRefresh(k);
      }catch(e){}
     });
     DB.ref('vgcheats/'+k).once('value',snap=>{
@@ -1483,6 +1492,7 @@ function cloudSet(k){
  if(!DB)return;
  try{
   const raw=localStorage.getItem(k);
+  try{localStorage.setItem('vg_push_'+k,JSON.stringify({v:raw,n:0,t:Date.now()}));}catch(e){}
   let v=raw;try{v=JSON.parse(raw);}catch(e){}
   DB.ref('vgcheats/'+k).set(v).catch(e=>{
    const now=Date.now();
@@ -2005,7 +2015,9 @@ function shiftPools(pid,delIdx){
 }
 function delRate(i){
  const p=findPanel(ratePid),r=getRates(p).slice();
- r.splice(i,1);saveRates(ratePid,r);shiftPools(ratePid,i);drawRates();renderProducts();
+ r.splice(i,1);saveRates(ratePid,r);shiftPools(ratePid,i);
+ try{if(JSON.stringify(getRates(p))!==JSON.stringify(r))showToast('⚠ Save blocked — browser storage ON karo');}catch(e){}
+ drawRates();renderProducts();
 }
 function saveRateEdit(){
  const c=collectRateForm();if(!c)return;
