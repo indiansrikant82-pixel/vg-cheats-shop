@@ -1152,9 +1152,9 @@ const products=[
 function getRates(p){
  try{
   const all=JSON.parse(localStorage.getItem('vg_rates')||'{}');
-  if(all[p.id]&&all[p.id].length)return all[p.id];
+  if(Array.isArray(all[p.id]))return all[p.id];
  }catch(e){}
- return p.rates;
+ return (p.rates||[]).slice();
 }
 function saveRates(pid,rates){
  let all={};
@@ -1311,7 +1311,7 @@ function playThumb(box){
 function getVideo(p){
  try{
   const all=JSON.parse(localStorage.getItem('vg_videos')||'{}');
-  if(all[p.id])return fixMedia(all[p.id]);
+  if(all&&Object.prototype.hasOwnProperty.call(all,p.id))return fixMedia(all[p.id]);
  }catch(e){}
  return fixMedia(p.video||'');
 }
@@ -1322,21 +1322,14 @@ function saveVideo(pid,url){
  cloudSet('vg_videos');
 }
 function getThumb(p){
- let t='';
+ let t='',hasOwn=false;
  try{
   const all=JSON.parse(localStorage.getItem('vg_thumbs')||'{}');
-  if(all[p.id])t=all[p.id];
+  if(all&&Object.prototype.hasOwnProperty.call(all,p.id)){t=all[p.id];hasOwn=true;}
  }catch(e){}
- if(!t)t=p.thumb||'';
+ if(!t&&!hasOwn)t=p.thumb||'';
  t=fixMedia(t);
- if(!t){
-  const v=p.video||'';
-  try{
-   const all=JSON.parse(localStorage.getItem('vg_videos')||'{}');
-   const vv=all[p.id]||v;
-   t=ytThumb(vv)||'';
-  }catch(e){t=ytThumb(v);}
- }
+ if(!t)t=ytThumb(getVideo(p)||'');
  return t;
 }
 function saveThumb(pid,url){
@@ -1348,7 +1341,7 @@ function saveThumb(pid,url){
 function getVfull(p){
  try{
   const all=JSON.parse(localStorage.getItem('vg_vfull')||'{}');
-  if(all[p.id])return fixMedia(all[p.id]);
+  if(all&&Object.prototype.hasOwnProperty.call(all,p.id))return fixMedia(all[p.id]);
  }catch(e){}
  return fixMedia(p.vfull||'');
 }
@@ -1384,7 +1377,7 @@ function oosGo(which){
  const p=findPanel(oosPid);if(!p)return;
  if(which==='wa'){
   const s=getSite(),wa=(s.wa||'').replace(/\D/g,'')||'918521189842';
-  openLink('https://wa.me/'+wa+'?text='+encodeURIComponent('Hello! '+getName(p)+' ('+getRates(p)[oosIdx].label+') is out of stock. Please inform me when available.'),'_blank');
+  openLink('https://wa.me/'+wa+'?text='+encodeURIComponent('Hello! '+getName(p)+' ('+((getRates(p)[oosIdx]||{}).label||'plan')+') is out of stock. Please inform me when available.'),'_blank');
  }else if(which==='tg')openTg(oosPid);
  else openDc(oosPid);
  closeOos();
@@ -1919,6 +1912,7 @@ function drawRates(){
  const p=findPanel(ratePid);if(!p)return;
  const rates=getRates(p),off=myOff();
  const box=document.getElementById('rateRows');box.innerHTML='';
+ if(!rates.length&&rateEdit)box.innerHTML='<p style="color:#9ab;text-align:center;padding:14px">No plans — neeche ＋ Add New Plan dabakar naya plan banao, phir Save.</p>';
  rates.forEach((r,i)=>{
   if(!rateEdit){
    box.innerHTML+=rateRowHtml(ratePid,r,i,off,'Buy ✅');
@@ -1940,14 +1934,11 @@ function drawRates(){
 function collectRateForm(){
  const p=findPanel(ratePid);if(!p)return null;
  const r=getRates(p),out=[];
- let found=false;
  for(let i=0;i<r.length;i++){
   const le=document.getElementById('rl'+i),pe=document.getElementById('rp'+i);
   if(!le||!pe)continue;
-  found=true;
    out.push({label:le.value.trim()||('Plan '+(i+1)),price:parseInt(String(pe.value).replace(/[^0-9]/g,''))||0});
  }
- if(!found)return null;
  const nn=document.getElementById('rn_name'),nd=document.getElementById('rn_desc'),nb=document.getElementById('rn_by'),nf=document.getElementById('rn_file'),ff=document.getElementById('rf_feat'),ddv=document.getElementById('rn_dev');
  const feats=ff?ff.value.split('\n').map(s=>s.trim()).filter(Boolean):[];
  return {rates:out,name:nn&&nn.value.trim()?nn.value.trim():p.name,desc:nd&&nd.value.trim()?nd.value.trim():p.desc,by:nb?nb.value.trim():'',features:feats,pfile:nf?nf.value.trim():'',device:ddv?ddv.value:getDev(p)};
@@ -1973,12 +1964,27 @@ function toggleRateEdit(){
  rateEdit=!rateEdit;drawRates();
 }
 function addRateRow(){
- const p=findPanel(ratePid),r=getRates(p);
+ const p=findPanel(ratePid),r=getRates(p).slice();
  r.push({label:'New Plan',price:100});saveRates(ratePid,r);drawRates();renderProducts();
 }
+/* plan delete par uski keys bhi shift karo taaki galat plan par na lage */
+function shiftPools(pid,delIdx){
+ try{
+  const all=JSON.parse(localStorage.getItem('vg_keypool')||'{}');
+  let ch=false;const out={};
+  Object.keys(all).forEach(k=>{
+   const m=k.match(/^(.*):(\d+)$/);if(!m||m[1]!==String(pid)){out[k]=all[k];return;}
+   const ix=+m[2];
+   if(ix===delIdx){ch=true;return;}
+   if(ix>delIdx){out[m[1]+':'+(ix-1)]=all[k];ch=true;}
+   else out[k]=all[k];
+  });
+  if(ch){localStorage.setItem('vg_keypool',JSON.stringify(out));cloudSet('vg_keypool');}
+ }catch(e){}
+}
 function delRate(i){
- const p=findPanel(ratePid),r=getRates(p);
- r.splice(i,1);saveRates(ratePid,r);drawRates();renderProducts();
+ const p=findPanel(ratePid),r=getRates(p).slice();
+ r.splice(i,1);saveRates(ratePid,r);shiftPools(ratePid,i);drawRates();renderProducts();
 }
 function saveRateEdit(){
  const c=collectRateForm();if(!c)return;
