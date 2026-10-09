@@ -1205,6 +1205,7 @@ function getName(p){return getInfo(p.id).name||p.name;}
 function getDesc(p){return getInfo(p.id).desc||p.desc;}
 function getBy(p){return getInfo(p.id).by||'';}
 function getFeat(p){const f=getInfo(p.id).features;return Array.isArray(f)?f:(p.features||[]);}
+function escHtml(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function getPfile(p){return getInfo(p.id).pfile||p.pfile||'';}
 function getGame(p){return String(getInfo(p.id).game||p.game||'GENERAL').toUpperCase();}
 function getDev(p){return String(getInfo(p.id).device||p.device||'ANDROID').toUpperCase();}
@@ -1229,6 +1230,28 @@ function toggleMaint(el){
 function setMaintMsg(el){
  if(!canEdit())return;
  writeMaint(undefined,el.value);renderProducts();
+}
+/* har field badalte hi turant save (CLOSE dabane par bhi rahega) */
+function updInfoPatch(patch){
+ try{
+  if(!canEdit())return;
+  let all={};try{all=JSON.parse(localStorage.getItem('vg_panelinfo')||'{}');}catch(e){}
+  const k=String(ratePid),cur=all[k]||{};
+  Object.keys(patch).forEach(key=>{cur[key]=patch[key];});
+  all[k]=cur;localStorage.setItem('vg_panelinfo',JSON.stringify(all));cloudSet('vg_panelinfo');
+  renderProducts();
+ }catch(e){}
+}
+function fldChanged(el){
+ try{
+  if(!canEdit()||!el||!el.id)return;
+  const map={rn_name:'name',rn_desc:'desc',rn_by:'by',rn_file:'pfile',rn_dev:'device',rn_mmsg:'maintMsg',rn_apiprov:'apiProv',rn_apikey:'apiKey',rn_apiapp:'apiApp',rn_apiurl:'apiUrl'};
+  let k=map[el.id],v;
+  if(el.id==='rf_feat'){k='features';v=String(el.value).split('\n').map(s=>s.trim()).filter(Boolean);}
+  else v=el.value;
+  if(!k)return;
+  const patch={};patch[k]=v;updInfoPatch(patch);
+ }catch(e){}
 }
 function maintBlock(pid){const p=findPanel(pid);msgBox('🛠 '+(p?getName(p):'Panel')+' — UNDER MAINTENANCE\n'+getMaintMsg(p||{id:pid}));}
 /* ===== FILTER DASHBOARD ===== */
@@ -1414,7 +1437,7 @@ let oosPid=null,oosIdx=0;
 function openOos(pid,idx){
  oosPid=String(pid);oosIdx=idx;
  const p=findPanel(oosPid);
- document.getElementById('oosMsg').innerText=(p?getName(p)+' ('+getRates(p)[idx].label+')':'This plan')+' — Out of stock right now. Contact Owner on WhatsApp.';
+ document.getElementById('oosMsg').innerText=(p?getName(p)+' ('+((getRates(p)[idx]||{}).label||'plan')+')':'This plan')+' — Out of stock right now. Contact Owner on WhatsApp.';
  document.getElementById('oosBg').classList.add('show');
  document.getElementById('oosModal').classList.add('open');
 }
@@ -1994,11 +2017,11 @@ function drawRates(){
   if(!rateEdit){
    box.innerHTML+=rateRowHtml(ratePid,r,i,off,'Buy ✅');
   }else{
-   box.innerHTML+=`<div class="rate-row edit"><input id="rl${i}" value="${r.label}"><input id="rp${i}" type="number" value="${r.price}"><button class="delbtn" style="background:#1a2456" title="Keys for this plan" onclick="openKeys('${ratePid}',${i})">🔑</button><button class="delbtn" onclick="delRate(${i})">✖</button></div>`;
+   box.innerHTML+=`<div class="rate-row edit"><input id="rl${i}" value="${escHtml(r.label)}"><input id="rp${i}" type="number" value="${r.price}"><button class="delbtn" style="background:#1a2456" title="Keys for this plan" onclick="openKeys('${ratePid}',${i})">🔑</button><button class="delbtn" onclick="delRate(${i})">✖</button></div>`;
   }
  });
  if(rateEdit){
-  box.innerHTML=`<div class="rate-row edit" style="display:block"><input id="rn_name" style="width:100%;margin-bottom:6px" value="${getName(p)}" placeholder="Panel name"><input id="rn_desc" style="width:100%" value="${getDesc(p)}" placeholder="Detail (1 line)"></div><div class="rate-row edit" style="display:block"><input id="rn_by" style="width:100%;margin-bottom:6px" value="${getBy(p)}" placeholder="Brand line (e.g. VG CHEATS FF)"><input id="rn_file" style="width:100%;margin-bottom:6px" value="${getPfile(p)}" placeholder="Update file link (https://...)"><select id="rn_dev" style="width:100%;padding:9px;margin-bottom:6px;border-radius:8px;border:1px solid #334;background:#0a0f2a;color:#fff"><option${getDev(p)==='ANDROID'?' selected':''}>ANDROID</option><option${getDev(p)==='IOS'?' selected':''}>IOS</option><option${getDev(p)==='PC'?' selected':''}>PC</option></select><textarea id="rf_feat" style="width:100%;background:#0a0f2a;border:1px solid #334;color:#fff;border-radius:8px;padding:9px" rows="3" placeholder="Features — one per line">${getFeat(p).join('\n')}</textarea><label class="mswitch"><input type="checkbox" id="rn_maint"${isMaint(p)?' checked':''} onchange="toggleMaint(this)"> 🛠 Maintenance mode (panel band dikhega)</label><input id="rn_mmsg" style="width:100%;margin-top:6px" onchange="setMaintMsg(this)" value="${String(getInfo(p.id).maintMsg||'').replace(/"/g,'&quot;')}" placeholder="Maintenance text (e.g. UPDATE COMING SOON)"><label style="font-size:.8rem;color:#9ab;text-align:left;display:block;margin-top:10px">🔑 Panel API — key generate ke liye (khaali = global KeyAuth)</label><select id="rn_apiprov" style="width:100%;padding:9px;margin-bottom:6px;border-radius:8px;border:1px solid #334;background:#0a0f2a;color:#fff"><option value="">— Global (Site Settings) —</option><option value="keyauth"${getInfo(p.id).apiProv==='keyauth'?' selected':''}>KeyAuth</option><option value="authlx"${getInfo(p.id).apiProv==='authlx'?' selected':''}>AuthLX</option><option value="genzauth"${getInfo(p.id).apiProv==='genzauth'?' selected':''}>GenzAuth</option><option value="custom"${getInfo(p.id).apiProv==='custom'?' selected':''}>Custom URL</option></select><input id="rn_apikey" type="password" style="width:100%;margin-bottom:6px" value="${String(getInfo(p.id).apiKey||'').replace(/"/g,'&quot;')}" placeholder="Seller / API Key (is panel ke liye)"><input id="rn_apiapp" style="width:100%;margin-bottom:6px" value="${String(getInfo(p.id).apiApp||'').replace(/"/g,'&quot;')}" placeholder="App ID (AuthLX / GenzAuth ke liye)"><input id="rn_apiurl" style="width:100%" value="${String(getInfo(p.id).apiUrl||'').replace(/"/g,'&quot;')}" placeholder="Custom Generate URL — {DAYS} {COUNT} {APP} {KEY}"></div>`+box.innerHTML;
+  box.innerHTML=`<div class="rate-row edit" style="display:block"><input id="rn_name" style="width:100%;margin-bottom:6px" onchange="fldChanged(this)" value="${escHtml(getName(p))}" placeholder="Panel name"><input id="rn_desc" style="width:100%" onchange="fldChanged(this)" value="${escHtml(getDesc(p))}" placeholder="Detail (1 line)"></div><div class="rate-row edit" style="display:block"><input id="rn_by" style="width:100%;margin-bottom:6px" onchange="fldChanged(this)" value="${escHtml(getBy(p))}" placeholder="Brand line (e.g. VG CHEATS FF)"><input id="rn_file" style="width:100%;margin-bottom:6px" onchange="fldChanged(this)" value="${escHtml(getPfile(p))}" placeholder="Update file link (https://...)"><select id="rn_dev" style="width:100%;padding:9px;margin-bottom:6px;border-radius:8px;border:1px solid #334;background:#0a0f2a;color:#fff" onchange="fldChanged(this)"><option${getDev(p)==='ANDROID'?' selected':''}>ANDROID</option><option${getDev(p)==='IOS'?' selected':''}>IOS</option><option${getDev(p)==='PC'?' selected':''}>PC</option></select><textarea id="rf_feat" style="width:100%;background:#0a0f2a;border:1px solid #334;color:#fff;border-radius:8px;padding:9px" rows="3" onchange="fldChanged(this)" placeholder="Features — one per line">${escHtml(getFeat(p).join('\n'))}</textarea><label class="mswitch"><input type="checkbox" id="rn_maint"${isMaint(p)?' checked':''} onchange="toggleMaint(this)"> 🛠 Maintenance mode (panel band dikhega)</label><input id="rn_mmsg" style="width:100%;margin-top:6px" onchange="setMaintMsg(this)" value="${String(getInfo(p.id).maintMsg||'').replace(/"/g,'&quot;')}" placeholder="Maintenance text (e.g. UPDATE COMING SOON)"><label style="font-size:.8rem;color:#9ab;text-align:left;display:block;margin-top:10px">🔑 Panel API — key generate ke liye (khaali = global KeyAuth)</label><select id="rn_apiprov" style="width:100%;padding:9px;margin-bottom:6px;border-radius:8px;border:1px solid #334;background:#0a0f2a;color:#fff" onchange="fldChanged(this)"><option value="">— Global (Site Settings) —</option><option value="keyauth"${getInfo(p.id).apiProv==='keyauth'?' selected':''}>KeyAuth</option><option value="authlx"${getInfo(p.id).apiProv==='authlx'?' selected':''}>AuthLX</option><option value="genzauth"${getInfo(p.id).apiProv==='genzauth'?' selected':''}>GenzAuth</option><option value="custom"${getInfo(p.id).apiProv==='custom'?' selected':''}>Custom URL</option></select><input id="rn_apikey" type="password" style="width:100%;margin-bottom:6px" onchange="fldChanged(this)" value="${String(getInfo(p.id).apiKey||'').replace(/"/g,'&quot;')}" placeholder="Seller / API Key (is panel ke liye)"><input id="rn_apiapp" style="width:100%;margin-bottom:6px" onchange="fldChanged(this)" value="${String(getInfo(p.id).apiApp||'').replace(/"/g,'&quot;')}" placeholder="App ID (AuthLX / GenzAuth ke liye)"><input id="rn_apiurl" style="width:100%" onchange="fldChanged(this)" value="${String(getInfo(p.id).apiUrl||'').replace(/"/g,'&quot;')}" placeholder="Custom Generate URL — {DAYS} {COUNT} {APP} {KEY}"></div>`+box.innerHTML;
  }
  const eb=document.getElementById('rateEditBtn');
  eb.style.display=canEdit()?'':'none';
@@ -2644,7 +2667,9 @@ function resetFreeIdx(i){
 }
 function buyRate(pid,i){
  if(pid!==undefined&&pid!==null)ratePid=String(pid);
- const p=findPanel(ratePid),r=getRates(p)[i];if(!r)return;
+ const p=findPanel(ratePid);if(!p)return;
+ if(isMaint(p)){maintBlock(ratePid);return;}
+ const r=getRates(p)[i];if(!r)return;
  const nm=getName(p);
  let qty=getQty(ratePid,i);
  const zeroFree=eff(r.price)===0&&!isOwner();
@@ -2683,14 +2708,15 @@ function closePanelForm(){
  hideFx('panelBg','panelForm');
 }
 function savePanel(){
+ if(window._vgSaving)return;window._vgSaving=true;setTimeout(()=>{window._vgSaving=false;},2500);
  const name=document.getElementById('np_name').value.trim();
- if(!name){msgBox('Please enter panel name');return;}
+ if(!name){window._vgSaving=false;msgBox('Please enter panel name');return;}
  const rates=[];
  document.querySelectorAll('#np_rates .nprate').forEach(r=>{
    const l=r.querySelector('.np_l').value.trim(),p=parseInt(String(r.querySelector('.np_p').value).replace(/[^0-9]/g,''))||0;
   if(l&&p>=0)rates.push({label:l,price:p});
  });
- if(!rates.length){msgBox('Please add at least 1 rate (days + price)');return;}
+ if(!rates.length){window._vgSaving=false;msgBox('Please add at least 1 rate (days + price)');return;}
  const feats=document.getElementById('np_feat').value.split('\n').map(s=>s.trim()).filter(Boolean);
  const arr=loadCustoms();
   const nid='c'+Date.now();
@@ -2717,8 +2743,16 @@ function savePanel(){
 async function delPanel(pid){
  if(!isOwner())return;
  if(!(await askUser('Delete this panel?','Delete')))return;
- localStorage.setItem('vg_custom_panels',JSON.stringify(loadCustoms().filter(x=>String(x.id)!==String(pid))));
+ pid=String(pid);
+ localStorage.setItem('vg_custom_panels',JSON.stringify(loadCustoms().filter(x=>String(x.id)!==pid)));
  cloudSet('vg_custom_panels');
+ try{
+  ['vg_rates','vg_panelinfo','vg_videos','vg_thumbs','vg_vfull','vg_links'].forEach(k=>{
+   try{const o=JSON.parse(localStorage.getItem(k)||'{}');if(o&&Object.prototype.hasOwnProperty.call(o,pid)){delete o[pid];localStorage.setItem(k,JSON.stringify(o));cloudSet(k);}}catch(e){}
+  });
+  try{const kp=JSON.parse(localStorage.getItem('vg_keypool')||'{}');let ch=false;Object.keys(kp).forEach(k=>{if(k===pid||k.indexOf(pid+':')===0){delete kp[k];ch=true;}});if(ch){localStorage.setItem('vg_keypool',JSON.stringify(kp));cloudSet('vg_keypool');}}catch(e){}
+  try{const ord=JSON.parse(localStorage.getItem('vg_order')||'null');if(Array.isArray(ord)){const f=ord.filter(id=>String(id)!==pid);if(f.length!==ord.length){localStorage.setItem('vg_order',JSON.stringify(f));cloudSet('vg_order');}}}catch(e){}
+ }catch(e){}
  renderProducts();showToast('Panel deleted');
 }
 /* ===== OWNER: users (ID + password + % OFF) ===== */
