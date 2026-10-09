@@ -775,7 +775,7 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
     </div>
     <p id="contactInfo" class="cinfo" style="margin-top:15px">📱 contact :- 8521189842 &nbsp; | &nbsp; 📧 demo@panelstore.in</p>
   </div>
-  <footer id="footTxt">© 2026 VG CHEATS • build 3.4 — All rights reserved</footer>
+  <footer id="footTxt">© 2026 VG CHEATS • build 3.5 — All rights reserved</footer>
 </div>
 
 <div id="toast"></div>
@@ -1306,12 +1306,13 @@ function loadUsers(){
 }
 function saveUsers(a){localStorage.setItem('vg_users',JSON.stringify(a));cloudSet('vg_users');}
 /* default demo accounts (pehli baar auto-bante hain, Owner baad me delete kar sakta hai) */
+/* NOTE: seed direct likho — cloudSet MAT karo, nahi to khaali browser server ka asli data mita dega */
 try{
  if(localStorage.getItem('vg_users')===null){
-  saveUsers([
+  localStorage.setItem('vg_users',JSON.stringify([
    {u:'admin',p:'admin123',role:'admin',off:5,email:''},
    {u:'demo',p:'demo123',role:'reseller',off:0,email:''}
-  ]);
+  ]));
  }
 }catch(e){}
 function findUser(name){return loadUsers().find(x=>x.u.toLowerCase()===String(name).toLowerCase().trim());}
@@ -1592,13 +1593,21 @@ function cloudInit(){
       const nv=(typeof v==='string')?v:JSON.stringify(v);
       const cur=localStorage.getItem(k);
       if(cur===nv){try{localStorage.removeItem('vg_push_'+k);}catch(e){}try{if(window._vgLastW)delete window._vgLastW[k];}catch(e){}return;}
+      // khaali server-list kabhi bhari local users-list ko na mite (seed-wipe guard)
+      try{
+       if(k==='vg_users'){
+        let loc=[];try{loc=JSON.parse(cur||'[]');}catch(e){loc=[];}
+        let rem=null;try{rem=JSON.parse(nv);}catch(e){rem=null;}
+        if(Array.isArray(loc)&&loc.length&&Array.isArray(rem)&&rem.length===0){
+         if(defendLocal(k,cur))return;
+        }
+       }
+      }catch(e){}
       let mw=null;try{mw=(window._vgLastW||{})[k]||null;}catch(e){}
-      if(mw&&mw.v===cur&&(Date.now()-(mw.t||0))<15*60*1000&&(mw.n||0)<3){
-       try{let lv=cur;try{lv=JSON.parse(cur);}catch(e){}DB.ref('vgcheats/'+k).set(lv);}catch(e){}
-       try{mw.n=(mw.n||0)+1;window._vgLastW[k]=mw;}catch(e){}
-       return;
+      if(mw&&mw.v===cur&&(Date.now()-(mw.t||0))<15*60*1000){
+       if(defendLocal(k,cur))return;
+       try{if(window._vgLastW)delete window._vgLastW[k];}catch(e){}
       }
-      try{if(window._vgLastW)delete window._vgLastW[k];}catch(e){}
       let mk=null;try{mk=JSON.parse(localStorage.getItem('vg_push_'+k)||'null');}catch(e){}
       if(mk&&mk.v===cur&&(Date.now()-(mk.t||0))<15*60*1000&&(mk.n||0)<3){
        try{let lv=cur;try{lv=JSON.parse(cur);}catch(e){}DB.ref('vgcheats/'+k).set(lv);}catch(e){}
@@ -1613,7 +1622,7 @@ function cloudInit(){
      try{
       if(!snap.exists()){
        const raw=localStorage.getItem(k);
-       if(raw!==null&&raw!=='[]'&&raw!=='{}'){let v=raw;try{v=JSON.parse(raw);}catch(e){}DB.ref('vgcheats/'+k).set(v);}
+       if(raw!==null&&raw!=='[]'&&raw!=='{}'&&bootPushOk(k,raw)){let v=raw;try{v=JSON.parse(raw);}catch(e){}try{localStorage.setItem('vg_push_'+k,JSON.stringify({v:raw,n:0,t:Date.now()}));}catch(e){}try{window._vgLastW=window._vgLastW||{};window._vgLastW[k]={v:raw,n:0,t:Date.now()};}catch(e){}DB.ref('vgcheats/'+k).set(v);}
       }
      }catch(e){}
     });
@@ -1634,6 +1643,27 @@ function cloudSet(k){
    if(!window._cloudErrT||now-window._cloudErrT>10000){window._cloudErrT=now;showToast('Cloud save failed: '+((e&&e.message)||e));}
   });
  }catch(e){}
+}
+/* bootstrap guard: factory-seed users kabhi cloud par authoritative na bane */
+function bootPushOk(k,raw){
+ try{
+  if(k==='vg_users'){
+   const a=JSON.parse(raw);
+   if(Array.isArray(a)&&a.length===2&&a[0]&&a[1]&&a[0].u==='admin'&&a[0].p==='admin123'&&a[1].u==='demo'&&a[1].p==='demo123')return false;
+  }
+ }catch(e){}
+ return true;
+}
+/* bounded local-defense (max 3 push, 15 min) — loop-proof */
+function defendLocal(k,cur){
+ try{
+  window._vgLastW=window._vgLastW||{};
+  let r=(window._vgLastW[k]&&window._vgLastW[k].v===cur)?window._vgLastW[k]:{v:cur,n:0,t:Date.now()};
+  if((Date.now()-(r.t||0))>=15*60*1000||(r.n||0)>=3){try{delete window._vgLastW[k];}catch(e){}return false;}
+  r.n=(r.n||0)+1;if(!r.t)r.t=Date.now();window._vgLastW[k]=r;
+  try{let lv=cur;try{lv=JSON.parse(cur);}catch(e){}DB.ref('vgcheats/'+k).set(lv);}catch(e){}
+  return true;
+ }catch(e){return false;}
 }
 function cloudDot(on){
  try{
@@ -2384,7 +2414,7 @@ function deliverPaid(txn){
   const pool=getPool(payInfo.pid,idx);
   let need=payInfo.qty||1;
   while(need>0&&pool.keys.length){keys.push(pool.keys.shift());need--;}
-  file=pool.file||'';savePool(payInfo.pid,idx,pool);
+  file=pool.file||(p?getPfile(p):'')||'';savePool(payInfo.pid,idx,pool);
  }
  try{if(keys.length&&+payInfo.price===0&&String(txn)!=='ADMIN-FREE')markFreeClaim(curUser(),payInfo.pid,idx);}catch(e){}
  const arr=loadOrders();
@@ -2532,7 +2562,7 @@ async function approveOrder(id){
  let need=o.qty||1;const got=[];
  while(need>0&&pool.keys.length){got.push(pool.keys.shift());need--;}
  if(!got.length){msgBox('No keys left for this plan! Add keys first.');return;}
- o.keys=got;o.key=got[0];o.file=pool.file||'';
+ o.keys=got;o.key=got[0];o.file=pool.file||(p?getPfile(p):'')||'';
  savePool(o.pid,idx,pool);
  o.status='approved';saveOrders(arr);drawOrders();refreshStats();
  try{if(+o.price===0)markFreeClaim(o.user,o.pid,idx);}catch(e){}
@@ -3649,7 +3679,7 @@ function vgStorageBadge(){
   window._vgStorageOK=ok;
   let b=document.getElementById('storeDot');
   if(!b){b=document.createElement('div');b.id='storeDot';document.body.appendChild(b);}
-  b.innerText=(ok?'● storage OK':'● STORAGE BLOCKED — save nahi hoga')+' • build 3.4';
+  b.innerText=(ok?'● storage OK':'● STORAGE BLOCKED — save nahi hoga')+' • build 3.5';
   b.style.cssText='position:fixed;left:8px;bottom:8px;z-index:60;font-size:10px;letter-spacing:1px;padding:5px 10px;border-radius:12px;color:'+(ok?'#00ff9d':'#ff5e7a')+';background:rgba(0,0,0,.65);border:1px solid '+(ok?'rgba(0,255,157,.4)':'rgba(255,61,94,.5)')+';pointer-events:none';
   if(!ok)setTimeout(()=>{try{msgBox('⚠ Browser STORAGE BLOCKED hai!\n\nIsliye Save kaam nahi kar raha — refresh par sab mit jata hai.\n\nFix:\n1) Chrome browser use karo\n2) Private/Incognito mode band karo\n3) Site settings me Cookies/Storage ON karo\n4) UC Mini / file-viewer app mat use karo');}catch(e){}},900);
  }catch(e){}
