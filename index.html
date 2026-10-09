@@ -1543,13 +1543,13 @@ function cloudDot(on){
 }
 function cloudRefresh(k){
  try{
-  if(k==='vg_orders'){refreshStats();if(document.getElementById('ordPage').classList.contains('open'))renderOrdersPage();try{document.querySelectorAll('.inlineRates').forEach(b=>{if(b.style.display!=='none'&&b.id.indexOf('ir_')===0)rebuildInline(b.id.slice(3));});drawRates();}catch(e){}}
+  if(k==='vg_orders'){refreshStats();if(document.getElementById('ordPage').classList.contains('open'))renderOrdersPage();try{document.querySelectorAll('.inlineRates').forEach(b=>{if(b.style.display!=='none'&&b.id.indexOf('ir_')===0)rebuildInline(b.id.slice(3));});window._vgRemoteDraw=true;drawRates();}catch(e){}}
   else if(k==='vg_wallet'){try{updateWho();}catch(e){}try{if(document.getElementById('profPage').classList.contains('open'))openProfile();}catch(e){}}
   else if(k==='vg_rates'||k==='vg_custom_panels'||k==='vg_videos'||k==='vg_thumbs'||k==='vg_links'||k==='vg_panelinfo'||k==='vg_order'){if(document.getElementById('shop').classList.contains('show'))renderProducts();}
   else if(k==='vg_site'){renderSite();}
   else if(k==='vg_users'){try{if(document.getElementById('userModal').classList.contains('open'))drawUsers();}catch(e){}}
-  else if(k==='vg_keypool'){try{drawRates();}catch(e){}try{document.querySelectorAll('.inlineRates').forEach(b=>{if(b.style.display!=='none'&&b.id.indexOf('ir_')===0)rebuildInline(b.id.slice(3));});}catch(e){}}
-  else if(k==='vg_freeclaim'){try{if(document.getElementById('rateModal').classList.contains('open'))drawRates();}catch(e){}try{document.querySelectorAll('.inlineRates').forEach(b=>{if(b.style.display!=='none'&&b.id.indexOf('ir_')===0)rebuildInline(b.id.slice(3));});}catch(e){}}
+  else if(k==='vg_keypool'){try{window._vgRemoteDraw=true;drawRates();}catch(e){}try{document.querySelectorAll('.inlineRates').forEach(b=>{if(b.style.display!=='none'&&b.id.indexOf('ir_')===0)rebuildInline(b.id.slice(3));});}catch(e){}}
+  else if(k==='vg_freeclaim'){try{if(document.getElementById('rateModal').classList.contains('open')){window._vgRemoteDraw=true;drawRates();}}catch(e){}try{document.querySelectorAll('.inlineRates').forEach(b=>{if(b.style.display!=='none'&&b.id.indexOf('ir_')===0)rebuildInline(b.id.slice(3));});}catch(e){}}
  }catch(e){}
 }
 /* ===== PERSONAL THEME (har koi apne rang) ===== */
@@ -1976,6 +1976,17 @@ function closeRates(){
 }
 function drawRates(){
  const p=findPanel(ratePid);if(!p)return;
+ // beech me redraw aaye (cloud/keys) to type kiya hua mitna nahi chahiye — stash karo
+ let _stash=null;
+ try{
+  if(!window._vgRemoteDraw){
+   _stash={};
+   ['rn_name','rn_desc','rn_by','rn_file','rn_dev','rf_feat','rn_maint','rn_mmsg','rn_apiprov','rn_apikey','rn_apiapp','rn_apiurl','vurl','vfullurl','thurl','turl','durl'].forEach(id=>{
+    const n=document.getElementById(id);if(!n)return;
+    _stash[id]=n.type==='checkbox'?n.checked:n.value;
+   });
+  }
+ }catch(e){_stash=null;}
  const rates=getRates(p),off=myOff();
  const box=document.getElementById('rateRows');box.innerHTML='';
  if(!rates.length&&rateEdit)box.innerHTML='<p style="color:#9ab;text-align:center;padding:14px">No plans — neeche ＋ Add New Plan dabakar naya plan banao, phir Save.</p>';
@@ -1996,6 +2007,13 @@ function drawRates(){
  const vr=document.getElementById('videoEditRow');
  vr.style.display=rateEdit?'block':'none';
  if(rateEdit){document.getElementById('vurl').value=getVideo(p);document.getElementById('vfullurl').value=getVfull(p);document.getElementById('thurl').value=getThumb(p);document.getElementById('turl').value=getTg(p);document.getElementById('durl').value=getDc(p);}
+ try{
+  if(_stash)Object.keys(_stash).forEach(id=>{
+   const n=document.getElementById(id);if(!n||typeof n.value==='undefined')return;
+   if(n.type==='checkbox')n.checked=!!_stash[id];else n.value=_stash[id];
+  });
+ }catch(e){}
+ try{window._vgRemoteDraw=false;}catch(e){}
 }
 function collectRateForm(){
  const p=findPanel(ratePid);if(!p)return null;
