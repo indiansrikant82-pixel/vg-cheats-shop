@@ -797,6 +797,7 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
     <button class="linkbtn" onclick="resetRates()">↩ Reset</button>
     <button class="linkbtn" onclick="debugPanel()" title="Storage me kya hai — check">🔍 Check</button>
   </div>
+  <div id="saveLine" style="font-size:.72rem;color:#7d8db8;text-align:center;letter-spacing:.5px;min-height:18px;margin-top:6px"></div>
   <div class="btn-row" style="margin-top:14px">
     <button class="btn-update" id="rateEditBtn" onclick="toggleRateEdit()">✏ Edit Price</button>
     <button class="closebtn" onclick="closeRates()">CLOSE</button>
@@ -1227,6 +1228,7 @@ function toggleMaint(el){
  if(!canEdit()){try{el.checked=!el.checked;}catch(e){}return;}
  writeMaint(!!el.checked,(document.getElementById('rn_mmsg')||{}).value);
  renderProducts();showToast(el.checked?'🛠 Maintenance ON — card par banner lagega':'✅ Maintenance OFF');
+ try{saveLine('saved '+ratePid+' • maint:'+(el.checked?'ON':'off'));}catch(e){}
 }
 function setMaintMsg(el){
  if(!canEdit())return;
@@ -1252,6 +1254,7 @@ function fldChanged(el){
   else v=el.value;
   if(!k)return;
   const patch={};patch[k]=v;updInfoPatch(patch);
+  try{saveLine('saved '+ratePid+' • '+el.id+' ✓');}catch(e){}
  }catch(e){}
 }
 function maintBlock(pid){const p=findPanel(pid);msgBox('🛠 '+(p?getName(p):'Panel')+' — UNDER MAINTENANCE\n'+getMaintMsg(p||{id:pid}));}
@@ -1347,6 +1350,10 @@ function verifyCardDom(pid,c){
   if(wantBar!==gotBar)return wantBar?'Maintenance banner card par nahi bana.':'Galat banner dikha.';
   return '';
  }catch(e){return 'Card check error: '+(((e&&e.message)||e));}
+}
+/* modal ke andar sach — last save/open state yahi dikhega */
+function saveLine(t){
+ try{const n=document.getElementById('saveLine');if(n)n.innerText=t;}catch(e){}
 }
 /* owner diagnostic: storage vs card ka sach ek popup me */
 function debugPanel(){
@@ -2083,6 +2090,7 @@ function drawRates(){
   });
  }catch(e){}
  try{window._vgRemoteDraw=false;}catch(e){}
+ try{saveLine('panel '+ratePid+' • stored by:['+(getInfo(p.id).by||'-')+'] • maint:'+(isMaint(p)?'ON':'off'));}catch(e){}
 }
 function collectRateForm(){
  const p=findPanel(ratePid);if(!p)return null;
@@ -2113,6 +2121,7 @@ function saveMedia(){
   const tw=c?twinWarn(ratePid):'';
   rateEdit=false;closeRates();renderProducts();
   const derr=c?verifyCardDom(ratePid,c):'';
+  try{if(c)saveLine('saved '+ratePid+' @ '+new Date().toLocaleTimeString()+' • by:['+(c.by||'-')+'] • maint:'+(c.maint?'ON':'off'));}catch(e){}
   if(err)msgBox('⚠ '+err);else if(derr)msgBox('⚠ Card verify: '+derr);else if(tw)msgBox(tw+'\n\n(Brand/maintenance save ho gaya hai — sahi card par dekho ya duplicate hatao.)');else showToast('✅ All changes saved');
   showSavedProof(c?c.rates:null);
  }catch(e){msgBox('Save error: '+((e&&e.message)||e));}
@@ -2179,6 +2188,7 @@ function saveRateEdit(){
   const tw=twinWarn(ratePid);
   rateEdit=false;closeRates();renderProducts();
   const derr=verifyCardDom(ratePid,c);
+  try{saveLine('saved '+ratePid+' @ '+new Date().toLocaleTimeString()+' • by:['+(c.by||'-')+'] • maint:'+(c.maint?'ON':'off'));}catch(e){}
   if(err)msgBox('⚠ '+err);else if(derr)msgBox('⚠ Card verify: '+derr);else if(tw)msgBox(tw+'\n\n(Brand/maintenance save ho gaya hai — sahi card par dekho ya duplicate hatao.)');else showToast('Price list saved ✅');
   showSavedProof(c.rates);
  }catch(e){msgBox('Save error: '+((e&&e.message)||e));}
