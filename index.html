@@ -818,6 +818,10 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
   <label>Thumbnail link (photo — shows when no video)</label><input id="np_thumb" placeholder="https://.../photo.jpg">
   <label>Telegram channel link</label><input id="np_tg" placeholder="https://t.me/...">
   <label>Discord server link</label><input id="np_dc" placeholder="https://discord.gg/...">
+  <label>🔑 Panel API (optional — khaali = global KeyAuth)</label><select id="np_apiprov" style="width:100%;padding:10px;margin:6px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff"><option value="">— Global (Site Settings) —</option><option value="keyauth">KeyAuth</option><option value="authlx">AuthLX</option><option value="genzauth">GenzAuth</option><option value="custom">Custom URL</option></select>
+  <input id="np_apikey" type="password" placeholder="Seller / API Key (is panel ke liye)">
+  <input id="np_apiapp" placeholder="App ID (AuthLX / GenzAuth ke liye)">
+  <input id="np_apiurl" placeholder="Custom Generate URL — {DAYS} {COUNT} {APP} {KEY}">
   <label>Rates — add as many days as you want (name + price)</label>
   <div id="np_rates"></div>
   <button class="linkbtn" onclick="addNpRate()">＋ Add more days</button>
@@ -1044,9 +1048,9 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
   <label>⚡ Bulk generate (for this plan only)</label>
   <div class="btn-row"><input id="keyPrefix" placeholder="Prefix, e.g. VG30-" style="flex:2"><input id="keyCount" type="number" min="1" max="500" placeholder="Kitni? e.g. 50" style="flex:1"></div>
   <button class="linkbtn" onclick="genBulkKeys()">⚡ Generate & Add Keys</button>
-  <label>🔑 KeyAuth — fresh keys (no expiry worry: generate anytime)</label>
+  <label>🌐 Fresh keys — Panel API (<b id="apiLine">KeyAuth</b>)</label>
   <div class="btn-row"><input id="keyDays" type="number" min="1" placeholder="Days, e.g. 30" style="flex:1"><input id="keyAmount" type="number" min="1" max="200" placeholder="Kitni? e.g. 20" style="flex:1"></div>
-  <button class="linkbtn" onclick="genKeyAuth()">🌐 Generate Fresh Keys via KeyAuth</button>
+  <button class="linkbtn" onclick="genKeyAuth()">🌐 Generate Fresh Keys</button>
   <div class="btn-row" style="margin-top:14px">
     <button class="btn-shop" onclick="saveKeysForm()">💾 Save Keys</button>
     <button class="btn-update" onclick="closeKeys()">Cancel</button>
@@ -1216,12 +1220,21 @@ function buildFilterRows(){
  const dr=document.getElementById('devRow');
  if(dr)dr.innerHTML=_devs.map((d,i)=>'<button class="fbtn'+(fDev===d?' on':'')+'" onclick="setDeviceI('+i+')">'+(d==='All'?'All Systems':(d==='PC'?'ONLY PC':(d==='IOS'?'IOS IPHONE':d)))+'</button>').join('');
 }
-function saveInfo(pid,name,desc,by,features,pfile,device,maint,maintMsg){
+function saveInfo(pid,name,desc,by,features,pfile,device,maint,maintMsg,apiProv,apiKey,apiApp,apiUrl){
  let all={};
  try{all=JSON.parse(localStorage.getItem('vg_panelinfo')||'{}');}catch(e){}
- all[pid]={name:name,desc:desc,by:by||'',features:features||[],pfile:pfile||'',device:device||'',maint:!!maint,maintMsg:maintMsg||''};localStorage.setItem('vg_panelinfo',JSON.stringify(all));
+ all[pid]={name:name,desc:desc,by:by||'',features:features||[],pfile:pfile||'',device:device||'',maint:!!maint,maintMsg:maintMsg||'',apiProv:apiProv||'',apiKey:apiKey||'',apiApp:apiApp||'',apiUrl:apiUrl||''};localStorage.setItem('vg_panelinfo',JSON.stringify(all));
  cloudSet('vg_panelinfo');
 }
+/* ===== PER-PANEL API (KeyAuth / AuthLX / GenzAuth / Custom — khaali = global) ===== */
+function getApi(p){
+ try{
+  const inf=getInfo(p.id);
+  if(inf.apiProv)return {prov:inf.apiProv,key:inf.apiKey||'',app:inf.apiApp||'',url:inf.apiUrl||'',custom:true};
+ }catch(e){}
+ const s=getSite();return {prov:'keyauth',key:(s.kaseller||'').trim(),app:'',url:'',custom:false};
+}
+function apiName(pr){return pr==='keyauth'?'KeyAuth':pr==='authlx'?'AuthLX':pr==='genzauth'?'GenzAuth':pr==='custom'?'Custom URL':'—';}
 /* ===== USERS: created by owner, with % off ===== */
 function loadUsers(){
  try{const a=JSON.parse(localStorage.getItem('vg_users')||'[]');return Array.isArray(a)?a:[];}catch(e){return[];}
@@ -1442,7 +1455,7 @@ function cloudState(s,e){
   if(d){d.innerText=s==='online'?'☁ Online':(s==='error'?'☁ Error':'☁ Off');d.style.color=s==='online'?'#00ff9d':'#ff5e7a';}
  }catch(_){}
 }
-const CLOUD_KEYS=['vg_rates','vg_videos','vg_thumbs','vg_links','vg_custom_panels','vg_users','vg_wallet','vg_keypool','vg_orders','vg_site','vg_owner_email','vg_owner_gmails','vg_panelinfo','vg_avatars','vg_vfull','vg_order'];
+const CLOUD_KEYS=['vg_rates','vg_videos','vg_thumbs','vg_links','vg_custom_panels','vg_users','vg_wallet','vg_keypool','vg_orders','vg_site','vg_owner_email','vg_owner_gmails','vg_panelinfo','vg_avatars','vg_vfull','vg_order','vg_freeclaim'];
 function cloudInit(){
  cloudState('connecting');
  if(!GOOGLE_ON){cloudState('off');return;}
@@ -1515,6 +1528,7 @@ function cloudRefresh(k){
   else if(k==='vg_site'){renderSite();}
   else if(k==='vg_users'){try{if(document.getElementById('userModal').classList.contains('open'))drawUsers();}catch(e){}}
   else if(k==='vg_keypool'){try{drawRates();}catch(e){}try{document.querySelectorAll('.inlineRates').forEach(b=>{if(b.style.display!=='none'&&b.id.indexOf('ir_')===0)rebuildInline(b.id.slice(3));});}catch(e){}}
+  else if(k==='vg_freeclaim'){try{if(document.getElementById('rateModal').classList.contains('open'))drawRates();}catch(e){}try{document.querySelectorAll('.inlineRates').forEach(b=>{if(b.style.display!=='none'&&b.id.indexOf('ir_')===0)rebuildInline(b.id.slice(3));});}catch(e){}}
  }catch(e){}
 }
 /* ===== PERSONAL THEME (har koi apne rang) ===== */
@@ -1952,7 +1966,7 @@ function drawRates(){
   }
  });
  if(rateEdit){
-  box.innerHTML=`<div class="rate-row edit" style="display:block"><input id="rn_name" style="width:100%;margin-bottom:6px" value="${getName(p)}" placeholder="Panel name"><input id="rn_desc" style="width:100%" value="${getDesc(p)}" placeholder="Detail (1 line)"></div><div class="rate-row edit" style="display:block"><input id="rn_by" style="width:100%;margin-bottom:6px" value="${getBy(p)}" placeholder="Brand line (e.g. VG CHEATS FF)"><input id="rn_file" style="width:100%;margin-bottom:6px" value="${getPfile(p)}" placeholder="Update file link (https://...)"><select id="rn_dev" style="width:100%;padding:9px;margin-bottom:6px;border-radius:8px;border:1px solid #334;background:#0a0f2a;color:#fff"><option${getDev(p)==='ANDROID'?' selected':''}>ANDROID</option><option${getDev(p)==='IOS'?' selected':''}>IOS</option><option${getDev(p)==='PC'?' selected':''}>PC</option></select><textarea id="rf_feat" style="width:100%;background:#0a0f2a;border:1px solid #334;color:#fff;border-radius:8px;padding:9px" rows="3" placeholder="Features — one per line">${getFeat(p).join('\n')}</textarea><label class="mswitch"><input type="checkbox" id="rn_maint"${isMaint(p)?' checked':''}> 🛠 Maintenance mode (panel band dikhega)</label><input id="rn_mmsg" style="width:100%;margin-top:6px" value="${String(getInfo(p.id).maintMsg||'').replace(/"/g,'&quot;')}" placeholder="Maintenance text (e.g. UPDATE COMING SOON)"></div>`+box.innerHTML;
+  box.innerHTML=`<div class="rate-row edit" style="display:block"><input id="rn_name" style="width:100%;margin-bottom:6px" value="${getName(p)}" placeholder="Panel name"><input id="rn_desc" style="width:100%" value="${getDesc(p)}" placeholder="Detail (1 line)"></div><div class="rate-row edit" style="display:block"><input id="rn_by" style="width:100%;margin-bottom:6px" value="${getBy(p)}" placeholder="Brand line (e.g. VG CHEATS FF)"><input id="rn_file" style="width:100%;margin-bottom:6px" value="${getPfile(p)}" placeholder="Update file link (https://...)"><select id="rn_dev" style="width:100%;padding:9px;margin-bottom:6px;border-radius:8px;border:1px solid #334;background:#0a0f2a;color:#fff"><option${getDev(p)==='ANDROID'?' selected':''}>ANDROID</option><option${getDev(p)==='IOS'?' selected':''}>IOS</option><option${getDev(p)==='PC'?' selected':''}>PC</option></select><textarea id="rf_feat" style="width:100%;background:#0a0f2a;border:1px solid #334;color:#fff;border-radius:8px;padding:9px" rows="3" placeholder="Features — one per line">${getFeat(p).join('\n')}</textarea><label class="mswitch"><input type="checkbox" id="rn_maint"${isMaint(p)?' checked':''}> 🛠 Maintenance mode (panel band dikhega)</label><input id="rn_mmsg" style="width:100%;margin-top:6px" value="${String(getInfo(p.id).maintMsg||'').replace(/"/g,'&quot;')}" placeholder="Maintenance text (e.g. UPDATE COMING SOON)"><label style="font-size:.8rem;color:#9ab;text-align:left;display:block;margin-top:10px">🔑 Panel API — key generate ke liye (khaali = global KeyAuth)</label><select id="rn_apiprov" style="width:100%;padding:9px;margin-bottom:6px;border-radius:8px;border:1px solid #334;background:#0a0f2a;color:#fff"><option value="">— Global (Site Settings) —</option><option value="keyauth"${getInfo(p.id).apiProv==='keyauth'?' selected':''}>KeyAuth</option><option value="authlx"${getInfo(p.id).apiProv==='authlx'?' selected':''}>AuthLX</option><option value="genzauth"${getInfo(p.id).apiProv==='genzauth'?' selected':''}>GenzAuth</option><option value="custom"${getInfo(p.id).apiProv==='custom'?' selected':''}>Custom URL</option></select><input id="rn_apikey" type="password" style="width:100%;margin-bottom:6px" value="${String(getInfo(p.id).apiKey||'').replace(/"/g,'&quot;')}" placeholder="Seller / API Key (is panel ke liye)"><input id="rn_apiapp" style="width:100%;margin-bottom:6px" value="${String(getInfo(p.id).apiApp||'').replace(/"/g,'&quot;')}" placeholder="App ID (AuthLX / GenzAuth ke liye)"><input id="rn_apiurl" style="width:100%" value="${String(getInfo(p.id).apiUrl||'').replace(/"/g,'&quot;')}" placeholder="Custom Generate URL — {DAYS} {COUNT} {APP} {KEY}"></div>`+box.innerHTML;
  }
  const eb=document.getElementById('rateEditBtn');
  eb.style.display=canEdit()?'':'none';
@@ -1970,14 +1984,14 @@ function collectRateForm(){
   if(!le||!pe)continue;
    out.push({label:le.value.trim()||('Plan '+(i+1)),price:parseInt(String(pe.value).replace(/[^0-9]/g,''))||0});
  }
- const nn=document.getElementById('rn_name'),nd=document.getElementById('rn_desc'),nb=document.getElementById('rn_by'),nf=document.getElementById('rn_file'),ff=document.getElementById('rf_feat'),ddv=document.getElementById('rn_dev'),mn=document.getElementById('rn_maint'),mm=document.getElementById('rn_mmsg');
+ const nn=document.getElementById('rn_name'),nd=document.getElementById('rn_desc'),nb=document.getElementById('rn_by'),nf=document.getElementById('rn_file'),ff=document.getElementById('rf_feat'),ddv=document.getElementById('rn_dev'),mn=document.getElementById('rn_maint'),mm=document.getElementById('rn_mmsg'),ap=document.getElementById('rn_apiprov'),ak=document.getElementById('rn_apikey'),aa=document.getElementById('rn_apiapp'),au=document.getElementById('rn_apiurl');
  const feats=ff?ff.value.split('\n').map(s=>s.trim()).filter(Boolean):[];
- return {rates:out,name:nn&&nn.value.trim()?nn.value.trim():p.name,desc:nd&&nd.value.trim()?nd.value.trim():p.desc,by:nb?nb.value.trim():'',features:feats,pfile:nf?nf.value.trim():'',device:ddv?ddv.value:getDev(p),maint:mn?mn.checked:isMaint(p),maintMsg:mm?mm.value.trim():getInfo(p.id).maintMsg||''};
+ return {rates:out,name:nn&&nn.value.trim()?nn.value.trim():p.name,desc:nd&&nd.value.trim()?nd.value.trim():p.desc,by:nb?nb.value.trim():'',features:feats,pfile:nf?nf.value.trim():'',device:ddv?ddv.value:getDev(p),maint:mn?mn.checked:isMaint(p),maintMsg:mm?mm.value.trim():getInfo(p.id).maintMsg||'',apiProv:ap?ap.value:'',apiKey:ak?ak.value.trim():getInfo(p.id).apiKey||'',apiApp:aa?aa.value.trim():getInfo(p.id).apiApp||'',apiUrl:au?au.value.trim():getInfo(p.id).apiUrl||''};
 }
 function saveMedia(){
  if(!checkAdmin())return;
  const c=collectRateForm();
- if(c){saveRates(ratePid,c.rates);saveInfo(ratePid,c.name,c.desc,c.by,c.features,c.pfile,c.device,c.maint,c.maintMsg);}
+ if(c){saveRates(ratePid,c.rates);saveInfo(ratePid,c.name,c.desc,c.by,c.features,c.pfile,c.device,c.maint,c.maintMsg,c.apiProv,c.apiKey,c.apiApp,c.apiUrl);}
  saveVideo(ratePid,document.getElementById('vurl').value.trim());
  saveVfull(ratePid,document.getElementById('vfullurl').value.trim());
  saveThumb(ratePid,document.getElementById('thurl').value.trim());
@@ -2021,7 +2035,7 @@ function delRate(i){
 }
 function saveRateEdit(){
  const c=collectRateForm();if(!c)return;
- saveRates(ratePid,c.rates);saveInfo(ratePid,c.name,c.desc,c.by,c.features,c.pfile,c.device,c.maint,c.maintMsg);
+ saveRates(ratePid,c.rates);saveInfo(ratePid,c.name,c.desc,c.by,c.features,c.pfile,c.device,c.maint,c.maintMsg,c.apiProv,c.apiKey,c.apiApp,c.apiUrl);
  rateEdit=false;closeRates();renderProducts();
  showToast('Price list saved ✅');
  showSavedProof(c.rates);
@@ -2036,7 +2050,8 @@ function rateRowHtml(pid,r,i,off,buyLabel){
  var unit=eff(r.price),q=getQty(pid,i),total=unit*q;
  var price=off>0?'<b>₹'+total+'</b> <span class="strike">₹'+(r.price*q)+'</span>':'<b>₹'+total+'</b>';
  var left=getPool(pid,i).keys.length;
- return `<div class="rate-row oneline" data-pid="${pid}" data-i="${i}"><span class="rl">${r.label} ${price} <small class="${left?'stk':'out'}">- ${left?left+' left':'sold out'}</small></span><span class="rr">${left?`<span class="qstep"><button onclick="chQtyBtn(this,-1)">-</button><b>${q}</b><button onclick="chQtyBtn(this,1)">+</button></span>${isOwner()?`<button class="genbtn" title="Quick +10 keys" onclick="quickKeys('${pid}',${i})">✨</button>`:''}<button class="buybtn sm" onclick="buyRate('${pid}',${i})">${buyLabel}</button>`:`<button class="buybtn sm dim" onclick="openOos('${pid}',${i})">${buyLabel}</button>`}</span></div>`;
+ var claimed=unit===0&&!isOwner()&&freeClaimed(curUser(),pid);
+ return `<div class="rate-row oneline" data-pid="${pid}" data-i="${i}"><span class="rl">${r.label} ${price} <small class="${left?'stk':'out'}">- ${left?left+' left':'sold out'}</small></span><span class="rr">${claimed?`<button class="buybtn sm dim" onclick="msgBox('🎁 Free key already claimed! 1 user = 1 free key per panel.')">USED</button>`:left?`<span class="qstep"><button onclick="chQtyBtn(this,-1)">-</button><b>${q}</b><button onclick="chQtyBtn(this,1)">+</button></span>${isOwner()?`<button class="genbtn" title="Quick +10 keys" onclick="quickKeys('${pid}',${i})">✨</button>`:''}<button class="buybtn sm" onclick="buyRate('${pid}',${i})">${buyLabel}</button>`:`<button class="buybtn sm dim" onclick="openOos('${pid}',${i})">${buyLabel}</button>`}</span></div>`;
 }
 function rebuildInline(pid){
  const box=document.getElementById('ir_'+pid);
@@ -2189,6 +2204,7 @@ function deliverPaid(txn){
   while(need>0&&pool.keys.length){keys.push(pool.keys.shift());need--;}
   file=pool.file||'';savePool(payInfo.pid,idx,pool);
  }
+ try{if(keys.length&&+payInfo.price===0&&String(txn)!=='ADMIN-FREE')markFreeClaim(curUser(),payInfo.pid,idx);}catch(e){}
  const arr=loadOrders();
  arr.push({id:payInfo.oid,user:sessionStorage.getItem('vg_user'),pid:payInfo.pid,panel:payInfo.nm,plan:payInfo.label,price:payInfo.price,planIdx:idx,ts:Date.now(),status:locked?'pending':'approved',txn:txn,qty:payInfo.qty||1,keys:keys,key:keys[0]||'',file:file});
  saveOrders(arr);
@@ -2337,6 +2353,7 @@ async function approveOrder(id){
  o.keys=got;o.key=got[0];o.file=pool.file||'';
  savePool(o.pid,idx,pool);
  o.status='approved';saveOrders(arr);drawOrders();refreshStats();
+ try{if(+o.price===0)markFreeClaim(o.user,o.pid,idx);}catch(e){}
  showToast('Order approved — key delivered');
 }
 async function rejectOrder(id){
@@ -2374,6 +2391,7 @@ function openKeys(pid,idx){
  const pool=getPool(keyPid,idx);
  document.getElementById('keyArea').value=pool.keys.join('\n');
  document.getElementById('keyFile').value=pool.file||'';
+ try{const cfg0=getApi(p||{id:keyPid});document.getElementById('apiLine').innerText=apiName(cfg0.prov)+(cfg0.custom?' (is panel ka)':' (global)');}catch(e){}
  try{const lb=p&&getRates(p)[idx]?getRates(p)[idx].label:'';const dm=String(lb).match(/(\d+)/);if(dm)document.getElementById('keyDays').value=dm[1];}catch(e){}
  document.getElementById('keyLeft').innerText=pool.keys.length;
  const fi=document.getElementById('keyFileInput');
@@ -2402,8 +2420,8 @@ function openKeys(pid,idx){
 function closeKeys(){hideFx('keyBg','keyModal');}
 function genKeyAuth(){
  if(!isOwner())return;
- const sk=(getSite().kaseller||'').trim();
- if(!sk){msgBox('Add KeyAuth Seller Key in Site Settings first.');return;}
+ const cfg=getApi(findPanel(keyPid)||{id:keyPid});
+ const anm=apiName(cfg.prov);
  let days=parseInt(document.getElementById('keyDays').value)||0;
  if(!days){
   const p=findPanel(keyPid);
@@ -2413,24 +2431,49 @@ function genKeyAuth(){
  }
  let n=parseInt(document.getElementById('keyAmount').value)||0;
  if(n<1||n>200){msgBox('Enter count from 1 to 200');return;}
- showToast('⏳ Generating via KeyAuth...');
- const url='https://keyauth.win/api/seller/?sellerkey='+encodeURIComponent(sk)+'&type=add&expiry='+days+'&mask=XXXXXX-XXXXXX&level=1&amount='+n+'&format=json';
- fetch(url).then(r=>r.json()).then(j=>{
-  const got=(j&&(j.keys||j.key))||null;
-  const list=Array.isArray(got)?got:(got?[got]:[]);
-  if(j&&j.success&&list.length){
-   const pool=getPool(keyPid,keyIdx);
-   pool.keys=pool.keys.concat(list.map(String));
-   pool.file=pool.file||document.getElementById('keyFile').value.trim();
-   savePool(keyPid,keyIdx,pool);
-   document.getElementById('keyArea').value=pool.keys.join('\n');
-   document.getElementById('keyLeft').innerText=pool.keys.length;
-   drawRates();
-   showToast('✅ '+list.length+' fresh keys added ('+days+' days)!');
-  }else{
-   msgBox('KeyAuth: '+(j?JSON.stringify(j).slice(0,200):'no response'));
-  }
- }).catch(()=>msgBox('KeyAuth connection failed. Check internet or verify seller key.'));
+ if(cfg.prov==='keyauth'){
+  if(!cfg.key){msgBox(cfg.custom?'Is panel me Seller Key khaali hai — Edit panel me API Key dalo.':'Add KeyAuth Seller Key in Site Settings first (ya is panel me alag key dalo).');return;}
+  showToast('⏳ Generating via KeyAuth...');
+  const url='https://keyauth.win/api/seller/?sellerkey='+encodeURIComponent(cfg.key)+'&type=add&expiry='+days+'&mask=XXXXXX-XXXXXX&level=1&amount='+n+'&format=json';
+  fetch(url).then(r=>r.json()).then(j=>{
+   if(j&&j.success===false){msgBox('KeyAuth: '+JSON.stringify(j).slice(0,200));return;}
+   genKeysDone(collectGenKeys(j),days,anm);
+  }).catch(()=>msgBox('KeyAuth connection failed. Check internet or verify seller key.'));
+  return;
+ }
+ let tpl=(cfg.url||'').trim();
+ if(!tpl){msgBox(anm+' ke liye Generate URL chahiye.\nEdit panel → Panel API me "Custom URL" field me apne provider dashboard wala generate link paste karo.\nPlaceholders: {DAYS} {COUNT} {APP} {KEY}');return;}
+ tpl=tpl.split('{DAYS}').join(encodeURIComponent(days)).split('{COUNT}').join(encodeURIComponent(n)).split('{APP}').join(encodeURIComponent(cfg.app)).split('{KEY}').join(encodeURIComponent(cfg.key));
+ showToast('⏳ Generating via '+anm+'...');
+ const hopt={};if(cfg.key)hopt['X-API-Key']=cfg.key;
+ fetch(tpl,{headers:hopt}).then(r=>r.json()).then(j=>genKeysDone(collectGenKeys(j),days,anm)).catch(()=>msgBox(anm+' connection failed. URL ya key check karo.'));
+}
+/* kisi bhi provider ka response — keys nikaalo (tolerant) */
+function collectGenKeys(j){
+ const out=[];
+ const skip=/^(success|message|msg|status|status_code|error|info|description|detail|hint|code|type|timestamp|docs_url)$/i;
+ const walk=x=>{
+  if(typeof x==='string'){const s=x.trim();if(s.length>=6&&s.length<=160&&!/[\s{}<>]/.test(s)&&(/[-_]/.test(s)||s.length>=16))out.push(s);return;}
+  if(typeof x==='boolean'||typeof x==='number'||!x)return;
+  if(Array.isArray(x)){x.forEach(walk);return;}
+  if(typeof x==='object')Object.keys(x).forEach(k=>{if(skip.test(k))return;walk(x[k]);});
+ };
+ try{walk(j);}catch(e){}
+ return [...new Set(out)];
+}
+function genKeysDone(list,days,anm){
+ if(list&&list.length){
+  const pool=getPool(keyPid,keyIdx);
+  pool.keys=pool.keys.concat(list.map(String));
+  pool.file=pool.file||document.getElementById('keyFile').value.trim();
+  savePool(keyPid,keyIdx,pool);
+  try{document.getElementById('keyArea').value=pool.keys.join('\n');}catch(e){}
+  try{document.getElementById('keyLeft').innerText=pool.keys.length;}catch(e){}
+  try{drawRates();}catch(e){}
+  showToast('✅ '+list.length+' fresh keys added ('+days+' days, '+anm+')!');
+ }else{
+  msgBox(anm+': response me keys nahi mili.');
+ }
 }
 /* ===== KEYAUTH IMPORT (licenses + users JSON) ===== */
 function parseKeyAuth(text){
@@ -2510,9 +2553,38 @@ function isPanelFree(pid){
  if(!x)return false;
  return (x.freePanels||[]).map(String).includes(String(pid));
 }
+/* ===== FREE PLAN: 1 user = 1 free key per panel (price-0 plans) ===== */
+function curUser(){try{return sessionStorage.getItem('vg_user')||'';}catch(e){return '';}}
+function freeClaimed(u,pid){
+ try{
+  u=String(u||'').toLowerCase();if(!u)return false;
+  const all=JSON.parse(localStorage.getItem('vg_freeclaim')||'{}');
+  return !!(all[u]&&all[u][String(pid)]);
+ }catch(e){return false;}
+}
+function markFreeClaim(u,pid,idx){
+ try{
+  u=String(u||'').toLowerCase();if(!u)return;
+  let all={};try{all=JSON.parse(localStorage.getItem('vg_freeclaim')||'{}');}catch(e){}
+  all[u]=all[u]||{};all[u][String(pid)]={idx:idx,ts:Date.now()};
+  localStorage.setItem('vg_freeclaim',JSON.stringify(all));cloudSet('vg_freeclaim');
+ }catch(e){}
+}
+function resetFreeIdx(i){
+ if(!isOwner())return;
+ const arr=loadUsers(),x=arr[i];if(!x)return;
+ try{let all=JSON.parse(localStorage.getItem('vg_freeclaim')||'{}');delete all[String(x.u).toLowerCase()];localStorage.setItem('vg_freeclaim',JSON.stringify(all));cloudSet('vg_freeclaim');}catch(e){}
+ drawUsers();showToast('🎁 Free-claim reset: '+x.u);
+}
 function buyRate(pid,i){
  if(pid!==undefined&&pid!==null)ratePid=String(pid);
- const p=findPanel(ratePid),r=getRates(p)[i],nm=getName(p),qty=getQty(ratePid,i),price=eff(r.price)*qty;
+ const p=findPanel(ratePid),r=getRates(p)[i];if(!r)return;
+ const nm=getName(p);
+ let qty=getQty(ratePid,i);
+ const zeroFree=eff(r.price)===0&&!isOwner();
+ if(zeroFree)qty=1;
+ const price=eff(r.price)*qty;
+ if(zeroFree&&freeClaimed(curUser(),ratePid)){msgBox('🎁 Free key already claimed!\n1 user = 1 free key per panel.');return;}
  const free=isPanelFree(ratePid);
  if(!free&&planPool(ratePid,r.label).pool.keys.length<qty){openOos(ratePid,i);return;}
  if(free){
@@ -2550,12 +2622,13 @@ function savePanel(){
  const rates=[];
  document.querySelectorAll('#np_rates .nprate').forEach(r=>{
    const l=r.querySelector('.np_l').value.trim(),p=parseInt(String(r.querySelector('.np_p').value).replace(/[^0-9]/g,''))||0;
-  if(l&&p>0)rates.push({label:l,price:p});
+  if(l&&p>=0)rates.push({label:l,price:p});
  });
  if(!rates.length){msgBox('Please add at least 1 rate (days + price)');return;}
  const feats=document.getElementById('np_feat').value.split('\n').map(s=>s.trim()).filter(Boolean);
  const arr=loadCustoms();
- arr.push({id:'c'+Date.now(),emoji:'📦',name:name,price:Math.min(...rates.map(x=>x.price)),
+  const nid='c'+Date.now();
+ arr.push({id:nid,emoji:'📦',name:name,price:Math.min(...rates.map(x=>x.price)),
   desc:document.getElementById('np_desc').value.trim()||'New panel',
   by:document.getElementById('np_by').value.trim(),
   pfile:document.getElementById('np_pfile').value.trim(),
@@ -2569,7 +2642,9 @@ function savePanel(){
   rates:rates});
  localStorage.setItem('vg_custom_panels',JSON.stringify(arr));
  cloudSet('vg_custom_panels');
- ['np_name','np_desc','np_by','np_pfile','np_feat','np_video','np_vfull','np_thumb','np_tg','np_dc'].forEach(i=>document.getElementById(i).value='');
+ try{saveInfo(nid,name,document.getElementById('np_desc').value.trim()||'New panel',document.getElementById('np_by').value.trim(),document.getElementById('np_feat').value.split('\n').map(s=>s.trim()).filter(Boolean),document.getElementById('np_pfile').value.trim(),document.getElementById('np_device').value||'ANDROID',false,'',document.getElementById('np_apiprov').value,document.getElementById('np_apikey').value.trim(),document.getElementById('np_apiapp').value.trim(),document.getElementById('np_apiurl').value.trim());}catch(e){}
+ ['np_name','np_desc','np_by','np_pfile','np_feat','np_video','np_vfull','np_thumb','np_tg','np_dc','np_apikey','np_apiapp','np_apiurl'].forEach(i=>document.getElementById(i).value='');
+ try{document.getElementById('np_apiprov').value='';}catch(e){}
  closePanelForm();renderProducts();
  showToast('✅ New panel added');
 }
@@ -2606,7 +2681,7 @@ function drawUsers(){
  box.innerHTML='<div class="orow" style="cursor:default;text-align:center">Users: <b>'+list.length+'</b> &nbsp;•&nbsp; Orders: <b>'+loadOrders().length+'</b> &nbsp;•&nbsp; Revenue: <b style="color:#00ff9d">₹'+rev.toLocaleString('en-IN')+'</b> &nbsp;•&nbsp; Pending: <b>'+pend+'</b> &nbsp;•&nbsp; Keys: <b>'+keys+'</b></div>';
  box.innerHTML+=list.length?'':'<p style="color:#9ab">No users yet — create one above 👆</p>';
  list.forEach((x,i)=>{
-  box.innerHTML+=`<div class="urow"><span><b>${x.u}</b> ${x.role==='admin'?'🛡 Admin':x.role==='reseller'?'🤝 Reseller':'👤 Normal'} ${x.blocked?'<b style="color:#ff3d81">⛔ BLOCKED</b>':''}<br><span class="off">${x.off||0}% OFF</span> <span style="color:#0f9">₹${(function(){try{return getBal(x.u);}catch(e){return 0;}})().toLocaleString('en-IN')}</span> <span style="color:#778">| pass: ${x.p}${x.email?'<br>✉ '+x.email:''}</span></span><span class="ops"><button style="background:#1a2456;color:#fff" onclick="editRole(${i})" title="Change role">🔄</button><button style="background:#1a2456;color:#fff" onclick="openPacc(${i})" title="Free panels">🎛</button><button style="background:#1a2456;color:#fff" onclick="editOff(${i})">Edit %</button><button style="background:#1a2456;color:#fff" onclick="editBal(${i})" title="Wallet">💰</button><button style="background:#1a2456;color:#fff" onclick="editPass(${i})">🔑</button><button style="background:${x.blocked?'#00c853':'#ff9d00'};color:#fff" onclick="toggleBlock(${i})">${x.blocked?'▶ Unblock':'⏸ Block'}</button><button style="background:#ff3d81;color:#fff" onclick="delUser(${i})">✖</button></span></div>`;
+  box.innerHTML+=`<div class="urow"><span><b>${x.u}</b> ${x.role==='admin'?'🛡 Admin':x.role==='reseller'?'🤝 Reseller':'👤 Normal'} ${x.blocked?'<b style="color:#ff3d81">⛔ BLOCKED</b>':''}<br><span class="off">${x.off||0}% OFF</span> <span style="color:#0f9">₹${(function(){try{return getBal(x.u);}catch(e){return 0;}})().toLocaleString('en-IN')}</span> <span style="color:#778">| pass: ${x.p}${x.email?'<br>✉ '+x.email:''}</span></span><span class="ops"><button style="background:#1a2456;color:#fff" onclick="editRole(${i})" title="Change role">🔄</button><button style="background:#1a2456;color:#fff" onclick="openPacc(${i})" title="Free panels">🎛</button><button style="background:#1a2456;color:#fff" onclick="editOff(${i})">Edit %</button><button style="background:#1a2456;color:#fff" onclick="editBal(${i})" title="Wallet">💰</button><button style="background:#1a2456;color:#fff" onclick="editPass(${i})">🔑</button><button style="background:#1a2456;color:#fff" onclick="resetFreeIdx(${i})" title="Reset free-key claim">🎁</button><button style="background:${x.blocked?'#00c853':'#ff9d00'};color:#fff" onclick="toggleBlock(${i})">${x.blocked?'▶ Unblock':'⏸ Block'}</button><button style="background:#ff3d81;color:#fff" onclick="delUser(${i})">✖</button></span></div>`;
  });
 }
 function addUser(){
