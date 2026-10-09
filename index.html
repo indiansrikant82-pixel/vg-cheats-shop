@@ -1598,10 +1598,11 @@ function cloudInit(){
  }catch(e){DB=null;}
 }
 function cloudSet(k){
+ let raw=null;
+ try{raw=localStorage.getItem(k);}catch(e){}
+ try{localStorage.setItem('vg_push_'+k,JSON.stringify({v:raw,n:0,t:Date.now()}));}catch(e){}
  if(!DB)return;
  try{
-  const raw=localStorage.getItem(k);
-  try{localStorage.setItem('vg_push_'+k,JSON.stringify({v:raw,n:0,t:Date.now()}));}catch(e){}
   let v=raw;try{v=JSON.parse(raw);}catch(e){}
   DB.ref('vgcheats/'+k).set(v).catch(e=>{
    const now=Date.now();
