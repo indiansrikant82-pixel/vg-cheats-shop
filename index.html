@@ -1225,10 +1225,12 @@ function writeMaint(maint,msg){
  }catch(e){}
 }
 function toggleMaint(el){
- if(!canEdit()){try{el.checked=!el.checked;}catch(e){}return;}
- writeMaint(!!el.checked,(document.getElementById('rn_mmsg')||{}).value);
- renderProducts();showToast(el.checked?'🛠 Maintenance ON — card par banner lagega':'✅ Maintenance OFF');
- try{saveLine('saved '+ratePid+' • maint:'+(el.checked?'ON':'off'));}catch(e){}
+ try{
+  if(!canEdit()){try{el.checked=!el.checked;}catch(e){}return;}
+  writeMaint(!!el.checked,(document.getElementById('rn_mmsg')||{}).value);
+  renderProducts();showToast(el.checked?'🛠 Maintenance ON — card par banner lagega':'✅ Maintenance OFF');
+  try{saveLine('saved '+ratePid+' • maint:'+(el.checked?'ON':'off'));}catch(e){}
+ }catch(e){try{el.checked=!el.checked;}catch(_){}msgBox('Save error: '+(((e&&e.message)||e)));}
 }
 function setMaintMsg(el){
  if(!canEdit())return;
