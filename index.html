@@ -795,6 +795,7 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
     <button class="linkbtn" onclick="addRateRow()">＋ Add plans</button>
     <button class="linkbtn" onclick="saveRateEdit()">💾 Save</button>
     <button class="linkbtn" onclick="resetRates()">↩ Reset</button>
+    <button class="linkbtn" onclick="debugPanel()" title="Storage me kya hai — check">🔍 Check</button>
   </div>
   <div class="btn-row" style="margin-top:14px">
     <button class="btn-update" id="rateEditBtn" onclick="toggleRateEdit()">✏ Edit Price</button>
@@ -1312,6 +1313,32 @@ function allPanels(){
   }
  }catch(e){}
  return base;
+}
+/* same naam ke judvaan panel pakdo (double-save se bante hain) */
+function twinNames(){
+ try{
+  const m={};
+  allPanels().forEach(p=>{const n=String(getName(p)).toLowerCase().trim();if(!n)return;m[n]=m[n]||[];m[n].push(String(p.id));});
+  return Object.keys(m).filter(k=>m[k].length>1);
+ }catch(e){return [];}
+}
+function twinWarn(pid){
+ try{
+  const p=findPanel(pid);if(!p)return '';
+  const n=String(getName(p)).toLowerCase().trim();
+  if(twinNames().indexOf(n)>=0)return '⚠ "'+getName(p)+'" naam ke 2 panel hain! Ek ko card ke ✖ se delete karo — nahi to edit doosre card par dikhega.';
+  return '';
+ }catch(e){return '';}
+}
+/* owner diagnostic: storage vs card ka sach ek popup me */
+function debugPanel(){
+ try{
+  const p=findPanel(ratePid);
+  let all={};try{all=JSON.parse(localStorage.getItem('vg_panelinfo')||'{}');}catch(e){all={ERR:String((e&&e.message)||e)};}
+  const mine=all[String(ratePid)];
+  let cards=[];try{cards=[...document.querySelectorAll('#plist .card')].map(c=>{const h=c.querySelector('h3');return h?h.textContent.trim().slice(0,30):'?';});}catch(e){}
+  msgBox('PID: '+ratePid+'\nrole: '+myRole()+'\nfindPanel: '+(p?('YES id='+p.id):'NO')+'\nbrand read: ['+getBy(p||{id:ratePid})+']\nmaint read: '+isMaint(p||{id:ratePid})+'\nstored keys: '+Object.keys(all).join(',')+'\nmy entry: '+JSON.stringify(mine)+'\ncards: '+cards.join(' | '));
+ }catch(e){msgBox('debug error: '+(((e&&e.message)||e)));}
 }
 function savePanelOrder(arr){
  try{localStorage.setItem('vg_order',JSON.stringify(arr));}catch(e){}
@@ -2064,8 +2091,9 @@ function saveMedia(){
   localStorage.setItem('vg_links',JSON.stringify(all));
   cloudSet('vg_links');
   const err=c?verifyPanelSave(ratePid,c):'Form nahi mila — modal dobara kholo.';
+  const tw=c?twinWarn(ratePid):'';
   rateEdit=false;closeRates();renderProducts();
-  if(err)msgBox('⚠ '+err);else showToast('✅ All changes saved');
+  if(err)msgBox('⚠ '+err);else if(tw)msgBox(tw+'\n\n(Brand/maintenance save ho gaya hai — sahi card par dekho ya duplicate hatao.)');else showToast('✅ All changes saved');
   showSavedProof(c?c.rates:null);
  }catch(e){msgBox('Save error: '+((e&&e.message)||e));}
 }
@@ -2120,8 +2148,9 @@ function saveRateEdit(){
   const c=collectRateForm();if(!c){msgBox('Form nahi mila — modal dobara kholo.');return;}
   saveRates(ratePid,c.rates);saveInfo(ratePid,c.name,c.desc,c.by,c.features,c.pfile,c.device,c.maint,c.maintMsg,c.apiProv,c.apiKey,c.apiApp,c.apiUrl);
   const err=verifyPanelSave(ratePid,c);
+  const tw=twinWarn(ratePid);
   rateEdit=false;closeRates();renderProducts();
-  if(err)msgBox('⚠ '+err);else showToast('Price list saved ✅');
+  if(err)msgBox('⚠ '+err);else if(tw)msgBox(tw+'\n\n(Brand/maintenance save ho gaya hai — sahi card par dekho ya duplicate hatao.)');else showToast('Price list saved ✅');
   showSavedProof(c.rates);
  }catch(e){msgBox('Save error: '+((e&&e.message)||e));}
 }
