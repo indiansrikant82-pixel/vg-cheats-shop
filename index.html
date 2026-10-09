@@ -2029,19 +2029,22 @@ function collectRateForm(){
 }
 function saveMedia(){
  if(!checkAdmin())return;
- const c=collectRateForm();
- if(c){saveRates(ratePid,c.rates);saveInfo(ratePid,c.name,c.desc,c.by,c.features,c.pfile,c.device,c.maint,c.maintMsg,c.apiProv,c.apiKey,c.apiApp,c.apiUrl);}
- saveVideo(ratePid,document.getElementById('vurl').value.trim());
- saveVfull(ratePid,document.getElementById('vfullurl').value.trim());
- saveThumb(ratePid,document.getElementById('thurl').value.trim());
- let all={};
- try{all=JSON.parse(localStorage.getItem('vg_links')||'{}');}catch(e){}
- all[ratePid]={tg:document.getElementById('turl').value.trim(),dc:document.getElementById('durl').value.trim()};
- localStorage.setItem('vg_links',JSON.stringify(all));
- cloudSet('vg_links');
- rateEdit=false;closeRates();renderProducts();
- showToast('✅ All changes saved');
- showSavedProof(c?c.rates:null);
+ try{
+  const c=collectRateForm();
+  if(c){saveRates(ratePid,c.rates);saveInfo(ratePid,c.name,c.desc,c.by,c.features,c.pfile,c.device,c.maint,c.maintMsg,c.apiProv,c.apiKey,c.apiApp,c.apiUrl);}
+  saveVideo(ratePid,document.getElementById('vurl').value.trim());
+  saveVfull(ratePid,document.getElementById('vfullurl').value.trim());
+  saveThumb(ratePid,document.getElementById('thurl').value.trim());
+  let all={};
+  try{all=JSON.parse(localStorage.getItem('vg_links')||'{}');}catch(e){}
+  all[ratePid]={tg:document.getElementById('turl').value.trim(),dc:document.getElementById('durl').value.trim()};
+  localStorage.setItem('vg_links',JSON.stringify(all));
+  cloudSet('vg_links');
+  const err=c?verifyPanelSave(ratePid,c):'Form nahi mila — modal dobara kholo.';
+  rateEdit=false;closeRates();renderProducts();
+  if(err)msgBox('⚠ '+err);else showToast('✅ All changes saved');
+  showSavedProof(c?c.rates:null);
+ }catch(e){msgBox('Save error: '+((e&&e.message)||e));}
 }
 function toggleRateEdit(){
  if(!rateEdit&&!checkAdmin())return;
@@ -2079,12 +2082,25 @@ function delRate(i){
  try{if(JSON.stringify(getRates(p))!==JSON.stringify(r))showToast('⚠ Save blocked — browser storage ON karo');}catch(e){}
  drawRates();renderProducts();
 }
+function verifyPanelSave(pid,c){
+ try{
+  const p=findPanel(pid);if(!p)return 'Panel not found after save!';
+  if(JSON.stringify(getRates(p))!==JSON.stringify(c.rates))return 'Rates save nahi hui — browser storage ON karo';
+  const inf=getInfo(pid);
+  if((inf.by||'')!==(c.by||''))return 'Brand save nahi hua — browser storage ON karo';
+  if(!!inf.maint!==!!c.maint)return 'Maintenance save nahi hua — browser storage ON karo';
+  return '';
+ }catch(e){return 'Verify error: '+((e&&e.message)||e);}
+}
 function saveRateEdit(){
- const c=collectRateForm();if(!c)return;
- saveRates(ratePid,c.rates);saveInfo(ratePid,c.name,c.desc,c.by,c.features,c.pfile,c.device,c.maint,c.maintMsg,c.apiProv,c.apiKey,c.apiApp,c.apiUrl);
- rateEdit=false;closeRates();renderProducts();
- showToast('Price list saved ✅');
- showSavedProof(c.rates);
+ try{
+  const c=collectRateForm();if(!c){msgBox('Form nahi mila — modal dobara kholo.');return;}
+  saveRates(ratePid,c.rates);saveInfo(ratePid,c.name,c.desc,c.by,c.features,c.pfile,c.device,c.maint,c.maintMsg,c.apiProv,c.apiKey,c.apiApp,c.apiUrl);
+  const err=verifyPanelSave(ratePid,c);
+  rateEdit=false;closeRates();renderProducts();
+  if(err)msgBox('⚠ '+err);else showToast('Price list saved ✅');
+  showSavedProof(c.rates);
+ }catch(e){msgBox('Save error: '+((e&&e.message)||e));}
 }
 const qtyMap={};
 function getQty(pid,i){return qtyMap[pid+":"+i]||1;}
