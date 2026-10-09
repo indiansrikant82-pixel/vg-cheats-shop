@@ -571,6 +571,10 @@ nav{position:sticky;top:0;z-index:60}
 .btn-shop.dim,.btn-update.dim,.discordbtn.dim{opacity:.45;filter:grayscale(.6)}
 .mswitch{display:flex;align-items:center;gap:10px;background:rgba(255,157,0,.08);border:1px solid rgba(255,157,0,.5);border-radius:12px;padding:10px 12px;margin-top:8px;cursor:pointer;font-size:.88rem;font-weight:bold;color:#ffcf9b}
 .mswitch input{width:20px;height:20px;accent-color:#ff9d00}
+/* global maintenance banner (whole shop) */
+.gmaint{position:relative;z-index:2;max-width:640px;margin:10px auto;padding:12px 14px;text-align:center;background:rgba(5,5,10,.92);border:2px solid #ff9d00;border-radius:14px;box-shadow:0 0 26px rgba(255,157,0,.55)}
+.gmaint b{display:block;font-size:1.05rem;letter-spacing:2px;color:#fff}
+.gmaint span{display:block;margin-top:4px;font-size:.72rem;letter-spacing:3px;color:#ffb300;font-weight:bold}
 .brandline{font-size:.72rem;letter-spacing:3px;color:#9be9ff;text-transform:uppercase;margin-bottom:8px;text-shadow:0 0 10px rgba(0,229,255,.5)}
 .devbadge{display:inline-block;font-size:.68rem;font-weight:bold;letter-spacing:1px;border:1px solid rgba(0,229,255,.5);color:#9be9ff;border-radius:12px;padding:3px 12px;margin-left:8px;vertical-align:middle}
 .mvrow{display:flex;gap:6px;justify-content:center;margin:0 0 8px}
@@ -738,6 +742,7 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
   </div>
 
   <div class="hero" id="homeSec">
+    <div id="globalMaint" class="gmaint" style="display:none"></div>
     <div class="hero3d" id="hero3d">
       <div class="horb h1"></div><div class="horb h2"></div>
       <div class="orbit"><i></i><i></i><i></i><i></i></div>
@@ -932,6 +937,8 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
   <label>Owner UPI ID (for payment QR, e.g. name@upi)</label><input id="st_upi" placeholder="yourname@upi">
   <label>Razorpay Key ID (for auto payment verify — auto-pay needs this)</label><input id="st_rzp" placeholder="rzp_live_...">
   <label style="display:flex;align-items:center;gap:8px"><input id="st_instant" type="checkbox" checked style="width:auto"> Instant delivery ON (OFF = Owner approval must, max security)</label>
+  <label class="mswitch"><input type="checkbox" id="st_maint"> 🛠 Full-shop maintenance (sab panels band)</label>
+  <input id="st_maintmsg" placeholder="Shop maintenance text (e.g. UPDATE COMING SOON)">
   <label>KeyAuth Seller Key (for fresh keys — saved only in Owner browser)</label><input id="st_kaseller" type="password" placeholder="Seller key paste karo">
   <label>Developer name (Owner editable)</label><input id="st_devname" placeholder="VG Team">
   <label>Developer contact</label><input id="st_devcontact" placeholder="Telegram / number">
@@ -1168,14 +1175,14 @@ const products=[
 ];
 function getRates(p){
  try{
-  const all=JSON.parse(localStorage.getItem('vg_rates')||'{}');
+  const all=storeObj('vg_rates');
   if(Array.isArray(all[p.id]))return all[p.id];
  }catch(e){}
  return (p.rates||[]).slice();
 }
 function saveRates(pid,rates){
  let all={};
- try{all=JSON.parse(localStorage.getItem('vg_rates')||'{}');}catch(e){}
+ try{all=storeObj('vg_rates');}catch(e){}
  all[pid]=rates;localStorage.setItem('vg_rates',JSON.stringify(all));
  cloudSet('vg_rates');
 }
@@ -1199,8 +1206,16 @@ function checkAdmin(){
  return false;
 }
 /* panel naam/detail override (owner edit) */
+function storeObj(k){
+ try{
+  const v=JSON.parse(localStorage.getItem(k)||'null');
+  if(v&&typeof v==='object'&&!Array.isArray(v))return v;
+  if(Array.isArray(v)){const o={};v.forEach((x,i)=>{if(x!==null&&x!==undefined)o[i]=x;});return o;}
+ }catch(e){}
+ return {};
+}
 function getInfo(pid){
- try{const all=JSON.parse(localStorage.getItem('vg_panelinfo')||'{}');if(all[pid])return all[pid];}catch(e){}
+ try{const all=storeObj('vg_panelinfo');if(all[pid])return all[pid];}catch(e){}
  return {};
 }
 function getName(p){return getInfo(p.id).name||p.name;}
@@ -1217,7 +1232,7 @@ function getMaintMsg(p){try{const m=getInfo(p.id).maintMsg;return (m&&String(m).
 /* tick/text badalte hi turant save — redraw ya Save ka wait nahi */
 function writeMaint(maint,msg){
  try{
-  let all={};try{all=JSON.parse(localStorage.getItem('vg_panelinfo')||'{}');}catch(e){}
+  let all={};try{all=storeObj('vg_panelinfo');}catch(e){}
   const k=String(ratePid),cur=all[k]||{};
   if(maint!==undefined)cur.maint=!!maint;
   if(msg!==undefined)cur.maintMsg=String(msg||'');
@@ -1240,7 +1255,7 @@ function setMaintMsg(el){
 function updInfoPatch(patch){
  try{
   if(!canEdit())return;
-  let all={};try{all=JSON.parse(localStorage.getItem('vg_panelinfo')||'{}');}catch(e){}
+  let all={};try{all=storeObj('vg_panelinfo');}catch(e){}
   const k=String(ratePid),cur=all[k]||{};
   Object.keys(patch).forEach(key=>{cur[key]=patch[key];});
   all[k]=cur;localStorage.setItem('vg_panelinfo',JSON.stringify(all));cloudSet('vg_panelinfo');
@@ -1272,7 +1287,7 @@ function buildFilterRows(){
 }
 function saveInfo(pid,name,desc,by,features,pfile,device,maint,maintMsg,apiProv,apiKey,apiApp,apiUrl){
  let all={};
- try{all=JSON.parse(localStorage.getItem('vg_panelinfo')||'{}');}catch(e){}
+ try{all=storeObj('vg_panelinfo');}catch(e){}
  all[pid]={name:name,desc:desc,by:by||'',features:features||[],pfile:pfile||'',device:device||'',maint:!!maint,maintMsg:maintMsg||'',apiProv:apiProv||'',apiKey:apiKey||'',apiApp:apiApp||'',apiUrl:apiUrl||''};localStorage.setItem('vg_panelinfo',JSON.stringify(all));
  cloudSet('vg_panelinfo');
 }
@@ -1436,22 +1451,22 @@ function playThumb(box){
 }
 function getVideo(p){
  try{
-  const all=JSON.parse(localStorage.getItem('vg_videos')||'{}');
-  if(all&&Object.prototype.hasOwnProperty.call(all,p.id))return fixMedia(all[p.id]);
+  const all=storeObj('vg_videos');
+  if(Object.prototype.hasOwnProperty.call(all,p.id))return fixMedia(all[p.id]);
  }catch(e){}
  return fixMedia(p.video||'');
 }
 function saveVideo(pid,url){
  let all={};
- try{all=JSON.parse(localStorage.getItem('vg_videos')||'{}');}catch(e){}
+ try{all=storeObj('vg_videos');}catch(e){}
  all[pid]=url;localStorage.setItem('vg_videos',JSON.stringify(all));
  cloudSet('vg_videos');
 }
 function getThumb(p){
  let t='',hasOwn=false;
  try{
-  const all=JSON.parse(localStorage.getItem('vg_thumbs')||'{}');
-  if(all&&Object.prototype.hasOwnProperty.call(all,p.id)){t=all[p.id];hasOwn=true;}
+  const all=storeObj('vg_thumbs');
+  if(Object.prototype.hasOwnProperty.call(all,p.id)){t=all[p.id];hasOwn=true;}
  }catch(e){}
  if(!t&&!hasOwn)t=p.thumb||'';
  t=fixMedia(t);
@@ -1460,20 +1475,20 @@ function getThumb(p){
 }
 function saveThumb(pid,url){
  let all={};
- try{all=JSON.parse(localStorage.getItem('vg_thumbs')||'{}');}catch(e){}
+ try{all=storeObj('vg_thumbs');}catch(e){}
  all[pid]=url;localStorage.setItem('vg_thumbs',JSON.stringify(all));
  cloudSet('vg_thumbs');
 }
 function getVfull(p){
  try{
-  const all=JSON.parse(localStorage.getItem('vg_vfull')||'{}');
-  if(all&&Object.prototype.hasOwnProperty.call(all,p.id))return fixMedia(all[p.id]);
+  const all=storeObj('vg_vfull');
+  if(Object.prototype.hasOwnProperty.call(all,p.id))return fixMedia(all[p.id]);
  }catch(e){}
  return fixMedia(p.vfull||'');
 }
 function saveVfull(pid,url){
  let all={};
- try{all=JSON.parse(localStorage.getItem('vg_vfull')||'{}');}catch(e){}
+ try{all=storeObj('vg_vfull');}catch(e){}
  all[pid]=url;localStorage.setItem('vg_vfull',JSON.stringify(all));
  cloudSet('vg_vfull');
 }
@@ -1576,7 +1591,14 @@ function cloudInit(){
      try{
       const nv=(typeof v==='string')?v:JSON.stringify(v);
       const cur=localStorage.getItem(k);
-      if(cur===nv){try{localStorage.removeItem('vg_push_'+k);}catch(e){}return;}
+      if(cur===nv){try{localStorage.removeItem('vg_push_'+k);}catch(e){}try{if(window._vgLastW)delete window._vgLastW[k];}catch(e){}return;}
+      let mw=null;try{mw=(window._vgLastW||{})[k]||null;}catch(e){}
+      if(mw&&mw.v===cur&&(Date.now()-(mw.t||0))<15*60*1000&&(mw.n||0)<3){
+       try{let lv=cur;try{lv=JSON.parse(cur);}catch(e){}DB.ref('vgcheats/'+k).set(lv);}catch(e){}
+       try{mw.n=(mw.n||0)+1;window._vgLastW[k]=mw;}catch(e){}
+       return;
+      }
+      try{if(window._vgLastW)delete window._vgLastW[k];}catch(e){}
       let mk=null;try{mk=JSON.parse(localStorage.getItem('vg_push_'+k)||'null');}catch(e){}
       if(mk&&mk.v===cur&&(Date.now()-(mk.t||0))<15*60*1000&&(mk.n||0)<3){
        try{let lv=cur;try{lv=JSON.parse(cur);}catch(e){}DB.ref('vgcheats/'+k).set(lv);}catch(e){}
@@ -1602,6 +1624,7 @@ function cloudInit(){
 function cloudSet(k){
  let raw=null;
  try{raw=localStorage.getItem(k);}catch(e){}
+ try{window._vgLastW=window._vgLastW||{};window._vgLastW[k]={v:raw,n:0,t:Date.now()};}catch(e){}
  try{localStorage.setItem('vg_push_'+k,JSON.stringify({v:raw,n:0,t:Date.now()}));}catch(e){}
  if(!DB)return;
  try{
@@ -2023,7 +2046,7 @@ function animateCount(el){
  })(t0);
 }
 function getLinks(pid){
- try{const all=JSON.parse(localStorage.getItem('vg_links')||'{}');if(all[pid])return all[pid];}catch(e){}
+ try{const all=storeObj('vg_links');if(all[pid])return all[pid];}catch(e){}
  return {};
 }
 function getTg(p){return getLinks(p.id).tg||p.tg||'https://t.me/panelstore_main';}
@@ -2234,6 +2257,7 @@ function quickKeys(pid,i){
 function toggleRatesCard(pid){
  try{
   const pp=findPanel(pid);if(pp&&isMaint(pp)){maintBlock(pid);return;}
+  try{if(siteMaint()&&!isOwner()){siteMaintBlock();return;}}catch(e){}
   const box=document.getElementById('ir_'+pid);
   if(!box){msgBox('List box not found. Please refresh the page.');return;}
   if(box.style.display!=='none'){box.style.display='none';return;}
@@ -2288,6 +2312,7 @@ function resetRates(){
 let payInfo=null;
 function openPay(nm,label,price,idx,qty){
  try{const pp=findPanel(ratePid);if(pp&&isMaint(pp)){maintBlock(ratePid);return;}}catch(e){}
+ try{if(siteMaint()&&!isOwner()){siteMaintBlock();return;}}catch(e){}
  closeRates();
  const s=getSite();
  const oid='VG'+Date.now().toString().slice(-6);
@@ -2740,6 +2765,7 @@ function buyRate(pid,i){
  if(pid!==undefined&&pid!==null)ratePid=String(pid);
  const p=findPanel(ratePid);if(!p)return;
  if(isMaint(p)){maintBlock(ratePid);return;}
+ if(siteMaint()&&!isOwner()){siteMaintBlock();return;}
  const r=getRates(p)[i];if(!r)return;
  const nm=getName(p);
  let qty=getQty(ratePid,i);
@@ -3148,7 +3174,20 @@ function goContact(b){
  document.getElementById('contact').scrollIntoView({behavior:'smooth'});
 }
 /* ===== SITE SETTINGS (owner full control) ===== */
-const DEFAULT_SITE={name:'VG CHEATS',logo:'logo.png',help_yt:'',help_btn:'How to Buy or How to use',greet:'Welcome to',wb:'Welcome Back',sub:'Best quality panels — instant delivery, best price',phone:'contact :- 8521189842',email:'indiansrikant82@gmail.com & a1gamingyt82@gmail.com',wa:'918521189842',wch:'https://whatsapp.com/channel/0029Vb8Qx2IFnSz40l4Yv41w',tg:'https://t.me/+tSngo3Aaar81NDll',upi:'',rzp:'',instant:true,kaseller:'',dev_name:'VG Team',dev_contact:'Contact Owner',dev_about:'Official developer',acc:'#00e5ff',head:'#ffffff'};
+/* ===== GLOBAL SHOP MAINTENANCE (owner: poori shop ek switch se) ===== */
+function siteMaint(){try{return !!getSite().maint;}catch(e){return false;}}
+function siteMaintMsg(){try{const m=getSite().maintMsg;return (m&&String(m).trim())||'TEMPORARILY UNAVAILABLE';}catch(e){return 'TEMPORARILY UNAVAILABLE';}}
+function siteMaintBlock(){msgBox('🛠 SHOP UNDER MAINTENANCE\n'+siteMaintMsg());}
+function paintGlobalMaint(){
+ try{
+  const b=document.getElementById('globalMaint');if(!b)return;
+  if(siteMaint()){
+   b.style.display='';
+   b.innerHTML='<b>🛠 SHOP UNDER MAINTENANCE</b><span>'+escHtml(siteMaintMsg())+'</span>'+(isOwner()?'<span style="color:#00ff9d">OWNER PREVIEW — tum kharid sakte ho</span>':'');
+  }else b.style.display='none';
+ }catch(e){}
+}
+const DEFAULT_SITE={name:'VG CHEATS',logo:'logo.png',help_yt:'',help_btn:'How to Buy or How to use',greet:'Welcome to',wb:'Welcome Back',sub:'Best quality panels — instant delivery, best price',phone:'contact :- 8521189842',email:'indiansrikant82@gmail.com & a1gamingyt82@gmail.com',wa:'918521189842',wch:'https://whatsapp.com/channel/0029Vb8Qx2IFnSz40l4Yv41w',tg:'https://t.me/+tSngo3Aaar81NDll',upi:'',rzp:'',instant:true,kaseller:'',dev_name:'VG Team',dev_contact:'Contact Owner',dev_about:'Official developer',acc:'#00e5ff',head:'#ffffff',maint:false,maintMsg:''};
 function getSite(){
  try{
   const s=JSON.parse(localStorage.getItem('vg_site')||'null');
@@ -3179,6 +3218,7 @@ function renderSite(){
  try{const hb=document.getElementById('helpTopBtn');if(hb)hb.innerText=s.help_btn||'How to Buy or How to use';}catch(e){}
  try{delete document.getElementById('heroTitle').dataset.split;splitHero();}catch(e){}
  try{applyTheme();}catch(e){}
+ try{paintGlobalMaint();}catch(e){}
 }
 function openSite(){
  if(!isOwner())return;
@@ -3198,6 +3238,8 @@ function openSite(){
  document.getElementById('st_upi').value=s.upi||'';
  document.getElementById('st_rzp').value=s.rzp||'';
  try{document.getElementById('st_instant').checked=s.instant!==false;}catch(e){}
+ try{document.getElementById('st_maint').checked=!!s.maint;}catch(e){}
+ try{document.getElementById('st_maintmsg').value=s.maintMsg||'';}catch(e){}
  document.getElementById('st_kaseller').value=s.kaseller||'';
  document.getElementById('st_devname').value=s.dev_name||'';
  document.getElementById('st_devcontact').value=s.dev_contact||'';
@@ -3222,7 +3264,7 @@ function closeSite(){
 }
 function saveSite(quiet){
  const g=id=>document.getElementById(id).value.trim();
- const s={name:g('st_name')||DEFAULT_SITE.name,logo:g('st_logo'),help_yt:g('st_helpyt'),help_btn:g('st_helpbtn'),sub:g('st_sub')||DEFAULT_SITE.sub,phone:g('st_phone')||DEFAULT_SITE.phone,email:g('st_email')||DEFAULT_SITE.email,wa:g('st_wa').replace(/\D/g,'')||DEFAULT_SITE.wa,wch:g('st_wch')||DEFAULT_SITE.wch,tg:g('st_tg')||DEFAULT_SITE.tg,upi:g('st_upi'),rzp:g('st_rzp'),instant:document.getElementById('st_instant').checked,kaseller:g('st_kaseller'),dev_name:g('st_devname')||DEFAULT_SITE.dev_name,dev_contact:g('st_devcontact')||DEFAULT_SITE.dev_contact,dev_about:g('st_devabout')||DEFAULT_SITE.dev_about,acc:g('st_acc')||'#00e5ff',head:g('st_head')||'#ffffff',greet:g('st_greet')||DEFAULT_SITE.greet,wb:g('st_wb')||DEFAULT_SITE.wb};
+ const s={name:g('st_name')||DEFAULT_SITE.name,logo:g('st_logo'),help_yt:g('st_helpyt'),help_btn:g('st_helpbtn'),sub:g('st_sub')||DEFAULT_SITE.sub,phone:g('st_phone')||DEFAULT_SITE.phone,email:g('st_email')||DEFAULT_SITE.email,wa:g('st_wa').replace(/\D/g,'')||DEFAULT_SITE.wa,wch:g('st_wch')||DEFAULT_SITE.wch,tg:g('st_tg')||DEFAULT_SITE.tg,upi:g('st_upi'),rzp:g('st_rzp'),instant:document.getElementById('st_instant').checked,maint:document.getElementById('st_maint').checked,maintMsg:g('st_maintmsg'),kaseller:g('st_kaseller'),dev_name:g('st_devname')||DEFAULT_SITE.dev_name,dev_contact:g('st_devcontact')||DEFAULT_SITE.dev_contact,dev_about:g('st_devabout')||DEFAULT_SITE.dev_about,acc:g('st_acc')||'#00e5ff',head:g('st_head')||'#ffffff',greet:g('st_greet')||DEFAULT_SITE.greet,wb:g('st_wb')||DEFAULT_SITE.wb};
  localStorage.setItem('vg_site',JSON.stringify(s));
  cloudSet('vg_site');
  renderSite();
