@@ -1947,14 +1947,13 @@ function renderProducts(){
   const del=(isOwner()&&String(p.id).startsWith('c'))?`<button class="delpanel" onclick="delPanel('${p.id}')">✖</button>`:'';
   const edt=isOwner()?`<button class="editpanel" onclick="openRates('${p.id}',true)">✏ Edit</button>`:'';
   const feats=getFeat(p);
-  const featHtml=feats.length?`<div class="featlist">${feats.slice(0,3).map(f=>`<div class="feat">⚡ ${f}</div>`).join('')}</div>`+(feats.length>3?`<div class="featmore" id="fm_${p.id}" style="display:none"><div class="featlist">${feats.slice(3).map(f=>`<div class="feat">⚡ ${f}</div>`).join('')}</div></div><button class="featarrow" onclick="toggleFeat('${p.id}',this)">▼</button>`:''):'';
-  const mOn=isMaint(p),mMsg=String(getMaintMsg(p)).replace(/</g,'&lt;');
+  const featHtml=feats.length?`<div class="featlist">${feats.slice(0,3).map(f=>`<div class="feat">⚡ ${escHtml(f)}</div>`).join('')}</div>`+(feats.length>3?`<div class="featmore" id="fm_${p.id}" style="display:none"><div class="featlist">${feats.slice(3).map(f=>`<div class="feat">⚡ ${escHtml(f)}</div>`).join('')}</div></div><button class="featarrow" onclick="toggleFeat('${p.id}',this)">▼</button>`:''):'';  const mOn=isMaint(p),mMsg=String(getMaintMsg(p)).replace(/</g,'&lt;');
   const mediaZone=mOn?`<div class="maint-zone">${mediaHtml}<div class="maint-bar"><b>🛠 UNDER MAINTENANCE</b><span>${mMsg}</span></div></div>`:mediaHtml;
   const mTag=mOn?`<span class="maint-tag">🛠 MAINTENANCE</span>`:'';
   const actFile=mOn?`<button class="btn-shop dim" onclick="maintBlock('${p.id}')">⬇ UPDATE FILE</button>`:`<button class="btn-shop" onclick="openPfile('${p.id}')">⬇ UPDATE FILE</button>`;
   const actVid=mOn?`<button class="btn-update dim" onclick="maintBlock('${p.id}')">▶ VIDEO</button>`:`<button class="btn-update" onclick="playPanelVid(this,'${p.id}')">▶ VIDEO</button>`;
   const actBuy=mOn?`<button class="discordbtn dim" onclick="maintBlock('${p.id}')">PURCHASE KEY</button>`:`<button class="discordbtn" onclick="toggleRatesCard('${p.id}')">PURCHASE KEY</button>`;
-  box.innerHTML+=`<div class="card reveal" draggable="${isOwner()}" ondragstart="try{event.dataTransfer.setData('text/plain','${p.id}');this.classList.add('dragging');}catch(e){}" ondragend="this.classList.remove('dragging')" ondragover="if(isOwner())event.preventDefault()" ondrop="event.preventDefault();dropCard(event,'${p.id}')" style="transition-delay:${Math.min(i*70,560)}ms">${del}${edt}${isOwner()?`<div class="mvrow"><button onclick="movePanel('${p.id}',-1)">◀</button><button onclick="movePanel('${p.id}',1)">▶</button></div>`:''}<div class="brandline">${getBy(p)||'VG CHEATS'}</div>${mediaZone}<h3>${getName(p)}${mTag}</h3><p>${getDesc(p)}</p>${featHtml}<div class="btn-row">${actFile}${actVid}</div>${actBuy}<div class="inlineRates" id="ir_${p.id}" style="display:none"></div><button class="discordbtn" style="margin-top:10px" onclick="openDc('${p.id}')">🎮 Discord Join</button></div>`;
+  box.innerHTML+=`<div class="card reveal" draggable="${isOwner()}" ondragstart="try{event.dataTransfer.setData('text/plain','${p.id}');this.classList.add('dragging');}catch(e){}" ondragend="this.classList.remove('dragging')" ondragover="if(isOwner())event.preventDefault()" ondrop="event.preventDefault();dropCard(event,'${p.id}')" style="transition-delay:${Math.min(i*70,560)}ms">${del}${edt}${isOwner()?`<div class="mvrow"><button onclick="movePanel('${p.id}',-1)">◀</button><button onclick="movePanel('${p.id}',1)">▶</button></div>`:''}<div class="brandline">${escHtml(getBy(p))||'VG CHEATS'}</div>${mediaZone}<h3>${escHtml(getName(p))}${mTag}</h3><p>${escHtml(getDesc(p))}</p>${featHtml}<div class="btn-row">${actFile}${actVid}</div>${actBuy}<div class="inlineRates" id="ir_${p.id}" style="display:none"></div><button class="discordbtn" style="margin-top:10px" onclick="openDc('${p.id}')">🎮 Discord Join</button></div>`;
  });
  refreshStats();
  observeReveals();
@@ -2769,7 +2768,11 @@ function savePanel(){
  ['np_name','np_desc','np_by','np_pfile','np_feat','np_video','np_vfull','np_thumb','np_tg','np_dc','np_apikey','np_apiapp','np_apiurl','np_mmsg'].forEach(i=>document.getElementById(i).value='');
  try{document.getElementById('np_apiprov').value='';document.getElementById('np_maint').checked=false;}catch(e){}
  closePanelForm();renderProducts();
- showToast('✅ New panel added');
+ try{
+  const ok=loadCustoms().some(x=>String(x.id)===nid);
+  if(!ok)msgBox('⚠ Panel list me save nahi hua — browser storage ON karo, phir dobara banao.');
+  else showToast('✅ New panel added');
+ }catch(e){showToast('✅ New panel added');}
 }
 async function delPanel(pid){
  if(!isOwner())return;
