@@ -3550,6 +3550,19 @@ function assembleFx(el){
 renderSite();
 try{document.getElementById('uname').value=localStorage.getItem('vg_remember')||'';}catch(e){}
 observeReveals();
+/* storage health badge — save kaam karega ya nahi, turant dikhega */
+function vgStorageBadge(){
+ try{
+  let ok=false;try{localStorage.setItem('vg_t','1');ok=localStorage.getItem('vg_t')==='1';localStorage.removeItem('vg_t');}catch(e){ok=false;}
+  window._vgStorageOK=ok;
+  let b=document.getElementById('storeDot');
+  if(!b){b=document.createElement('div');b.id='storeDot';document.body.appendChild(b);}
+  b.innerText=(ok?'● storage OK':'● STORAGE BLOCKED — save nahi hoga')+' • build 3.1';
+  b.style.cssText='position:fixed;left:8px;bottom:8px;z-index:60;font-size:10px;letter-spacing:1px;padding:5px 10px;border-radius:12px;color:'+(ok?'#00ff9d':'#ff5e7a')+';background:rgba(0,0,0,.65);border:1px solid '+(ok?'rgba(0,255,157,.4)':'rgba(255,61,94,.5)')+';pointer-events:none';
+  if(!ok)setTimeout(()=>{try{msgBox('⚠ Browser STORAGE BLOCKED hai!\n\nIsliye Save kaam nahi kar raha — refresh par sab mit jata hai.\n\nFix:\n1) Chrome browser use karo\n2) Private/Incognito mode band karo\n3) Site settings me Cookies/Storage ON karo\n4) UC Mini / file-viewer app mat use karo');}catch(e){}},900);
+ }catch(e){}
+}
+try{vgStorageBadge();}catch(e){}
 try{cloudInit();}catch(e){}
 try{if(window._restoreSession){window._restoreSession=false;enterShop();}}catch(e){}
 </script>
