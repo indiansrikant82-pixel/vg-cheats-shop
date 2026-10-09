@@ -822,6 +822,8 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
   <input id="np_apikey" type="password" placeholder="Seller / API Key (is panel ke liye)">
   <input id="np_apiapp" placeholder="App ID (AuthLX / GenzAuth ke liye)">
   <input id="np_apiurl" placeholder="Custom Generate URL — {DAYS} {COUNT} {APP} {KEY}">
+  <label class="mswitch"><input type="checkbox" id="np_maint"> 🛠 Maintenance mode (panel band dikhega)</label>
+  <input id="np_mmsg" placeholder="Maintenance text (e.g. UPDATE COMING SOON)">
   <label>Rates — add as many days as you want (name + price)</label>
   <div id="np_rates"></div>
   <button class="linkbtn" onclick="addNpRate()">＋ Add more days</button>
@@ -2009,8 +2011,12 @@ function toggleRateEdit(){
  rateEdit=!rateEdit;drawRates();
 }
 function addRateRow(){
- const p=findPanel(ratePid),r=getRates(p).slice();
- r.push({label:'New Plan',price:100});saveRates(ratePid,r);drawRates();renderProducts();
+ const c=(typeof collectRateForm==='function'&&document.getElementById('rn_name'))?collectRateForm():null;
+ const p=findPanel(ratePid);
+ const r=c?c.rates.slice():getRates(p).slice();
+ r.push({label:'New Plan',price:100});saveRates(ratePid,r);
+ if(c)saveInfo(ratePid,c.name,c.desc,c.by,c.features,c.pfile,c.device,c.maint,c.maintMsg,c.apiProv,c.apiKey,c.apiApp,c.apiUrl);
+ drawRates();renderProducts();
 }
 /* plan delete par uski keys bhi shift karo taaki galat plan par na lage */
 function shiftPools(pid,delIdx){
@@ -2028,8 +2034,11 @@ function shiftPools(pid,delIdx){
  }catch(e){}
 }
 function delRate(i){
- const p=findPanel(ratePid),r=getRates(p).slice();
+ const c=(typeof collectRateForm==='function'&&document.getElementById('rn_name'))?collectRateForm():null;
+ const p=findPanel(ratePid);
+ const r=c?c.rates.slice():getRates(p).slice();
  r.splice(i,1);saveRates(ratePid,r);shiftPools(ratePid,i);
+ if(c)saveInfo(ratePid,c.name,c.desc,c.by,c.features,c.pfile,c.device,c.maint,c.maintMsg,c.apiProv,c.apiKey,c.apiApp,c.apiUrl);
  try{if(JSON.stringify(getRates(p))!==JSON.stringify(r))showToast('⚠ Save blocked — browser storage ON karo');}catch(e){}
  drawRates();renderProducts();
 }
@@ -2070,6 +2079,7 @@ function quickKeys(pid,i){
  let made=0,guard=0;
  while(made<10&&guard<300){guard++;let k=pre;for(let g=0;g<2;g++){for(let j=0;j<4;j++)k+=chars[Math.floor(Math.random()*chars.length)];if(g===0)k+='-';}if(set.has(k))continue;set.add(k);made++;}
  pool.keys=[...set];savePool(pid,i,pool);
+ try{const cc=(document.getElementById('rn_name'))?collectRateForm():null;if(cc){saveRates(ratePid,cc.rates);saveInfo(ratePid,cc.name,cc.desc,cc.by,cc.features,cc.pfile,cc.device,cc.maint,cc.maintMsg,cc.apiProv,cc.apiKey,cc.apiApp,cc.apiUrl);}}catch(e){}
  try{rebuildInline(pid);}catch(e){}
  try{if(document.getElementById('rateModal').classList.contains('open'))drawRates();}catch(e){}
  showToast('⚡ +'+made+' keys added!');
@@ -2469,6 +2479,7 @@ function genKeysDone(list,days,anm){
   savePool(keyPid,keyIdx,pool);
   try{document.getElementById('keyArea').value=pool.keys.join('\n');}catch(e){}
   try{document.getElementById('keyLeft').innerText=pool.keys.length;}catch(e){}
+  try{const cc=(document.getElementById('rn_name'))?collectRateForm():null;if(cc){saveRates(ratePid,cc.rates);saveInfo(ratePid,cc.name,cc.desc,cc.by,cc.features,cc.pfile,cc.device,cc.maint,cc.maintMsg,cc.apiProv,cc.apiKey,cc.apiApp,cc.apiUrl);}}catch(e){}
   try{drawRates();}catch(e){}
   showToast('✅ '+list.length+' fresh keys added ('+days+' days, '+anm+')!');
  }else{
@@ -2510,6 +2521,7 @@ function importKeyAuthJson(){
 function saveKeysForm(){
  const lines=document.getElementById('keyArea').value.split('\n').map(s=>s.trim()).filter(Boolean);
  savePool(keyPid,keyIdx,{keys:lines,file:document.getElementById('keyFile').value.trim()});
+ try{const cc=(document.getElementById('rn_name'))?collectRateForm():null;if(cc){saveRates(ratePid,cc.rates);saveInfo(ratePid,cc.name,cc.desc,cc.by,cc.features,cc.pfile,cc.device,cc.maint,cc.maintMsg,cc.apiProv,cc.apiKey,cc.apiApp,cc.apiUrl);}}catch(e){}
  closeKeys();drawRates();showToast('✅ Keys saved ('+lines.length+')');
 }
 function genBulkKeys(){
@@ -2531,6 +2543,7 @@ function genBulkKeys(){
  savePool(keyPid,keyIdx,{keys:arr,file:document.getElementById('keyFile').value.trim()});
  document.getElementById('keyArea').value=arr.join('\n');
  document.getElementById('keyLeft').innerText=arr.length;
+ try{const cc=(document.getElementById('rn_name'))?collectRateForm():null;if(cc){saveRates(ratePid,cc.rates);saveInfo(ratePid,cc.name,cc.desc,cc.by,cc.features,cc.pfile,cc.device,cc.maint,cc.maintMsg,cc.apiProv,cc.apiKey,cc.apiApp,cc.apiUrl);}}catch(e){}
  drawRates();
  showToast('⚡ '+made+' keys generated!');
 }
@@ -2642,9 +2655,9 @@ function savePanel(){
   rates:rates});
  localStorage.setItem('vg_custom_panels',JSON.stringify(arr));
  cloudSet('vg_custom_panels');
- try{saveInfo(nid,name,document.getElementById('np_desc').value.trim()||'New panel',document.getElementById('np_by').value.trim(),document.getElementById('np_feat').value.split('\n').map(s=>s.trim()).filter(Boolean),document.getElementById('np_pfile').value.trim(),document.getElementById('np_device').value||'ANDROID',false,'',document.getElementById('np_apiprov').value,document.getElementById('np_apikey').value.trim(),document.getElementById('np_apiapp').value.trim(),document.getElementById('np_apiurl').value.trim());}catch(e){}
- ['np_name','np_desc','np_by','np_pfile','np_feat','np_video','np_vfull','np_thumb','np_tg','np_dc','np_apikey','np_apiapp','np_apiurl'].forEach(i=>document.getElementById(i).value='');
- try{document.getElementById('np_apiprov').value='';}catch(e){}
+ try{saveInfo(nid,name,document.getElementById('np_desc').value.trim()||'New panel',document.getElementById('np_by').value.trim(),document.getElementById('np_feat').value.split('\n').map(s=>s.trim()).filter(Boolean),document.getElementById('np_pfile').value.trim(),document.getElementById('np_device').value||'ANDROID',document.getElementById('np_maint').checked,document.getElementById('np_mmsg').value.trim(),document.getElementById('np_apiprov').value,document.getElementById('np_apikey').value.trim(),document.getElementById('np_apiapp').value.trim(),document.getElementById('np_apiurl').value.trim());}catch(e){}
+ ['np_name','np_desc','np_by','np_pfile','np_feat','np_video','np_vfull','np_thumb','np_tg','np_dc','np_apikey','np_apiapp','np_apiurl','np_mmsg'].forEach(i=>document.getElementById(i).value='');
+ try{document.getElementById('np_apiprov').value='';document.getElementById('np_maint').checked=false;}catch(e){}
  closePanelForm();renderProducts();
  showToast('✅ New panel added');
 }
