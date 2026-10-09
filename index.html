@@ -2751,6 +2751,10 @@ function buyRate(pid,i){
 /* ===== OWNER: panel add/delete ===== */
 function openPanelForm(){
  if(!isOwner()){msgBox('🔒 Only Owner can add panels.');return;}
+ try{
+  ['np_name','np_desc','np_by','np_pfile','np_feat','np_video','np_vfull','np_thumb','np_tg','np_dc','np_apikey','np_apiapp','np_apiurl','np_mmsg'].forEach(i=>{document.getElementById(i).value='';});
+  document.getElementById('np_apiprov').value='';document.getElementById('np_maint').checked=false;
+ }catch(e){}
  document.getElementById('np_rates').innerHTML='';
  addNpRate('7 Days',199);addNpRate('15 Days',349);addNpRate('30 Days',599);addNpRate('60 Days',1099);
  document.getElementById('panelBg').classList.add('show');
