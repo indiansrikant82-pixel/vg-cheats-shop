@@ -1330,6 +1330,24 @@ function twinWarn(pid){
   return '';
  }catch(e){return '';}
 }
+/* save ke baad card par sach me dikha ya nahi — DOM verify */
+function verifyCardDom(pid,c){
+ try{
+  let found=null;
+  document.querySelectorAll('#plist .card').forEach(card=>{
+   const btn=card.querySelector('.editpanel');
+   if(btn&&(btn.getAttribute('onclick')||'').indexOf("'"+pid+"'")>=0)found=card;
+  });
+  if(!found)return 'Card screen par nahi mila (search/filter laga ho to hatao).';
+  const bl=found.querySelector('.brandline');
+  const wantBy=((c.by||'').trim()||'VG CHEATS'),gotBy=bl?bl.textContent.trim():null;
+  if(gotBy===null)return 'Card ka brandline nahi mila.';
+  if(gotBy!==wantBy)return 'brandline me "'+gotBy+'" dikha, "'+wantBy+'" hona chahiye tha.';
+  const wantBar=!!c.maint,gotBar=!!found.querySelector('.maint-bar');
+  if(wantBar!==gotBar)return wantBar?'Maintenance banner card par nahi bana.':'Galat banner dikha.';
+  return '';
+ }catch(e){return 'Card check error: '+(((e&&e.message)||e));}
+}
 /* owner diagnostic: storage vs card ka sach ek popup me */
 function debugPanel(){
  try{
@@ -2094,7 +2112,8 @@ function saveMedia(){
   const err=c?verifyPanelSave(ratePid,c):'Form nahi mila — modal dobara kholo.';
   const tw=c?twinWarn(ratePid):'';
   rateEdit=false;closeRates();renderProducts();
-  if(err)msgBox('⚠ '+err);else if(tw)msgBox(tw+'\n\n(Brand/maintenance save ho gaya hai — sahi card par dekho ya duplicate hatao.)');else showToast('✅ All changes saved');
+  const derr=c?verifyCardDom(ratePid,c):'';
+  if(err)msgBox('⚠ '+err);else if(derr)msgBox('⚠ Card verify: '+derr);else if(tw)msgBox(tw+'\n\n(Brand/maintenance save ho gaya hai — sahi card par dekho ya duplicate hatao.)');else showToast('✅ All changes saved');
   showSavedProof(c?c.rates:null);
  }catch(e){msgBox('Save error: '+((e&&e.message)||e));}
 }
@@ -2148,10 +2167,19 @@ function saveRateEdit(){
  try{
   const c=collectRateForm();if(!c){msgBox('Form nahi mila — modal dobara kholo.');return;}
   saveRates(ratePid,c.rates);saveInfo(ratePid,c.name,c.desc,c.by,c.features,c.pfile,c.device,c.maint,c.maintMsg,c.apiProv,c.apiKey,c.apiApp,c.apiUrl);
+  try{
+   saveVideo(ratePid,document.getElementById('vurl').value.trim());
+   saveVfull(ratePid,document.getElementById('vfullurl').value.trim());
+   saveThumb(ratePid,document.getElementById('thurl').value.trim());
+   let _ll={};try{_ll=JSON.parse(localStorage.getItem('vg_links')||'{}');}catch(e){}
+   _ll[ratePid]={tg:document.getElementById('turl').value.trim(),dc:document.getElementById('durl').value.trim()};
+   localStorage.setItem('vg_links',JSON.stringify(_ll));cloudSet('vg_links');
+  }catch(e){}
   const err=verifyPanelSave(ratePid,c);
   const tw=twinWarn(ratePid);
   rateEdit=false;closeRates();renderProducts();
-  if(err)msgBox('⚠ '+err);else if(tw)msgBox(tw+'\n\n(Brand/maintenance save ho gaya hai — sahi card par dekho ya duplicate hatao.)');else showToast('Price list saved ✅');
+  const derr=verifyCardDom(ratePid,c);
+  if(err)msgBox('⚠ '+err);else if(derr)msgBox('⚠ Card verify: '+derr);else if(tw)msgBox(tw+'\n\n(Brand/maintenance save ho gaya hai — sahi card par dekho ya duplicate hatao.)');else showToast('Price list saved ✅');
   showSavedProof(c.rates);
  }catch(e){msgBox('Save error: '+((e&&e.message)||e));}
 }
