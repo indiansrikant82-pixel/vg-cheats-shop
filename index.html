@@ -2092,35 +2092,59 @@ async function doLogin(){
  setTimeout(enterShop,1200);
 }
 /* ===== GOOGLE LOGIN (free) ===== */
+function finishGoogleLogin(em,displayName){
+ if(!em){msgBox('Email not found');return;}
+ let oe='';
+ try{oe=(localStorage.getItem('vg_owner_email')||'').toLowerCase().trim();}catch(e){}
+ if(oe&&em===oe||isOwnerEmail(em)){
+  sessionStorage.setItem('vg_role','owner');
+  sessionStorage.setItem('vg_user','Owner');
+  sessionStorage.setItem('vg_off',0);
+ }else{
+  let rec=loadUsers().find(x=>((x.email||'').toLowerCase())===em);
+  if(!rec){
+   const nm=String((displayName||em.split('@')[0])||'User').trim().slice(0,30);
+   rec={u:nm,p:'google-oauth',role:'public',off:0,email:em,ts:Date.now(),oauth:true};
+   const arr=loadUsers();arr.push(rec);saveUsers(arr);
+   showToast('✅ Google account registered!');
+  }
+  if(rec.blocked){msgBox('⛔ Your ID is blocked! Contact Owner.');return;}
+  sessionStorage.setItem('vg_role',rec.role);
+  sessionStorage.setItem('vg_user',rec.u);
+  sessionStorage.setItem('vg_off',rec.off||0);
+ }
+ const card=document.getElementById('loginCard');
+  try{saveSession();}catch(e){}
+ card.classList.add('spinning');
+ setTimeout(enterShop,900);
+}
 function googleLogin(){
  if(!GOOGLE_ON){msgBox('Google login needs Firebase config (see top of file).\nTotally FREE — no card needed. Send me the config.');return;}
  firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(res=>{
-  const em=((res.user&&res.user.email)||'').toLowerCase().trim();
-  if(!em){msgBox('Email not found');return;}
-  let oe='';
-  try{oe=(localStorage.getItem('vg_owner_email')||'').toLowerCase().trim();}catch(e){}
-  if(oe&&em===oe||isOwnerEmail(em)){
-   sessionStorage.setItem('vg_role','owner');
-   sessionStorage.setItem('vg_user','Owner');
-   sessionStorage.setItem('vg_off',0);
-  }else{
-   let rec=loadUsers().find(x=>((x.email||'').toLowerCase())===em);
-   if(!rec){
-    const nm=String((res.user&&(res.user.displayName||em.split('@')[0]))||'User').trim().slice(0,30);
-    rec={u:nm,p:'google-oauth',role:'public',off:0,email:em,ts:Date.now(),oauth:true};
-    const arr=loadUsers();arr.push(rec);saveUsers(arr);
-    showToast('✅ Google account registered!');
-   }
-   if(rec.blocked){msgBox('⛔ Your ID is blocked! Contact Owner.');return;}
-   sessionStorage.setItem('vg_role',rec.role);
-   sessionStorage.setItem('vg_user',rec.u);
-   sessionStorage.setItem('vg_off',rec.off||0);
+  finishGoogleLogin(((res.user&&res.user.email)||'').toLowerCase().trim(),res.user&&res.user.displayName);
+ }).catch(e=>{
+  const code=(e&&e.code)||'';
+  if(code==='auth/popup-blocked'||code==='auth/popup-closed-by-user'||code==='auth/cancelled-popup-request'){
+   try{
+    showToast('🔄 Popup blocked — Google page par le ja rahe hain...');
+    firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+    return;
+   }catch(_){}
   }
-  const card=document.getElementById('loginCard');
-   try{saveSession();}catch(e){}
-  card.classList.add('spinning');
-  setTimeout(enterShop,900);
- }).catch(e=>msgBox('Google login failed: '+e.message+'\n(Works after website is hosted — blocked on localhost/file)'));
+  msgBox('Google login failed: '+e.message+'\n(Works after website is hosted — blocked on localhost/file)');
+ });
+}
+try{
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',googleRedirectBack);
+ else googleRedirectBack();
+}catch(e){}
+function googleRedirectBack(){
+ try{
+  if(!GOOGLE_ON||typeof firebase==='undefined'||!firebase.auth)return;
+  firebase.auth().getRedirectResult().then(res=>{
+   if(res&&res.user&&res.user.email)finishGoogleLogin(String(res.user.email).toLowerCase().trim(),res.user.displayName);
+  }).catch(()=>{});
+ }catch(e){}
 }
 function saveOwnerEmail(){
  const v=document.getElementById('o_email').value.trim().toLowerCase();
