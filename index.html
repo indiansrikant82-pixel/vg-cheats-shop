@@ -226,12 +226,12 @@ body.enter .door-right{transform:translateX(100%) rotateY(-60deg)}
 #cfModal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
 #cfMsg{font-size:1.05rem;line-height:1.5}
 /* ===== GLASSMORPHISM (glass-like UI) ===== */
-body{background:#060a18;background-image:radial-gradient(circle at 12% 8%,rgba(124,77,255,.45),transparent 42%),radial-gradient(circle at 88% 90%,rgba(0,229,255,.35),transparent 42%),radial-gradient(circle at 75% 20%,rgba(255,61,129,.28),transparent 40%),radial-gradient(circle at 20% 85%,rgba(0,200,83,.16),transparent 40%);background-attachment:fixed}
+body{background:#070709;background-image:radial-gradient(circle at 12% 8%,rgba(245,197,24,.07),transparent 42%),radial-gradient(circle at 88% 90%,rgba(245,197,24,.06),transparent 42%),radial-gradient(circle at 75% 20%,rgba(255,255,255,.03),transparent 40%),radial-gradient(circle at 20% 85%,rgba(245,197,24,.05),transparent 40%);background-attachment:fixed}
 .orb{opacity:.75;filter:blur(70px)}
 .orb1{width:480px;height:480px;background:#7c4dff;top:-120px;left:-120px}
 .orb2{width:420px;height:420px;background:#00c8ff;bottom:-100px;right:-100px;animation-delay:-5s}
 .orb3{width:380px;height:380px;background:#ff3d81;top:40%;left:60%;animation-delay:-2.5s;opacity:.45}
-.card{background:rgba(255,255,255,.06);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);border:1px solid rgba(255,255,255,.14);border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.37)}
+.card{background:rgba(10,10,14,.5);backdrop-filter:blur(22px) saturate(130%);-webkit-backdrop-filter:blur(22px) saturate(130%);border:1px solid rgba(255,255,255,.14);border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.37)}
 .card:hover{border-color:rgba(0,229,255,.6)}
 .login-card{background:rgba(255,255,255,.08);backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 32px rgba(0,0,0,.37)}
 nav{background:rgba(8,12,28,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
@@ -562,6 +562,7 @@ nav{position:sticky;top:0;z-index:60}
 .thumbplay img{width:100%;height:auto;max-height:260px;object-fit:contain;display:block;background:#000}
 .vwrap img{width:100%;height:auto;max-height:260px;object-fit:contain;display:block;background:#000}
 .thumbph{display:flex;align-items:center;justify-content:center;font-size:52px;min-height:150px;max-height:190px;background:linear-gradient(160deg,#141c45,#05070f);color:#00e5ff}
+.tbad{position:absolute;left:8px;right:8px;bottom:8px;text-align:center;font-size:.68rem;font-weight:bold;color:#ffb300;background:rgba(0,0,0,.65);border:1px solid rgba(255,157,0,.6);border-radius:10px;padding:5px 8px;z-index:3}
 /* ===== MAINTENANCE MODE (owner control) ===== */
 .maint-zone{position:relative}
 .maint-bar{position:absolute;left:8px;right:8px;top:50%;transform:translateY(-50%);background:rgba(5,5,10,.92);border:2px solid #ff9d00;border-radius:14px;padding:12px 10px;text-align:center;box-shadow:0 0 26px rgba(255,157,0,.55),inset 0 1px 0 rgba(255,255,255,.15);pointer-events:none;z-index:4}
@@ -606,7 +607,7 @@ nav{position:sticky;top:0;z-index:60}
 .oostxt{color:#ff5e7a;font-weight:bold;font-size:.72rem;letter-spacing:1px;white-space:nowrap}
 /* ===== MOBILE: ALL EFFECTS OFF + PC: lighter ===== */
 body.no-fx .bubbles,body.no-fx .flow,body.no-fx .corner,body.no-fx .orb,body.no-fx #glow,body.no-fx .orbit,body.no-fx .hgrid,body.no-fx .ring,body.no-fx .horb,body.no-fx #bgCanvas,body.no-fx #devilCanvas,body.no-fx #fxSmoke,body.no-fx .hero3d,body.no-fx .puff,body.no-fx .wisp,body.no-fx .tape,body.no-fx #progress{display:none!important}
-body.no-fx{background:#060a18!important;background-image:none!important;background-attachment:scroll!important}
+body.no-fx{background:#070708!important;background-image:none!important;background-attachment:scroll!important}
 body.no-fx *,body.no-fx *::before,body.no-fx *::after{animation:none!important;transition:none!important;will-change:auto!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 body.no-fx .card,body.no-fx .login-card,body.no-fx .btn,body.no-fx .btn-shop,body.no-fx .buybtn,body.no-fx nav button,body.no-fx .stat,body.no-fx #contact,body.no-fx .sbox,body.no-fx .fpanel,body.no-fx .orow,body.no-fx .feat{box-shadow:none!important;text-shadow:none!important}
 body.no-fx .h-anim>span,body.no-fx .h-anim>span .hl,body.no-fx .stat b{background:none!important;color:#00e5ff!important;-webkit-text-fill-color:#00e5ff!important;filter:none!important}
@@ -658,6 +659,122 @@ body.no-fx .vwrap video{preload:none}
 .btn:hover::after,.card button:hover::after{left:130%}
 nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
 .login-card:hover{box-shadow:0 0 40px rgba(0,229,255,.4)}
+/* ===== GOLD LOGIN (dark glass + gold) ===== */
+#loginSec{background:radial-gradient(circle at 12% 6%,rgba(245,197,24,.1),transparent 40%),radial-gradient(circle at 85% 92%,rgba(245,197,24,.05),transparent 40%),linear-gradient(180deg,#070708,#040405)}
+.login-card.gold{width:360px;max-width:94vw;background:rgba(10,10,14,.38)!important;backdrop-filter:blur(22px) saturate(130%);-webkit-backdrop-filter:blur(22px) saturate(130%);border:1px solid rgba(255,255,255,.13)!important;border-radius:0!important;clip-path:polygon(28px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,14px 100%,0 calc(100% - 14px),0 28px);filter:drop-shadow(0 0 22px rgba(245,197,24,.16)) drop-shadow(0 18px 40px rgba(0,0,0,.6));padding:0!important;overflow:hidden;position:relative;text-align:left}
+.login-card.gold:hover{box-shadow:none!important;filter:drop-shadow(0 0 34px rgba(245,197,24,.28)) drop-shadow(0 18px 40px rgba(0,0,0,.6))}
+.lwrap{position:relative;width:360px;max-width:94vw}
+.lwrap .login-card.gold{width:100%}
+/* corner chips removed — pure glass frame */
+.lslide{display:flex;width:200%;transition:transform .55s cubic-bezier(.2,.8,.25,1)}
+#loginCard.show-up .lslide{transform:translateX(-50%)}
+.lface{width:50%;flex-shrink:0;padding:34px 28px 28px;box-sizing:border-box}
+.gtitle{margin:0;font-size:1.65rem;color:#35c4ff;font-weight:700;letter-spacing:.5px;text-shadow:0 0 18px rgba(53,196,255,.35)}
+.gtitle em{font-style:normal;color:#f5c518;text-shadow:0 0 18px rgba(245,197,24,.35)}
+.gsub{margin:6px 0 16px;font-size:.82rem;color:#9a9aad}
+.glabel{display:block;font-size:.78rem;color:#cfcfe0;margin:12px 0 6px;font-weight:600}
+.gfield{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.16);border-radius:6px;padding:0 12px}
+.gfield .gico{color:#8b8b9e;font-size:.95rem;flex-shrink:0;font-style:normal}
+.gfield input{flex:1;background:none!important;border:none!important;box-shadow:none!important;border-radius:0!important;padding:12px 0!important;margin:0!important;color:#fff!important;font-size:.92rem;outline:none;min-width:0}
+.gfield input::placeholder{color:#6d6d80}
+.gfield:focus-within{border-color:rgba(245,197,24,.7);box-shadow:0 0 16px rgba(245,197,24,.25)}
+.geye{background:none;border:none;color:#8b8b9e;cursor:pointer;font-size:.95rem;padding:4px}
+.grow{display:flex;align-items:center;justify-content:space-between;margin-top:12px;font-size:.8rem;color:#b9b9cc}
+.gcheck{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:.8rem;color:#b9b9cc;cursor:pointer}
+.gcheck input,.grow input[type=checkbox]{width:16px;height:16px;accent-color:#f5c518}
+.grow .flink,.gcheck .flink{color:#cfcfe0}
+.frow2{display:flex;gap:10px}
+.frow2>div{flex:1;min-width:0}
+.gbtn{display:block;width:100%;margin-top:16px;background:linear-gradient(90deg,#ffd83d,#f5b800)!important;border:none!important;border-radius:6px!important;color:#1a1405!important;font-weight:800!important;font-size:1rem!important;padding:13px!important;cursor:pointer;box-shadow:0 6px 26px rgba(245,197,24,.4)!important;transition:transform .2s,box-shadow .2s}
+.gbtn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(245,197,24,.55)!important}
+.gdiv{text-align:center;font-size:.7rem;letter-spacing:2px;color:#6d6d80;margin:16px 0 10px}
+.gsoc{flex:1;background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.16)!important;color:#e8e8f2!important;border-radius:6px!important;padding:10px!important;font-size:.88rem;font-weight:600;cursor:pointer}
+.gsoc:hover{border-color:rgba(245,197,24,.5)!important}
+.gswap{text-align:center;margin:16px 0 0;font-size:.85rem;color:#9a9aad}
+.gswap .regbtn{color:#f5c518;font-weight:700}
+.login-card.gold .role-row button{background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.2)!important;color:#b9b9cc!important}
+.login-card.gold .role-row button.sel{background:linear-gradient(90deg,#ffd83d,#f5b800)!important;color:#1a1405!important;border-color:transparent!important;box-shadow:0 0 14px rgba(245,197,24,.45)!important}
+.login-card.gold #roleHint{color:#8b8b9e}
+.login-card.gold .lbrand{margin-bottom:2px}
+.devrow{text-align:center;margin-top:10px}
+/* ===== GOLD SITE THEME (login jaisa — sirf rang, layout/content same) ===== */
+:root{--acc:#f5c518}
+nav{border-bottom:1px solid rgba(245,197,24,.35)}
+nav button:hover{box-shadow:0 0 15px rgba(245,197,24,.7);transform:translateY(-2px)}
+.roundlogo{border:2px solid rgba(245,197,24,.6)!important;box-shadow:0 0 12px rgba(245,197,24,.5)!important}
+#progress{background:linear-gradient(90deg,#f5c518,#b8860b,#ffdf6b)}
+#helpTopBtn{background:linear-gradient(45deg,#f5c518,#b8860b);box-shadow:0 0 15px rgba(245,197,24,.5)}
+#ownerBar{background:rgba(245,197,24,.05)}
+#ownerBar button{border:1px solid rgba(245,197,24,.4)}
+#ownerBar button:hover{background:#f5c518;color:#000}
+.supstrip{background:linear-gradient(90deg,#8a6d00,#d4a017,#8a6d00);color:#1a1405;font-weight:bold}
+#livePanels{color:#00ff9d}
+.h-anim>span{background:linear-gradient(90deg,#ff3d5e,#ff1e1e,#ff7a00,#ff3d5e);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:shineTxt 5s linear infinite;filter:drop-shadow(0 0 16px rgba(255,30,30,.55))}
+.h-anim>span .hl{background:linear-gradient(90deg,#ff3d5e,#ff1e1e,#ff7a00,#ff3d5e);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:shineTxt 5s linear infinite}
+.flabel{color:#f5c518;text-shadow:0 0 12px rgba(245,197,24,.6)}
+.fhead{color:#f5c518;text-shadow:0 0 12px rgba(245,197,24,.6)}
+.sbox{border:1px solid rgba(245,197,24,.4)}
+.fbtn{border:1px solid rgba(245,197,24,.5);color:#ffe9a8}
+.fbtn:hover{transform:translateY(-2px);box-shadow:0 0 14px rgba(245,197,24,.4)}
+.fbtn.on{background:linear-gradient(45deg,#f5c518,#b8860b);color:#1a1405;border-color:transparent;box-shadow:0 0 16px rgba(245,197,24,.5)}
+.stat b{background:linear-gradient(90deg,#f5c518,#b8860b);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ctitle{text-shadow:0 0 18px rgba(245,197,24,.8),0 2px 6px rgba(0,0,0,.5)}
+#contact{border:1px solid rgba(245,197,24,.2);box-shadow:0 8px 40px rgba(245,197,24,.1),0 8px 32px rgba(0,0,0,.37)}
+#contact input:focus{border-color:#f5c518!important;box-shadow:0 0 16px rgba(245,197,24,.4)!important}
+input:focus,textarea:focus,select:focus{border-color:rgba(245,197,24,.7)!important;box-shadow:0 0 14px rgba(245,197,24,.3)!important}
+.btn-shop{background:linear-gradient(180deg,#d9a91f,#8a6a00)!important;color:#1a1405!important}
+.btn-update{background:linear-gradient(180deg,#d9a91f,#8a6a00)!important;color:#1a1405!important}
+.buybtn{background:linear-gradient(180deg,#e8b921,#9a7400)!important;color:#1a1405!important}
+.btn-shop:hover,.btn-update:hover,.buybtn:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 0 22px rgba(245,197,24,.55),0 6px 20px rgba(0,0,0,.35)!important}
+#helpModal,#payModal,#ordModal,#keyModal,#odetModal,#oosModal,#topModal,#profModal,#themeModal,#cfModal,#rateModal,#panelForm,#paccModal,#userModal,#siteModal,#fpModal{border:1px solid rgba(245,197,24,.32)!important;background:linear-gradient(160deg,rgba(24,19,8,.92),rgba(10,10,14,.94))!important}
+#toast{background:linear-gradient(90deg,#ffd83d,#f5b800)!important;color:#1a1405!important;box-shadow:0 5px 25px rgba(245,197,24,.5)!important}
+.rate-row{border:1px solid rgba(245,197,24,.22)!important}
+#pmenu{border:1px solid rgba(245,197,24,.35)}
+#pmenu button{border-radius:0!important}
+.accline input{accent-color:#f5c518}
+.seldot{box-shadow:0 0 12px rgba(245,197,24,.5)}
+.orow:hover{border-color:rgba(245,197,24,.5);box-shadow:0 0 22px rgba(245,197,24,.25)}
+#ordPage .ordhead{border-bottom:1px solid rgba(245,197,24,.25)}
+.urow b{color:#f5c518}
+.pavatar{background:linear-gradient(45deg,#a87e00,#f5c518)}
+.tape{border-top:1px solid rgba(245,197,24,.25);border-bottom:1px solid rgba(245,197,24,.25)}
+.tape-in{color:#ffe9a8}
+/* ===== CARDS GOLD ( Freeze hata — card bhi theme me ) ===== */
+.card{border:1px solid rgba(245,197,24,.3)!important;border-radius:0!important;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,16px 100%,0 calc(100% - 16px),0 16px)}
+.card{background:linear-gradient(160deg,rgba(24,19,8,.78),rgba(10,10,14,.78))!important}
+.card:hover{border-color:rgba(245,197,24,.6)!important;box-shadow:none!important;filter:drop-shadow(0 0 26px rgba(245,197,24,.35))}
+.card::before{background:radial-gradient(300px circle at var(--mx,50%) var(--my,50%),rgba(245,197,24,.22),transparent 60%)}
+.brandline{color:#ffe9a8;text-shadow:0 0 10px rgba(245,197,24,.5);text-align:center}
+.card>h3{color:#00ff9d;text-align:center}
+.card>p{color:#9aa3b8;text-align:center}
+.devbadge{border:1px solid rgba(245,197,24,.5);color:#ffe9a8}
+.vwrap{border:1px solid rgba(245,197,24,.3)}
+.vwrap.novid{color:#f5c518}
+.thumbph{color:#f5c518}
+.feat{border-left:3px solid #f5c518}
+.feat:hover{border-left-color:#ffdf6b;box-shadow:0 6px 20px rgba(245,197,24,.35),0 0 16px rgba(245,197,24,.25)}
+.featarrow{color:#ffe9a8;text-shadow:0 0 10px rgba(245,197,24,.6)}
+.mvrow button:hover{background:rgba(245,197,24,.25)}
+.card .qstep button:hover{background:rgba(245,197,24,.3)}
+.discordbtn{background:linear-gradient(180deg,#e8b921,#9a7400)!important;color:#1a1405!important}
+.discordbtn:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 0 22px rgba(245,197,24,.7),0 6px 20px rgba(0,0,0,.35)!important}
+.genbtn{background:linear-gradient(45deg,#b8860b,#f5c518);color:#1a1405!important;box-shadow:0 0 12px rgba(245,197,24,.5)}
+.linkbtn{border:1px solid rgba(245,197,24,.4)!important;color:#ffe9a8!important}
+.senddm{background:linear-gradient(45deg,#d4a017,#8a6d00)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 0 26px rgba(245,197,24,.7)!important}
+.wchsmall{background:linear-gradient(45deg,#d4a017,#8a6d00)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 0 20px rgba(245,197,24,.65)!important}
+.tgsmall{background:linear-gradient(45deg,#d4a017,#8a6d00)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 0 20px rgba(245,197,24,.65)!important}
+/* ===== REFERENCE LOGIN FRAME (cut corners + floating chips) ===== */
+.login-card.gold{clip-path:polygon(30px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,16px 100%,0 calc(100% - 16px),0 30px)!important;filter:drop-shadow(0 0 22px rgba(245,197,24,.16)) drop-shadow(0 18px 40px rgba(0,0,0,.6))!important;box-shadow:none!important}
+.login-card.gold:hover{filter:drop-shadow(0 0 34px rgba(245,197,24,.28)) drop-shadow(0 18px 40px rgba(0,0,0,.6))!important;box-shadow:none!important}
+.login-card.gold .gfield{border-radius:8px!important}
+.login-card.gold .gbtn{border-radius:10px!important}
+.login-card.gold .gsoc{border-radius:10px!important}
+/* ===== SQUARE NAV (logo hata, menu button) ===== */
+.squaremenu{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;font-size:1.25rem;color:#f5c518;background:rgba(245,197,24,.08);border:1px solid rgba(245,197,24,.5);border-radius:0;cursor:pointer;flex-shrink:0}
+.squaremenu:hover{background:rgba(245,197,24,.22);box-shadow:0 0 14px rgba(245,197,24,.4)}
+nav button{border-radius:0!important}
+#pmenu{border-radius:0!important}
+#pmenu button{border-radius:0!important}
 </style>
 </head>
 <body>
@@ -686,30 +803,45 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
   <canvas id="devilCanvas"></canvas>
   <button id="ownerTopBtn" onclick="openOwnerLogin()">👑 Owner</button>
   <button id="helpTopBtn" onclick="openHelp()">How to Buy or How to use</button>
-  <div class="login-card" id="loginCard">
-    <div class="lbrand" onclick="logoClick()" title="Owner: click to change logo"><img id="loginLogo" class="roundlogo" style="display:none" alt="logo" onerror="this.style.display='none';document.getElementById('loginBadge').style.display='';"><span id="loginBadge" class="roundlogo">VG</span></div>
-    <div class="lname" id="loginShopName" style="display:none">VG CHEATS</div>
-    <h2 class="wback" id="loginWelcome">Welcome Back</h2>
-    <small>Enter name + password, choose your role</small>
-    <input id="uname" placeholder="Username">
-    <input id="upass" type="password" placeholder="Password">
-    <div style="text-align:left;margin-top:6px"><button class="flink" onclick="forgetPass()">Forget Password ?</button></div>
-    <div class="role-row">
-      <button id="roleAdmin" onclick="pickRole('admin',this)">🛡 Admin</button>
-      <button id="roleReseller" class="sel" onclick="pickRole('reseller',this)">🤝 Reseller</button>
-      <button id="rolePublic" onclick="pickRole('public',this)">🙂 Public</button>
+  <div class="lwrap">
+  <div class="login-card gold" id="loginCard">
+    <div class="lslide" id="lslide">
+      <div class="lface" id="faceIn">
+        <div class="lname" id="loginShopName" style="display:none">VG CHEATS</div>
+        <h2 class="gtitle">Welcome <em>Back</em></h2>
+        <span id="loginWelcome" style="display:none">Welcome Back</span>
+        <p class="gsub">Enter your credentials to access your secure account</p>
+        <label class="glabel">Username</label>
+        <div class="gfield"><i class="gico">👤</i><input id="uname" placeholder="Your username"></div>
+        <label class="glabel">Password</label>
+        <div class="gfield"><i class="gico">🔒</i><input id="upass" type="password" placeholder="••••••••"></div>
+        <div class="grow"><label class="gcheck" style="margin-top:0"><input type="checkbox" id="remMe"> Remember me</label><button class="flink" onclick="forgetPass()">Forgot password?</button></div>
+        <button class="gbtn" onclick="remSave();doLogin()">Sign In &nbsp;→</button>
+        <div class="gdiv">OR CONTINUE WITH</div>
+        <div class="btn-row"><button class="gsoc" onclick="googleLogin()">G&nbsp; Google</button></div>
+        <p class="gswap">Don't have an account? <button class="regbtn" onclick="toggleReg()">Sign Up</button></p>
+        <div class="devrow"><button class="flink" onclick="openDev()">👨‍💻 Developer</button></div>
+      </div>
+      <div class="lface" id="faceUp">
+        <h2 class="gtitle">Create <em>Account</em></h2>
+        <p class="gsub">Join us today to access your secure workspace</p>
+        <label class="glabel">Full Name</label>
+        <div class="gfield"><i class="gico">👤</i><input id="r_uname" placeholder="e.g. Vermaji"></div>
+        <label class="glabel">Email Address</label>
+        <div class="gfield"><i class="gico">✉</i><input id="r_uemail" placeholder="e.g. vermaji@gmail.com"></div>
+        <div class="frow2">
+          <div><label class="glabel">Password</label><div class="gfield"><i class="gico">🔒</i><input id="r_upass" type="password" placeholder="••••••"></div></div>
+          <div><label class="glabel">Confirm Password</label><div class="gfield"><i class="gico">🔒</i><input id="r_upass2" type="password" placeholder="••••••"></div></div>
+        </div>
+        <label class="gcheck"><input type="checkbox" id="r_terms"> I agree to the Terms &amp; Privacy Policy</label>
+        <button class="gbtn" onclick="doRegisterGold()">Create Account &nbsp;→</button>
+        <div class="gdiv">OR SIGN UP WITH</div>
+        <div class="btn-row"><button class="gsoc" onclick="googleLogin()">G&nbsp; Google</button></div>
+        <p class="gswap">Already have an account? <button class="regbtn" onclick="toggleReg(true)">Sign In</button></p>
+      </div>
     </div>
-    <small id="roleHint">Reseller: Enter username + password given by Owner</small>
-    <button class="btn loginGo" style="width:100%;margin-top:12px" onclick="doLogin()">Login</button>
-    <div class="signup">Are You New Member ? <button class="regbtn" onclick="toggleReg()">Sign UP</button></div>
-    <div style="text-align:center;margin-top:8px"><button class="flink" onclick="openDev()">👨‍💻 Developer</button></div>
-    <div id="regBox" style="display:none">
-      <input id="r_uname" placeholder="Choose username">
-      <input id="r_upass" type="password" placeholder="Create password">
-      <input id="r_uemail" placeholder="Gmail (required)">
-      <button class="btn loginGo" style="width:100%;margin-top:6px" onclick="doRegister()">Register ✅</button>
-      <div style="text-align:center;margin-top:6px"><button class="flink" onclick="toggleReg(true)">Cancel</button></div>
-    </div>
+    <div id="regBox" style="display:none"></div>
+  </div>
   </div>
 </section>
 
@@ -775,7 +907,7 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
     </div>
     <p id="contactInfo" class="cinfo" style="margin-top:15px">📱 contact :- 8521189842 &nbsp; | &nbsp; 📧 demo@panelstore.in</p>
   </div>
-  <footer id="footTxt">© 2026 VG CHEATS • build 3.5 — All rights reserved</footer>
+  <footer id="footTxt">© 2026 VG CHEATS • build 4.9 — All rights reserved</footer>
 </div>
 
 <div id="toast"></div>
@@ -945,6 +1077,11 @@ nav button:hover{box-shadow:0 0 15px #00e5ff;transform:translateY(-2px)}
   <label>Developer about (1 line)</label><input id="st_devabout" placeholder="Official developer">
   <label>Accent colour (logo + headings glow)</label><input id="st_acc" type="color" value="#00e5ff" style="height:44px;padding:4px">
   <label>Heading text colour</label><input id="st_head" type="color" value="#ffffff" style="height:44px;padding:4px">
+  <label>🔘 Button colours — owner full control (khaali chhodo = theme default)</label>
+  <div class="minirow">⬇ UPDATE FILE <input id="st_bshopbg" type="color" value="#8a6a00" title="Background"> <input id="st_bshoptx" type="color" value="#1a1405" title="Text"></div>
+  <div class="minirow">▶ VIDEO <input id="st_bvidbg" type="color" value="#8a6a00" title="Background"> <input id="st_bvidtx" type="color" value="#1a1405" title="Text"></div>
+  <div class="minirow">PURCHASE KEY <input id="st_bbuybg" type="color" value="#8a6a00" title="Background"> <input id="st_bbuytx" type="color" value="#1a1405" title="Text"></div>
+  <div class="minirow">🎮 DISCORD JOIN <input id="st_bdcbg" type="color" value="#8a6a00" title="Background"> <input id="st_bdctx" type="color" value="#1a1405" title="Text"></div>
   <div class="btn-row" style="margin-top:14px">
     <button class="btn-shop" onclick="saveSite()">💾 Save</button>
     <button class="btn-update" onclick="closeSite()">Cancel</button>
@@ -1274,7 +1411,7 @@ function fldChanged(el){
   try{saveLine('saved '+ratePid+' • '+el.id+' ✓');}catch(e){}
  }catch(e){}
 }
-function maintBlock(pid){const p=findPanel(pid);msgBox('🛠 '+(p?getName(p):'Panel')+' — UNDER MAINTENANCE\n'+getMaintMsg(p||{id:pid}));}
+function maintBlock(pid){vgNoClick();vgDenied();const p=findPanel(pid);msgBox('🛠 '+(p?getName(p):'Panel')+' — UNDER MAINTENANCE\n'+getMaintMsg(p||{id:pid}));}
 /* ===== FILTER DASHBOARD ===== */
 let fGame='All',fDev='All',fQ='',_games=[],_devs=[];
 function setQuery(v){fQ=String(v||'').toLowerCase().trim();renderProducts();}
@@ -1302,9 +1439,23 @@ function getApi(p){
 function apiName(pr){return pr==='keyauth'?'KeyAuth':pr==='authlx'?'AuthLX':pr==='genzauth'?'GenzAuth':pr==='custom'?'Custom URL':'—';}
 /* ===== USERS: created by owner, with % off ===== */
 function loadUsers(){
- try{const a=JSON.parse(localStorage.getItem('vg_users')||'[]');return Array.isArray(a)?a:[];}catch(e){return[];}
+ try{
+  const raw=localStorage.getItem('vg_users');
+  const a=JSON.parse(raw||'[]');
+  if(Array.isArray(a)&&a.length)return a;
+  // khaali/mita hua mile + backup me zyada users hon = bahari gadbad → backup se wapas
+  try{
+   const b=JSON.parse(localStorage.getItem('vg_users_bak')||'[]');
+   if(Array.isArray(b)&&b.length>(Array.isArray(a)?a.length:0)){
+    localStorage.setItem('vg_users',JSON.stringify(b));cloudSet('vg_users');
+    setTimeout(()=>{try{showToast('🛡 Users auto-restored from backup ('+b.length+')');}catch(e){}},600);
+    return b;
+   }
+  }catch(e){}
+  return Array.isArray(a)?a:[];
+ }catch(e){return[];}
 }
-function saveUsers(a){localStorage.setItem('vg_users',JSON.stringify(a));cloudSet('vg_users');}
+function saveUsers(a){localStorage.setItem('vg_users',JSON.stringify(a));try{localStorage.setItem('vg_users_bak',JSON.stringify(a));}catch(e){}cloudSet('vg_users');}
 /* default demo accounts (pehli baar auto-bante hain, Owner baad me delete kar sakta hai) */
 /* NOTE: seed direct likho — cloudSet MAT karo, nahi to khaali browser server ka asli data mita dega */
 try{
@@ -1437,6 +1588,21 @@ function playYt(btn){
  }catch(e){}
 }
 /* card mp4: pehle thumbnail, click par video load+play (fast + no lag) */
+/* dead/expired media link: card khaali na ho — owner ko warning, buyer ko placeholder */
+function vgMediaFail(el){
+ try{
+  const tp=el.closest?el.closest('.thumbplay'):null;
+  if(tp){
+   el.style.display='none';
+   try{if(isOwner()&&!tp.querySelector('.tbad')){const s=document.createElement('span');s.className='tbad';s.innerText='⚠ thumbnail link dead — Edit me naya link dalo';tp.appendChild(s);}}catch(e){}
+   return;
+  }
+  const w=el.closest?el.closest('.vwrap'):null;if(!w)return;
+  let ow=false;try{ow=isOwner();}catch(e){}
+  w.classList.add('novid');
+  w.innerHTML=ow?'🎬<small>⚠ Media link expired/broken — Edit me naya link dalo</small>':'🎬<small>Video coming soon</small>';
+ }catch(e){}
+}
 function playThumb(box){
  try{
   try{const pp=findPanel(box.dataset.pid);if(pp&&isMaint(pp)){maintBlock(box.dataset.pid);return;}}catch(e){}
@@ -1505,6 +1671,7 @@ function enterSite(){
 /* ===== OUT OF STOCK (contact buttons) ===== */
 let oosPid=null,oosIdx=0;
 function openOos(pid,idx){
+ vgNoClick();vgDenied();
  oosPid=String(pid);oosIdx=idx;
  const p=findPanel(oosPid);
  document.getElementById('oosMsg').innerText=(p?getName(p)+' ('+((getRates(p)[idx]||{}).label||'plan')+')':'This plan')+' — Out of stock right now. Contact Owner on WhatsApp.';
@@ -1577,6 +1744,7 @@ function cloudInit(){
  try{
   if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CFG);
   DB=firebase.database();
+  try{if(firebase.auth&&!firebase.auth().currentUser)firebase.auth().signInAnonymously().catch(()=>{});}catch(e){}
   try{
    DB.ref('.info/connected').on('value',snap=>{
     const on=snap.val()===true;
@@ -1587,8 +1755,9 @@ function cloudInit(){
   CLOUD_KEYS.forEach(k=>{
    try{
     DB.ref('vgcheats/'+k).on('value',snap=>{
-     const v=snap.val();
+     let v=snap.val();
      if(v===null||v===undefined)return;
+     try{if(v&&typeof v==='object')v=fillSecrets(k,JSON.parse(JSON.stringify(v)));}catch(e){}
      try{
       const nv=(typeof v==='string')?v:JSON.stringify(v);
       const cur=localStorage.getItem(k);
@@ -1622,7 +1791,7 @@ function cloudInit(){
      try{
       if(!snap.exists()){
        const raw=localStorage.getItem(k);
-       if(raw!==null&&raw!=='[]'&&raw!=='{}'&&bootPushOk(k,raw)){let v=raw;try{v=JSON.parse(raw);}catch(e){}try{localStorage.setItem('vg_push_'+k,JSON.stringify({v:raw,n:0,t:Date.now()}));}catch(e){}try{window._vgLastW=window._vgLastW||{};window._vgLastW[k]={v:raw,n:0,t:Date.now()};}catch(e){}DB.ref('vgcheats/'+k).set(v);}
+       if(raw!==null&&raw!=='[]'&&raw!=='{}'&&bootPushOk(k,raw)){let v=raw;try{v=JSON.parse(raw);}catch(e){}try{localStorage.setItem('vg_push_'+k,JSON.stringify({v:raw,n:0,t:Date.now()}));}catch(e){}try{window._vgLastW=window._vgLastW||{};window._vgLastW[k]={v:raw,n:0,t:Date.now()};}catch(e){}try{v=stripSecrets(k,v);}catch(e){}DB.ref('vgcheats/'+k).set(v);}
       }
      }catch(e){}
     });
@@ -1638,11 +1807,28 @@ function cloudSet(k){
  if(!DB)return;
  try{
   let v=raw;try{v=JSON.parse(raw);}catch(e){}
+  v=stripSecrets(k,v);
   DB.ref('vgcheats/'+k).set(v).catch(e=>{
    const now=Date.now();
    if(!window._cloudErrT||now-window._cloudErrT>10000){window._cloudErrT=now;showToast('Cloud save failed: '+((e&&e.message)||e));}
   });
  }catch(e){}
+}
+/* seller secrets kabhi cloud par nahi — sirf owner browser me */
+function stripSecrets(k,v){
+ try{
+  if(k==='vg_site'&&v&&typeof v==='object'){const c=Object.assign({},v);delete c.kaseller;return c;}
+  if(k==='vg_panelinfo'&&v&&typeof v==='object'){const c={};Object.keys(v).forEach(pid=>{const p=Object.assign({},v[pid]);delete p.apiKey;c[pid]=p;});return c;}
+ }catch(e){}
+ return v;
+}
+function fillSecrets(k,v){
+ try{
+  const cur=JSON.parse(localStorage.getItem(k)||'null');
+  if(k==='vg_site'&&v&&typeof v==='object'&&cur&&typeof cur==='object'){if(cur.kaseller)v.kaseller=cur.kaseller;return v;}
+  if(k==='vg_panelinfo'&&v&&typeof v==='object'&&cur&&typeof cur==='object'){Object.keys(v).forEach(pid=>{if(cur[pid]&&cur[pid].apiKey)v[pid].apiKey=cur[pid].apiKey;});return v;}
+ }catch(e){}
+ return v;
 }
 /* bootstrap guard: factory-seed users kabhi cloud par authoritative na bane */
 function bootPushOk(k,raw){
@@ -1813,13 +1999,58 @@ function verifyFpOtp(){
  document.getElementById('uname').value=rec.u;
  showToast('✅ New password set! Now Login');
 }
-function toggleReg(hide){
- const b=document.getElementById('regBox');
- b.style.display=(hide||b.style.display!=='none')?'none':'block';
+/* ===== GOLD LOGIN: slide + click sound (logic same) ===== */
+let _vgAC=null;
+function vgTone(f0,f1,dur,type,vol,when){
+ try{
+  _vgAC=_vgAC||new (window.AudioContext||window.webkitAudioContext)();
+  if(_vgAC.state==='suspended')_vgAC.resume();
+  const t=_vgAC.currentTime+(when||0),o=_vgAC.createOscillator(),g=_vgAC.createGain();
+  o.type=type||'sine';o.frequency.setValueAtTime(f0,t);
+  o.frequency.exponentialRampToValueAtTime(Math.max(f1,1),t+dur);
+  g.gain.setValueAtTime(vol||0.08,t);
+  g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+  o.connect(g);g.connect(_vgAC.destination);o.start(t);o.stop(t+dur+0.02);
+ }catch(e){}
 }
+function vgClick(){vgTone(520,920,0.07,'triangle',0.07);}
+function vgDenied(){vgTone(220,110,0.16,'square',0.06);vgTone(160,90,0.18,'square',0.05,0.02);}
+function vgNoClick(){try{window._vgNoClickT=Date.now();}catch(e){}}
+function toggleReg(hide){
+ const card=document.getElementById('loginCard');if(!card)return;
+ const showUp=hide?false:!card.classList.contains('show-up');
+ card.classList.toggle('show-up',showUp);
+ const b=document.getElementById('regBox');if(b)b.style.display='none';
+}
+function remSave(){
+ try{
+  const c=document.getElementById('remMe'),u=document.getElementById('uname').value.trim();
+  if(c&&c.checked&&u)localStorage.setItem('vg_remember',u);
+  else localStorage.removeItem('vg_remember');
+ }catch(e){}
+}
+function doRegisterGold(){
+ const a=document.getElementById('r_upass').value,b=document.getElementById('r_upass2').value;
+ if(a!==b){msgBox('Passwords do not match');return;}
+ if(!document.getElementById('r_terms').checked){msgBox('Please accept Terms & Privacy Policy');return;}
+ doRegister();
+ try{
+  if(document.getElementById('r_upass').value===''&&document.getElementById('uname').value!==''){
+   document.getElementById('r_upass2').value='';document.getElementById('r_terms').checked=false;
+  }
+ }catch(e){}
+}
+function appleLogin(){showToast('🍎 Apple login jald aa raha hai — abhi Google/ID se login karo');}
 document.getElementById('loginSec').addEventListener('click',e=>{
  const b=document.getElementById('regBox');
  if(b&&b.style.display!=='none'&&!e.target.closest('.login-card'))b.style.display='none';
+});
+/* poori site par click sound (login jaisa) — 1 listener, 1 beep */
+document.addEventListener('click',e=>{
+ try{
+  if(window._vgNoClickT&&Date.now()-window._vgNoClickT<400)return;
+  if(e.target.closest&&e.target.closest('button,a,input,select,textarea,.card,.feat,.fbtn,.orow,.urow'))vgClick();
+ }catch(_){}
 });
 function doRegister(){
  const n=document.getElementById('r_uname').value.trim();
@@ -1831,7 +2062,7 @@ function doRegister(){
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){msgBox('Please enter a valid Gmail — wrong Gmail will not register.');return;}
  const arr=loadUsers();
  if(arr.some(x=>((x.email||'').toLowerCase())===em)){msgBox('This Gmail is already registered.');return;}
- arr.push({u:n,p:pw,role:'public',off:0,email:em});
+ arr.push({u:n,p:pw,role:'public',off:0,email:em,ts:Date.now()});
  saveUsers(arr);
  document.getElementById('uname').value=n;
  document.getElementById('r_uname').value='';document.getElementById('r_upass').value='';document.getElementById('r_uemail').value='';
@@ -1845,10 +2076,9 @@ async function doLogin(){
  if(!pw){msgBox('Please enter password (given by Owner)');return;}
  const rec=findUser(u);
  if(!rec){msgBox('❌ This username is not registered.\nTap Register below or ask Owner.');return;}
- if(rec.role!==selRole){msgBox('This account is '+rec.role+'.\nPlease select the '+rec.role+' tab to login.');return;}
  if(rec.p!==pw){msgBox('❌ Wrong password.');return;}
  if(rec.blocked){msgBox('⛔ Your ID is blocked! Contact Owner.');return;}
- sessionStorage.setItem('vg_role',selRole);
+ sessionStorage.setItem('vg_role',rec.role);
  sessionStorage.setItem('vg_user',u);
  sessionStorage.setItem('vg_off',rec.off||0);
  try{saveSession();}catch(e){}
@@ -1874,8 +2104,13 @@ function googleLogin(){
    sessionStorage.setItem('vg_user','Owner');
    sessionStorage.setItem('vg_off',0);
   }else{
-   const rec=loadUsers().find(x=>((x.email||'').toLowerCase())===em);
-   if(!rec){msgBox('❌ This Gmail ('+em+') is not registered.\nAsk Owner to add your Gmail in Users.');return;}
+   let rec=loadUsers().find(x=>((x.email||'').toLowerCase())===em);
+   if(!rec){
+    const nm=String((res.user&&(res.user.displayName||em.split('@')[0]))||'User').trim().slice(0,30);
+    rec={u:nm,p:'google-oauth',role:'public',off:0,email:em,ts:Date.now(),oauth:true};
+    const arr=loadUsers();arr.push(rec);saveUsers(arr);
+    showToast('✅ Google account registered!');
+   }
    if(rec.blocked){msgBox('⛔ Your ID is blocked! Contact Owner.');return;}
    sessionStorage.setItem('vg_role',rec.role);
    sessionStorage.setItem('vg_user',rec.u);
@@ -2015,13 +2250,13 @@ function renderProducts(){
   const pname=String(getName(p)||'video').replace(/"/g,'&quot;');
   let mediaHtml;
   if(yid){
-   mediaHtml=`<div class="vwrap"><div class="ytbox" data-pid="${p.id}" data-yt="${yid}"><img src="https://i.ytimg.com/vi/${yid}/hqdefault.jpg" alt="${pname}" loading="lazy" decoding="async"><button class="playov" onclick="event.stopPropagation();playYt(this)">▶</button></div></div>`;
+   mediaHtml=`<div class="vwrap"><div class="ytbox" data-pid="${p.id}" data-yt="${yid}"><img src="https://i.ytimg.com/vi/${yid}/hqdefault.jpg" alt="${pname}" loading="lazy" decoding="async" onerror="vgMediaFail(this)"><button class="playov" onclick="event.stopPropagation();playYt(this)">▶</button></div></div>`;
   }else if(v){
    const safeV=String(v).replace(/"/g,'&quot;');
-   const cover=th?`<img src="${th}" alt="${pname}" loading="lazy" decoding="async" onerror="this.style.display='none'">`:`<div class="thumbph">🎬</div>`;
+   const cover=th?`<img src="${th}" alt="${pname}" loading="lazy" decoding="async" onerror="vgMediaFail(this)">`:`<div class="thumbph">🎬</div>`;
    mediaHtml=`<div class="vwrap"><div class="thumbplay" data-pid="${p.id}" data-v="${safeV}" title="Tap to play video" onclick="playThumb(this)">${cover}</div></div>`;
   }else if(th){
-   mediaHtml=`<div class="vwrap"><img src="${th}" alt="${pname}" loading="lazy" decoding="async" onerror="this.closest('.vwrap').style.display='none'"></div>`;
+   mediaHtml=`<div class="vwrap"><img src="${th}" alt="${pname}" loading="lazy" decoding="async" onerror="vgMediaFail(this)"></div>`;
   }else{
    mediaHtml=`<div class="vwrap novid">🎬<small>Video coming soon</small></div>`;
   }
@@ -2033,8 +2268,8 @@ function renderProducts(){
   const mTag=mOn?`<span class="maint-tag">🛠 MAINTENANCE</span>`:'';
   const actFile=mOn?`<button class="btn-shop dim" onclick="maintBlock('${p.id}')">⬇ UPDATE FILE</button>`:`<button class="btn-shop" onclick="openPfile('${p.id}')">⬇ UPDATE FILE</button>`;
   const actVid=mOn?`<button class="btn-update dim" onclick="maintBlock('${p.id}')">▶ VIDEO</button>`:`<button class="btn-update" onclick="playPanelVid(this,'${p.id}')">▶ VIDEO</button>`;
-  const actBuy=mOn?`<button class="discordbtn dim" onclick="maintBlock('${p.id}')">PURCHASE KEY</button>`:`<button class="discordbtn" onclick="toggleRatesCard('${p.id}')">PURCHASE KEY</button>`;
-  box.innerHTML+=`<div class="card reveal" draggable="${isOwner()}" ondragstart="try{event.dataTransfer.setData('text/plain','${p.id}');this.classList.add('dragging');}catch(e){}" ondragend="this.classList.remove('dragging')" ondragover="if(isOwner())event.preventDefault()" ondrop="event.preventDefault();dropCard(event,'${p.id}')" style="transition-delay:${Math.min(i*70,560)}ms">${del}${edt}${isOwner()?`<div class="mvrow"><button onclick="movePanel('${p.id}',-1)">◀</button><button onclick="movePanel('${p.id}',1)">▶</button></div>`:''}<div class="brandline">${escHtml(getBy(p))||'VG CHEATS'}</div>${mediaZone}<h3>${escHtml(getName(p))}${mTag}</h3><p>${escHtml(getDesc(p))}</p>${featHtml}<div class="btn-row">${actFile}${actVid}</div>${actBuy}<div class="inlineRates" id="ir_${p.id}" style="display:none"></div><button class="discordbtn" style="margin-top:10px" onclick="openDc('${p.id}')">🎮 Discord Join</button></div>`;
+  const actBuy=mOn?`<button class="discordbtn buykey dim" onclick="maintBlock('${p.id}')">PURCHASE KEY</button>`:`<button class="discordbtn buykey" onclick="toggleRatesCard('${p.id}')">PURCHASE KEY</button>`;
+  box.innerHTML+=`<div class="card reveal" draggable="${isOwner()}" ondragstart="try{event.dataTransfer.setData('text/plain','${p.id}');this.classList.add('dragging');}catch(e){}" ondragend="this.classList.remove('dragging')" ondragover="if(isOwner())event.preventDefault()" ondrop="event.preventDefault();dropCard(event,'${p.id}')" style="transition-delay:${Math.min(i*70,560)}ms">${del}${edt}${isOwner()?`<div class="mvrow"><button onclick="movePanel('${p.id}',-1)">◀</button><button onclick="movePanel('${p.id}',1)">▶</button></div>`:''}<div class="brandline">${getBy(p)||'VG CHEATS'}</div>${mediaZone}<h3>${getName(p)}${mTag}</h3><p>${getDesc(p)}</p>${featHtml}<div class="btn-row">${actFile}${actVid}</div>${actBuy}<div class="inlineRates" id="ir_${p.id}" style="display:none"></div><button class="discordbtn dcjoin" style="margin-top:10px" onclick="openDc('${p.id}')">🎮 Discord Join</button></div>`;
  });
  refreshStats();
  observeReveals();
@@ -2260,7 +2495,7 @@ function rateRowHtml(pid,r,i,off,buyLabel){
  var price=off>0?'<b>₹'+total+'</b> <span class="strike">₹'+(r.price*q)+'</span>':'<b>₹'+total+'</b>';
  var left=getPool(pid,i).keys.length;
  var claimed=unit===0&&!isOwner()&&freeClaimed(curUser(),pid);
- return `<div class="rate-row oneline" data-pid="${pid}" data-i="${i}"><span class="rl">${r.label} ${price} <small class="${left?'stk':'out'}">- ${left?left+' left':'sold out'}</small></span><span class="rr">${claimed?`<button class="buybtn sm dim" onclick="msgBox('🎁 Free key already claimed! 1 user = 1 free key per panel.')">USED</button>`:left?`<span class="qstep"><button onclick="chQtyBtn(this,-1)">-</button><b>${q}</b><button onclick="chQtyBtn(this,1)">+</button></span>${isOwner()?`<button class="genbtn" title="Quick +10 keys" onclick="quickKeys('${pid}',${i})">✨</button>`:''}<button class="buybtn sm" onclick="buyRate('${pid}',${i})">${buyLabel}</button>`:`<button class="buybtn sm dim" onclick="openOos('${pid}',${i})">${buyLabel}</button>`}</span></div>`;
+ return `<div class="rate-row oneline" data-pid="${pid}" data-i="${i}"><span class="rl">${r.label} ${price} <small class="${left?'stk':'out'}">- ${left?left+' left':'sold out'}</small></span><span class="rr">${claimed?`<button class="buybtn sm dim" onclick="freeUsedMsg()">USED</button>`:left?`<span class="qstep"><button onclick="chQtyBtn(this,-1)">-</button><b>${q}</b><button onclick="chQtyBtn(this,1)">+</button></span>${isOwner()?`<button class="genbtn" title="Quick +10 keys" onclick="quickKeys('${pid}',${i})">✨</button>`:''}<button class="buybtn sm" onclick="buyRate('${pid}',${i})">${buyLabel}</button>`:`<button class="buybtn sm dim" onclick="openOos('${pid}',${i})">${buyLabel}</button>`}</span></div>`;
 }
 function rebuildInline(pid){
  const box=document.getElementById('ir_'+pid);
@@ -2802,7 +3037,7 @@ function buyRate(pid,i){
  const zeroFree=eff(r.price)===0&&!isOwner();
  if(zeroFree)qty=1;
  const price=eff(r.price)*qty;
- if(zeroFree&&freeClaimed(curUser(),ratePid)){msgBox('🎁 Free key already claimed!\n1 user = 1 free key per panel.');return;}
+ if(zeroFree&&freeClaimed(curUser(),ratePid)){vgNoClick();vgDenied();msgBox('🎁 Free key already claimed!\n1 user = 1 free key per panel.');return;}
  const free=isPanelFree(ratePid);
  if(!free&&planPool(ratePid,r.label).pool.keys.length<qty){openOos(ratePid,i);return;}
  if(free){
@@ -2900,6 +3135,7 @@ function renderNuPanels(){
 function openUsers(){
  if(!isOwner()){msgBox('🔒 Only Owner can create users.');return;}
  try{document.getElementById('o_email').value=localStorage.getItem('vg_owner_email')||'';}catch(e){}
+ try{uFilter='all';}catch(e){}
  renderNuPanels();
  drawUsers();
  document.getElementById('userBg').classList.add('show');
@@ -2908,16 +3144,29 @@ function openUsers(){
 function closeUsers(){
  hideFx('userBg','userModal');
 }
+let uFilter='all';
+function setUFilter(f){uFilter=f;drawUsers();}
 function drawUsers(){
  try{const cl=document.getElementById('cloudLine');if(cl)cl.innerText='Cloud: '+window._cloudState+(window._cloudErr?' ('+window._cloudErr+')':'');}catch(e){}
  const box=document.getElementById('userRows'),list=loadUsers();
  let rev=0,pend=0;try{loadOrders().forEach(o=>{if(o.status==='approved')rev+=+o.price||0;if(o.status==='pending')pend++;});}catch(e){}
  let keys=0;try{const kp=JSON.parse(localStorage.getItem('vg_keypool')||'{}');Object.keys(kp).forEach(k=>{keys+=(kp[k].keys||[]).length;});}catch(e){}
  box.innerHTML='<div class="orow" style="cursor:default;text-align:center">Users: <b>'+list.length+'</b> &nbsp;•&nbsp; Orders: <b>'+loadOrders().length+'</b> &nbsp;•&nbsp; Revenue: <b style="color:#00ff9d">₹'+rev.toLocaleString('en-IN')+'</b> &nbsp;•&nbsp; Pending: <b>'+pend+'</b> &nbsp;•&nbsp; Keys: <b>'+keys+'</b></div>';
- box.innerHTML+=list.length?'':'<p style="color:#9ab">No users yet — create one above 👆</p>';
+ const cA=list.filter(x=>x.role==='admin').length,cR=list.filter(x=>x.role==='reseller').length,cP=list.length-cA-cR;
+ const cN=list.filter(x=>x.ts&&(Date.now()-x.ts)<7*24*3600*1000).length;
+ const tab=(f,l)=>`<button class="fbtn${uFilter===f?' on':''}" onclick="setUFilter('${f}')">${l}</button>`;
+ box.innerHTML+=`<div class="frow" style="justify-content:center;margin:10px 0">${tab('all','All ('+list.length+')')}${tab('admin','🛡 Admin ('+cA+')')}${tab('reseller','🤝 Reseller ('+cR+')')}${tab('public','👤 Public ('+cP+')')}${tab('new','🆕 New ('+cN+')')}</div>`;
+ let shown=0;
  list.forEach((x,i)=>{
-  box.innerHTML+=`<div class="urow"><span><b>${x.u}</b> ${x.role==='admin'?'🛡 Admin':x.role==='reseller'?'🤝 Reseller':'👤 Normal'} ${x.blocked?'<b style="color:#ff3d81">⛔ BLOCKED</b>':''}<br><span class="off">${x.off||0}% OFF</span> <span style="color:#0f9">₹${(function(){try{return getBal(x.u);}catch(e){return 0;}})().toLocaleString('en-IN')}</span> <span style="color:#778">| pass: ${x.p}${x.email?'<br>✉ '+x.email:''}</span></span><span class="ops"><button style="background:#1a2456;color:#fff" onclick="editRole(${i})" title="Change role">🔄</button><button style="background:#1a2456;color:#fff" onclick="openPacc(${i})" title="Free panels">🎛</button><button style="background:#1a2456;color:#fff" onclick="editOff(${i})">Edit %</button><button style="background:#1a2456;color:#fff" onclick="editBal(${i})" title="Wallet">💰</button><button style="background:#1a2456;color:#fff" onclick="editPass(${i})">🔑</button><button style="background:#1a2456;color:#fff" onclick="resetFreeIdx(${i})" title="Reset free-key claim">🎁</button><button style="background:${x.blocked?'#00c853':'#ff9d00'};color:#fff" onclick="toggleBlock(${i})">${x.blocked?'▶ Unblock':'⏸ Block'}</button><button style="background:#ff3d81;color:#fff" onclick="delUser(${i})">✖</button></span></div>`;
+  if(uFilter==='admin'&&x.role!=='admin')return;
+  if(uFilter==='reseller'&&x.role!=='reseller')return;
+  if(uFilter==='public'&&(x.role==='admin'||x.role==='reseller'))return;
+  const isNew=x.ts&&(Date.now()-x.ts)<7*24*3600*1000;
+  if(uFilter==='new'&&!isNew)return;
+  shown++;
+  box.innerHTML+=`<div class="urow"><span><b>${x.u}</b> ${x.role==='admin'?'🛡 Admin':x.role==='reseller'?'🤝 Reseller':'👤 Normal'}${isNew?'<b style="color:#ffd83d"> 🆕 NEW</b>':''} ${x.blocked?'<b style="color:#ff3d81">⛔ BLOCKED</b>':''}<br><span class="off">${x.off||0}% OFF</span> <span style="color:#0f9">₹${(function(){try{return getBal(x.u);}catch(e){return 0;}})().toLocaleString('en-IN')}</span> <span style="color:#778">| pass: ${x.p}${x.email?'<br>✉ '+x.email:''}${x.ts?'<br><span style="color:#778">joined '+new Date(x.ts).toLocaleDateString('en-IN')+'</span>':''}</span></span><span class="ops"><button style="background:#1a2456;color:#fff" onclick="editRole(${i})" title="Change role">🔄</button><button style="background:#1a2456;color:#fff" onclick="openPacc(${i})" title="Free panels">🎛</button><button style="background:#1a2456;color:#fff" onclick="editOff(${i})">Edit %</button><button style="background:#1a2456;color:#fff" onclick="editBal(${i})" title="Wallet">💰</button><button style="background:#1a2456;color:#fff" onclick="editPass(${i})">🔑</button><button style="background:#1a2456;color:#fff" onclick="resetFreeIdx(${i})" title="Reset free-key claim">🎁</button><button style="background:${x.blocked?'#00c853':'#ff9d00'};color:#fff" onclick="toggleBlock(${i})">${x.blocked?'▶ Unblock':'⏸ Block'}</button><button style="background:#ff3d81;color:#fff" onclick="delUser(${i})">✖</button></span></div>`;
  });
+ if(!shown)box.innerHTML+='<p style="color:#9ab;text-align:center">Is list me koi nahi hai.</p>';
 }
 function addUser(){
  const n=document.getElementById('nu_name').value.trim(),pw=document.getElementById('nu_pass').value.trim();
@@ -2926,7 +3175,7 @@ function addUser(){
  const off=Math.min(90,Math.max(0,parseInt(document.getElementById('nu_off').value)||0));
  const arr=loadUsers();
  const fp=[...document.querySelectorAll('#nu_panels input:checked')].map(c=>String(c.dataset.pid));
- arr.push({u:n,p:pw,role:document.getElementById('nu_role').value,off:off,email:document.getElementById('nu_email').value.trim().toLowerCase(),freePanels:fp});
+ arr.push({u:n,p:pw,role:document.getElementById('nu_role').value,off:off,email:document.getElementById('nu_email').value.trim().toLowerCase(),freePanels:fp,ts:Date.now()});
  saveUsers(arr);
  document.getElementById('nu_name').value='';document.getElementById('nu_pass').value='';document.getElementById('nu_off').value='';document.getElementById('nu_email').value='';
  document.querySelectorAll('#nu_panels input:checked').forEach(c=>c.checked=false);
@@ -2973,7 +3222,7 @@ function doImport(){
  arr.forEach(x=>{
   if(!x||!x.u||!x.p)return;
   if(cur.some(c=>String(c.u).toLowerCase()===String(x.u).toLowerCase())){skipped++;return;}
-  cur.push({u:String(x.u),p:String(x.p),role:['admin','reseller'].includes(x.role)?x.role:'public',off:Math.min(90,Math.max(0,+x.off||0)),email:String(x.email||'').toLowerCase(),freePanels:Array.isArray(x.freePanels)?x.freePanels:[],blocked:!!x.blocked});
+  cur.push({u:String(x.u),p:String(x.p),role:['admin','reseller'].includes(x.role)?x.role:'public',off:Math.min(90,Math.max(0,+x.off||0)),email:String(x.email||'').toLowerCase(),freePanels:Array.isArray(x.freePanels)?x.freePanels:[],blocked:!!x.blocked,ts:+x.ts||Date.now()});
   added++;
  });
  saveUsers(cur);
@@ -3203,11 +3452,29 @@ function goContact(b){
  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
  document.getElementById('contact').scrollIntoView({behavior:'smooth'});
 }
+/* owner button colours (background + text, per button) */
+function paintBtnTheme(){
+ try{
+  const s=getSite();let css='';
+  const put=(sel,bg,tx)=>{
+   if(bg&&/^#[0-9a-f]{6}$/i.test(bg))css+=sel+'{background:'+bg+'!important;}';
+   if(tx&&/^#[0-9a-f]{6}$/i.test(tx))css+=sel+'{color:'+tx+'!important;}';
+  };
+  put('.btn-shop',s.bShopBg,s.bShopTx);
+  put('.btn-update',s.bVidBg,s.bVidTx);
+  put('.buykey',s.bBuyBg,s.bBuyTx);
+  put('.dcjoin',s.bDcBg,s.bDcTx);
+  let st=document.getElementById('btnThemeCss');
+  if(!st){st=document.createElement('style');st.id='btnThemeCss';document.head.appendChild(st);}
+  st.innerHTML=css;
+ }catch(e){}
+}
 /* ===== SITE SETTINGS (owner full control) ===== */
 /* ===== GLOBAL SHOP MAINTENANCE (owner: poori shop ek switch se) ===== */
 function siteMaint(){try{return !!getSite().maint;}catch(e){return false;}}
 function siteMaintMsg(){try{const m=getSite().maintMsg;return (m&&String(m).trim())||'TEMPORARILY UNAVAILABLE';}catch(e){return 'TEMPORARILY UNAVAILABLE';}}
-function siteMaintBlock(){msgBox('🛠 SHOP UNDER MAINTENANCE\n'+siteMaintMsg());}
+function siteMaintBlock(){vgNoClick();vgDenied();msgBox('🛠 SHOP UNDER MAINTENANCE\n'+siteMaintMsg());}
+function freeUsedMsg(){vgNoClick();vgDenied();msgBox('🎁 Free key already claimed! 1 user = 1 free key per panel.');}
 function paintGlobalMaint(){
  try{
   const b=document.getElementById('globalMaint');if(!b)return;
@@ -3217,7 +3484,7 @@ function paintGlobalMaint(){
   }else b.style.display='none';
  }catch(e){}
 }
-const DEFAULT_SITE={name:'VG CHEATS',logo:'logo.png',help_yt:'',help_btn:'How to Buy or How to use',greet:'Welcome to',wb:'Welcome Back',sub:'Best quality panels — instant delivery, best price',phone:'contact :- 8521189842',email:'indiansrikant82@gmail.com & a1gamingyt82@gmail.com',wa:'918521189842',wch:'https://whatsapp.com/channel/0029Vb8Qx2IFnSz40l4Yv41w',tg:'https://t.me/+tSngo3Aaar81NDll',upi:'',rzp:'',instant:true,kaseller:'',dev_name:'VG Team',dev_contact:'Contact Owner',dev_about:'Official developer',acc:'#00e5ff',head:'#ffffff',maint:false,maintMsg:''};
+const DEFAULT_SITE={name:'VG CHEATS',logo:'logo.png',help_yt:'',help_btn:'How to Buy or How to use',greet:'Welcome to',wb:'Welcome Back',sub:'Best quality panels — instant delivery, best price',phone:'contact :- 8521189842',email:'indiansrikant82@gmail.com & a1gamingyt82@gmail.com',wa:'918521189842',wch:'https://whatsapp.com/channel/0029Vb8Qx2IFnSz40l4Yv41w',tg:'https://t.me/+tSngo3Aaar81NDll',upi:'',rzp:'',instant:true,kaseller:'',dev_name:'VG Team',dev_contact:'Contact Owner',dev_about:'Official developer',acc:'#00e5ff',head:'#ffffff',maint:false,maintMsg:'',bShopBg:'',bShopTx:'',bVidBg:'',bVidTx:'',bBuyBg:'',bBuyTx:'',bDcBg:'',bDcTx:''};
 function getSite(){
  try{
   const s=JSON.parse(localStorage.getItem('vg_site')||'null');
@@ -3237,8 +3504,7 @@ function renderSite(){
  try{
   document.getElementById('loginShopName').innerText=s.name;
   const gi=document.getElementById('loginLogo'),gb=document.getElementById('loginBadge');
-  if(s.logo){gi.src=s.logo;gi.style.display='';gb.style.display='none';}
-  else{gi.style.display='none';gb.style.display='';gb.innerText=s.name.substring(0,2).toUpperCase();}
+  if(gi&&gb){if(s.logo){gi.src=s.logo;gi.style.display='';gb.style.display='none';}else{gi.style.display='none';gb.style.display='';gb.innerText=s.name.substring(0,2).toUpperCase();}}
  }catch(e){}
  document.getElementById('heroTitle').innerHTML=s.greet+' <span>'+s.name+'</span>';
  try{document.getElementById('loginWelcome').innerText=s.wb||'Welcome Back';}catch(e){}
@@ -3249,6 +3515,7 @@ function renderSite(){
  try{delete document.getElementById('heroTitle').dataset.split;splitHero();}catch(e){}
  try{applyTheme();}catch(e){}
  try{paintGlobalMaint();}catch(e){}
+ try{paintBtnTheme();}catch(e){}
 }
 function openSite(){
  if(!isOwner())return;
@@ -3276,6 +3543,14 @@ function openSite(){
  document.getElementById('st_devabout').value=s.dev_about||'';
  document.getElementById('st_acc').value=s.acc||'#00e5ff';
  document.getElementById('st_head').value=s.head||'#ffffff';
+ try{document.getElementById('st_bshopbg').value=s.bShopBg||'#8a6a00';}catch(e){}
+ try{document.getElementById('st_bshoptx').value=s.bShopTx||'#1a1405';}catch(e){}
+ try{document.getElementById('st_bvidbg').value=s.bVidBg||'#8a6a00';}catch(e){}
+ try{document.getElementById('st_bvidtx').value=s.bVidTx||'#1a1405';}catch(e){}
+ try{document.getElementById('st_bbuybg').value=s.bBuyBg||'#8a6a00';}catch(e){}
+ try{document.getElementById('st_bbuytx').value=s.bBuyTx||'#1a1405';}catch(e){}
+ try{document.getElementById('st_bdcbg').value=s.bDcBg||'#8a6a00';}catch(e){}
+ try{document.getElementById('st_bdctx').value=s.bDcTx||'#1a1405';}catch(e){}
  try{
   document.documentElement.style.setProperty('--acc',s.acc||'#00e5ff');
   document.documentElement.style.setProperty('--head',s.head||'#ffffff');
@@ -3294,7 +3569,7 @@ function closeSite(){
 }
 function saveSite(quiet){
  const g=id=>document.getElementById(id).value.trim();
- const s={name:g('st_name')||DEFAULT_SITE.name,logo:g('st_logo'),help_yt:g('st_helpyt'),help_btn:g('st_helpbtn'),sub:g('st_sub')||DEFAULT_SITE.sub,phone:g('st_phone')||DEFAULT_SITE.phone,email:g('st_email')||DEFAULT_SITE.email,wa:g('st_wa').replace(/\D/g,'')||DEFAULT_SITE.wa,wch:g('st_wch')||DEFAULT_SITE.wch,tg:g('st_tg')||DEFAULT_SITE.tg,upi:g('st_upi'),rzp:g('st_rzp'),instant:document.getElementById('st_instant').checked,maint:document.getElementById('st_maint').checked,maintMsg:g('st_maintmsg'),kaseller:g('st_kaseller'),dev_name:g('st_devname')||DEFAULT_SITE.dev_name,dev_contact:g('st_devcontact')||DEFAULT_SITE.dev_contact,dev_about:g('st_devabout')||DEFAULT_SITE.dev_about,acc:g('st_acc')||'#00e5ff',head:g('st_head')||'#ffffff',greet:g('st_greet')||DEFAULT_SITE.greet,wb:g('st_wb')||DEFAULT_SITE.wb};
+ const s={name:g('st_name')||DEFAULT_SITE.name,logo:g('st_logo'),help_yt:g('st_helpyt'),help_btn:g('st_helpbtn'),sub:g('st_sub')||DEFAULT_SITE.sub,phone:g('st_phone')||DEFAULT_SITE.phone,email:g('st_email')||DEFAULT_SITE.email,wa:g('st_wa').replace(/\D/g,'')||DEFAULT_SITE.wa,wch:g('st_wch')||DEFAULT_SITE.wch,tg:g('st_tg')||DEFAULT_SITE.tg,upi:g('st_upi'),rzp:g('st_rzp'),instant:document.getElementById('st_instant').checked,maint:document.getElementById('st_maint').checked,maintMsg:g('st_maintmsg'),kaseller:g('st_kaseller'),dev_name:g('st_devname')||DEFAULT_SITE.dev_name,dev_contact:g('st_devcontact')||DEFAULT_SITE.dev_contact,dev_about:g('st_devabout')||DEFAULT_SITE.dev_about,acc:g('st_acc')||'#00e5ff',head:g('st_head')||'#ffffff',greet:g('st_greet')||DEFAULT_SITE.greet,wb:g('st_wb')||DEFAULT_SITE.wb,bShopBg:g('st_bshopbg'),bShopTx:g('st_bshoptx'),bVidBg:g('st_bvidbg'),bVidTx:g('st_bvidtx'),bBuyBg:g('st_bbuybg'),bBuyTx:g('st_bbuytx'),bDcBg:g('st_bdcbg'),bDcTx:g('st_bdctx')};
  localStorage.setItem('vg_site',JSON.stringify(s));
  cloudSet('vg_site');
  renderSite();
@@ -3648,26 +3923,8 @@ function assembleFx(el){
   if(window.VG_NO_FX)return;
   glow.style.left=e.clientX+'px';glow.style.top=e.clientY+'px';
  });
- // card mouse tilt + spotlight (phone par OFF)
- document.addEventListener('mousemove',e=>{
-  if(window.VG_NO_FX||document.body.classList.contains('no-fx'))return;
-  const inMedia=e.target.closest?e.target.closest('.vwrap'):null;
-  const t=e.target.closest?e.target.closest('.card'):null;
-  document.querySelectorAll('.card').forEach(c=>{
-   if(c===t&&!inMedia){
-    const r=c.getBoundingClientRect();
-    if(r.width===0)return;
-    const lite=(matchMedia&&matchMedia('(max-width:600px)').matches)||('ontouchstart' in window);
-    const k=lite?6:16;
-    const x=Math.min(Math.max((e.clientX-r.left)/r.width,0),1),y=Math.min(Math.max((e.clientY-r.top)/r.height,0),1);
-    c.style.setProperty('--mx',(x*100)+'%');c.style.setProperty('--my',(y*100)+'%');
-    c.style.transition='transform .12s ease-out';
-    c.style.transform=lite?`rotateY(${(x-0.5)*k}deg) rotateX(${(0.5-y)*k}deg) scale(1.01)`:`rotateY(${(x-0.5)*k}deg) rotateX(${(0.5-y)*k}deg) translateZ(12px) scale(1.03)`;
-   }else if(c.style.transform){
-    c.style.transform='';c.style.transition='';
-   }
-  });
- });
+ // card tilt REMOVED (owner choice) — hover glow CSS se hi hai
+ /* tilt off */
 })();
 renderSite();
 try{document.getElementById('uname').value=localStorage.getItem('vg_remember')||'';}catch(e){}
@@ -3679,7 +3936,7 @@ function vgStorageBadge(){
   window._vgStorageOK=ok;
   let b=document.getElementById('storeDot');
   if(!b){b=document.createElement('div');b.id='storeDot';document.body.appendChild(b);}
-  b.innerText=(ok?'● storage OK':'● STORAGE BLOCKED — save nahi hoga')+' • build 3.5';
+  b.innerText='build version 1.0';
   b.style.cssText='position:fixed;left:8px;bottom:8px;z-index:60;font-size:10px;letter-spacing:1px;padding:5px 10px;border-radius:12px;color:'+(ok?'#00ff9d':'#ff5e7a')+';background:rgba(0,0,0,.65);border:1px solid '+(ok?'rgba(0,255,157,.4)':'rgba(255,61,94,.5)')+';pointer-events:none';
   if(!ok)setTimeout(()=>{try{msgBox('⚠ Browser STORAGE BLOCKED hai!\n\nIsliye Save kaam nahi kar raha — refresh par sab mit jata hai.\n\nFix:\n1) Chrome browser use karo\n2) Private/Incognito mode band karo\n3) Site settings me Cookies/Storage ON karo\n4) UC Mini / file-viewer app mat use karo');}catch(e){}},900);
  }catch(e){}
