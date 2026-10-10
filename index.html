@@ -921,8 +921,8 @@ nav button{border-radius:0!important}
   <div id="rateRows"></div>
   <div id="videoEditRow" style="display:none">
     <p class="rate-sub" style="margin:12px 0 6px">🎬 Video / Thumbnail link + Telegram + Discord:</p>
-    <input id="vurl" placeholder="Card clip video mp4 / YouTube (chhota clip)" style="width:100%;padding:10px;margin:4px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff">
-    <input id="vfullurl" placeholder="FULL setup video mp4 / YouTube (VIDEO button ke liye)" style="width:100%;padding:10px;margin:4px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff">
+    <input id="vurl" placeholder="Card clip video mp4 / YouTube (short clip)" style="width:100%;padding:10px;margin:4px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff">
+    <input id="vfullurl" placeholder="FULL setup video mp4 / YouTube (for VIDEO button)" style="width:100%;padding:10px;margin:4px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff">
     <input id="thurl" placeholder="Thumbnail: https://.../photo.jpg (shows when no video)" style="width:100%;padding:10px;margin:4px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff">
     <input id="turl" placeholder="Telegram: https://t.me/..." style="width:100%;padding:10px;margin:4px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff">
     <input id="durl" placeholder="Discord: https://discord.gg/..." style="width:100%;padding:10px;margin:4px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff">
@@ -932,7 +932,7 @@ nav button{border-radius:0!important}
     <button class="linkbtn" onclick="addRateRow()">＋ Add plans</button>
     <button class="linkbtn" onclick="saveRateEdit()">💾 Save</button>
     <button class="linkbtn" onclick="resetRates()">↩ Reset</button>
-    <button class="linkbtn" onclick="debugPanel()" title="Storage me kya hai — check">🔍 Check</button>
+    <button class="linkbtn" onclick="debugPanel()" title="Check what is in storage">🔍 Check</button>
   </div>
   <div id="saveLine" style="font-size:.72rem;color:#7d8db8;text-align:center;letter-spacing:.5px;min-height:18px;margin-top:6px"></div>
   <div class="btn-row" style="margin-top:14px">
@@ -953,15 +953,15 @@ nav button{border-radius:0!important}
   <label>Features (one per line)</label><textarea id="np_feat" rows="3" placeholder="PREMIUM QUALITY&#10;FAST SERVICE" style="width:100%;padding:10px;margin:6px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff"></textarea>
   <label>Device (PC / ANDROID / IOS)</label><select id="np_device" style="width:100%;padding:10px;margin:6px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff"><option>ANDROID</option><option>IOS</option><option>PC</option></select>
   <label>Video link (mp4, can be empty)</label><input id="np_video" placeholder="https://.../video.mp4">
-  <label>Full setup video link (VIDEO button ke liye)</label><input id="np_vfull" placeholder="https://.../full.mp4 or YouTube">
+  <label>Full setup video link (for VIDEO button)</label><input id="np_vfull" placeholder="https://.../full.mp4 or YouTube">
   <label>Thumbnail link (photo — shows when no video)</label><input id="np_thumb" placeholder="https://.../photo.jpg">
   <label>Telegram channel link</label><input id="np_tg" placeholder="https://t.me/...">
   <label>Discord server link</label><input id="np_dc" placeholder="https://discord.gg/...">
-  <label>🔑 Panel API (optional — khaali = global KeyAuth)</label><select id="np_apiprov" style="width:100%;padding:10px;margin:6px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff"><option value="">— Global (Site Settings) —</option><option value="keyauth">KeyAuth</option><option value="authlx">AuthLX</option><option value="genzauth">GenzAuth</option><option value="custom">Custom URL</option></select>
-  <input id="np_apikey" type="password" placeholder="Seller / API Key (is panel ke liye)">
-  <input id="np_apiapp" placeholder="App ID (AuthLX / GenzAuth ke liye)">
+  <label>🔑 Panel API (optional — empty = global KeyAuth)</label><select id="np_apiprov" style="width:100%;padding:10px;margin:6px 0;border-radius:10px;border:1px solid #334;background:#0a0f2a;color:#fff"><option value="">— Global (Site Settings) —</option><option value="keyauth">KeyAuth</option><option value="authlx">AuthLX</option><option value="genzauth">GenzAuth</option><option value="custom">Custom URL</option></select>
+  <input id="np_apikey" type="password" placeholder="Seller / API Key (for this panel)">
+  <input id="np_apiapp" placeholder="App ID (for AuthLX / GenzAuth)">
   <input id="np_apiurl" placeholder="Custom Generate URL — {DAYS} {COUNT} {APP} {KEY}">
-  <label class="mswitch"><input type="checkbox" id="np_maint"> 🛠 Maintenance mode (panel band dikhega)</label>
+  <label class="mswitch"><input type="checkbox" id="np_maint"> 🛠 Maintenance mode (panel will show as closed)</label>
   <input id="np_mmsg" placeholder="Maintenance text (e.g. UPDATE COMING SOON)">
   <label>Rates — add as many days as you want (name + price)</label>
   <div id="np_rates"></div>
@@ -1069,15 +1069,15 @@ nav button{border-radius:0!important}
   <label>Owner UPI ID (for payment QR, e.g. name@upi)</label><input id="st_upi" placeholder="yourname@upi">
   <label>Razorpay Key ID (for auto payment verify — auto-pay needs this)</label><input id="st_rzp" placeholder="rzp_live_...">
   <label style="display:flex;align-items:center;gap:8px"><input id="st_instant" type="checkbox" checked style="width:auto"> Instant delivery ON (OFF = Owner approval must, max security)</label>
-  <label class="mswitch"><input type="checkbox" id="st_maint"> 🛠 Full-shop maintenance (sab panels band)</label>
+  <label class="mswitch"><input type="checkbox" id="st_maint"> 🛠 Full-shop maintenance (all panels closed)</label>
   <input id="st_maintmsg" placeholder="Shop maintenance text (e.g. UPDATE COMING SOON)">
-  <label>KeyAuth Seller Key (for fresh keys — saved only in Owner browser)</label><input id="st_kaseller" type="password" placeholder="Seller key paste karo">
+  <label>KeyAuth Seller Key (for fresh keys — saved only in Owner browser)</label><input id="st_kaseller" type="password" placeholder="Paste seller key here">
   <label>Developer name (Owner editable)</label><input id="st_devname" placeholder="VG Team">
   <label>Developer contact</label><input id="st_devcontact" placeholder="Telegram / number">
   <label>Developer about (1 line)</label><input id="st_devabout" placeholder="Official developer">
   <label>Accent colour (logo + headings glow)</label><input id="st_acc" type="color" value="#00e5ff" style="height:44px;padding:4px">
   <label>Heading text colour</label><input id="st_head" type="color" value="#ffffff" style="height:44px;padding:4px">
-  <label>🔘 Button colours — owner full control (khaali chhodo = theme default)</label>
+  <label>🔘 Button colours — owner full control (leave empty = theme default)</label>
   <div class="minirow">⬇ UPDATE FILE <input id="st_bshopbg" type="color" value="#8a6a00" title="Background"> <input id="st_bshoptx" type="color" value="#1a1405" title="Text"></div>
   <div class="minirow">▶ VIDEO <input id="st_bvidbg" type="color" value="#8a6a00" title="Background"> <input id="st_bvidtx" type="color" value="#1a1405" title="Text"></div>
   <div class="minirow">PURCHASE KEY <input id="st_bbuybg" type="color" value="#8a6a00" title="Background"> <input id="st_bbuytx" type="color" value="#1a1405" title="Text"></div>
@@ -1194,10 +1194,10 @@ nav button{border-radius:0!important}
   <label>File / download link (optional — comes with the key)</label>
   <input id="keyFile" placeholder="https://drive.google.com/...">
   <label>⚡ Bulk generate (for this plan only)</label>
-  <div class="btn-row"><input id="keyPrefix" placeholder="Prefix, e.g. VG30-" style="flex:2"><input id="keyCount" type="number" min="1" max="500" placeholder="Kitni? e.g. 50" style="flex:1"></div>
+  <div class="btn-row"><input id="keyPrefix" placeholder="Prefix, e.g. VG30-" style="flex:2"><input id="keyCount" type="number" min="1" max="500" placeholder="How many? e.g. 50" style="flex:1"></div>
   <button class="linkbtn" onclick="genBulkKeys()">⚡ Generate & Add Keys</button>
   <label>🌐 Fresh keys — Panel API (<b id="apiLine">KeyAuth</b>)</label>
-  <div class="btn-row"><input id="keyDays" type="number" min="1" placeholder="Days, e.g. 30" style="flex:1"><input id="keyAmount" type="number" min="1" max="200" placeholder="Kitni? e.g. 20" style="flex:1"></div>
+  <div class="btn-row"><input id="keyDays" type="number" min="1" placeholder="Days, e.g. 30" style="flex:1"><input id="keyAmount" type="number" min="1" max="200" placeholder="How many? e.g. 20" style="flex:1"></div>
   <button class="linkbtn" onclick="genKeyAuth()">🌐 Generate Fresh Keys</button>
   <div class="btn-row" style="margin-top:14px">
     <button class="btn-shop" onclick="saveKeysForm()">💾 Save Keys</button>
@@ -1498,7 +1498,7 @@ function twinWarn(pid){
  try{
   const p=findPanel(pid);if(!p)return '';
   const n=String(getName(p)).toLowerCase().trim();
-  if(twinNames().indexOf(n)>=0)return '⚠ "'+getName(p)+'" naam ke 2 panel hain! Ek ko card ke ✖ se delete karo — nahi to edit doosre card par dikhega.';
+  if(twinNames().indexOf(n)>=0)return '⚠ "'+getName(p)+'" has 2 panels with this name! Delete one with the card ✖ — else edits will appear on the other card.';
   return '';
  }catch(e){return '';}
 }
@@ -1510,13 +1510,13 @@ function verifyCardDom(pid,c){
    const btn=card.querySelector('.editpanel');
    if(btn&&(btn.getAttribute('onclick')||'').indexOf("'"+pid+"'")>=0)found=card;
   });
-  if(!found)return 'Card screen par nahi mila (search/filter laga ho to hatao).';
+  if(!found)return 'Card not found on screen (remove search/filter if applied).';
   const bl=found.querySelector('.brandline');
   const wantBy=((c.by||'').trim()||'VG CHEATS'),gotBy=bl?bl.textContent.trim():null;
-  if(gotBy===null)return 'Card ka brandline nahi mila.';
-  if(gotBy!==wantBy)return 'brandline me "'+gotBy+'" dikha, "'+wantBy+'" hona chahiye tha.';
+  if(gotBy===null)return 'Card brandline not found.';
+  if(gotBy!==wantBy)return 'brandline shows "'+gotBy+'", expected "'+wantBy+'".';
   const wantBar=!!c.maint,gotBar=!!found.querySelector('.maint-bar');
-  if(wantBar!==gotBar)return wantBar?'Maintenance banner card par nahi bana.':'Galat banner dikha.';
+  if(wantBar!==gotBar)return wantBar?'Maintenance banner not built on card.':'Wrong banner shown.';
   return '';
  }catch(e){return 'Card check error: '+(((e&&e.message)||e));}
 }
@@ -1594,13 +1594,13 @@ function vgMediaFail(el){
   const tp=el.closest?el.closest('.thumbplay'):null;
   if(tp){
    el.style.display='none';
-   try{if(isOwner()&&!tp.querySelector('.tbad')){const s=document.createElement('span');s.className='tbad';s.innerText='⚠ thumbnail link dead — Edit me naya link dalo';tp.appendChild(s);}}catch(e){}
+   try{if(isOwner()&&!tp.querySelector('.tbad')){const s=document.createElement('span');s.className='tbad';s.innerText='⚠ thumbnail link dead — add a new link in Edit';tp.appendChild(s);}}catch(e){}
    return;
   }
   const w=el.closest?el.closest('.vwrap'):null;if(!w)return;
   let ow=false;try{ow=isOwner();}catch(e){}
   w.classList.add('novid');
-  w.innerHTML=ow?'🎬<small>⚠ Media link expired/broken — Edit me naya link dalo</small>':'🎬<small>Video coming soon</small>';
+  w.innerHTML=ow?'🎬<small>⚠ Media link expired/broken — add a new link in Edit</small>':'🎬<small>Video coming soon</small>';
  }catch(e){}
 }
 function playThumb(box){
@@ -1720,7 +1720,7 @@ document.getElementById('cfOk').onclick=()=>{
 document.getElementById('cfNo').onclick=()=>cfDone(cfMode==='prompt'?null:false);
 document.getElementById('cfBg').onclick=()=>cfDone(null);
 /* ===== STORAGE GUARD (save fail hote hi wajah batayega) ===== */
-(function(){try{const _s=localStorage.setItem.bind(localStorage);localStorage.setItem=function(k,v){try{_s(k,v);}catch(e){setTimeout(()=>{try{msgBox('Storage blocked! Browser ka site-data ON karo ya space khaali karo — kuch save nahi hua.');}catch(_){}},0);throw e;}};}catch(e){}})();
+(function(){try{const _s=localStorage.setItem.bind(localStorage);localStorage.setItem=function(k,v){try{_s(k,v);}catch(e){setTimeout(()=>{try{msgBox('Storage blocked! Turn ON browser site-data or free space — nothing was saved.');}catch(_){}},0);throw e;}};}catch(e){}})();
 function storageOK(){try{localStorage.setItem('vg_t','1');localStorage.removeItem('vg_t');return true;}catch(e){return false;}}
 /* ===== CLOUD SYNC (free Firebase — sab devices par same data) =====
    Firebase config lagate hi Owner ka approve turant buyer ko dikhega.
@@ -2040,7 +2040,7 @@ function doRegisterGold(){
   }
  }catch(e){}
 }
-function appleLogin(){showToast('🍎 Apple login jald aa raha hai — abhi Google/ID se login karo');}
+function appleLogin(){showToast('🍎 Apple login coming soon — login with Google/ID for now');}
 document.getElementById('loginSec').addEventListener('click',e=>{
  const b=document.getElementById('regBox');
  if(b&&b.style.display!=='none'&&!e.target.closest('.login-card'))b.style.display='none';
@@ -2126,7 +2126,7 @@ function googleLogin(){
   const code=(e&&e.code)||'';
   if(code==='auth/popup-blocked'||code==='auth/popup-closed-by-user'||code==='auth/cancelled-popup-request'){
    try{
-    showToast('🔄 Popup blocked — Google page par le ja rahe hain...');
+    showToast('🔄 Popup blocked — taking you to the Google page...');
     firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
     return;
    }catch(_){}
@@ -2380,7 +2380,7 @@ function drawRates(){
  }catch(e){_stash=null;}
  const rates=getRates(p),off=myOff();
  const box=document.getElementById('rateRows');box.innerHTML='';
- if(!rates.length&&rateEdit)box.innerHTML='<p style="color:#9ab;text-align:center;padding:14px">No plans — neeche ＋ Add New Plan dabakar naya plan banao, phir Save.</p>';
+ if(!rates.length&&rateEdit)box.innerHTML='<p style="color:#9ab;text-align:center;padding:14px">No plans — press ＋ Add New Plan below to create one, then Save.</p>';
  rates.forEach((r,i)=>{
   if(!rateEdit){
    box.innerHTML+=rateRowHtml(ratePid,r,i,off,'Buy ✅');
@@ -2389,11 +2389,11 @@ function drawRates(){
   }
  });
  if(rateEdit){
-  box.innerHTML=`<div class="rate-row edit" style="display:block"><input id="rn_name" style="width:100%;margin-bottom:6px" onchange="fldChanged(this)" value="${escHtml(getName(p))}" placeholder="Panel name"><input id="rn_desc" style="width:100%" onchange="fldChanged(this)" value="${escHtml(getDesc(p))}" placeholder="Detail (1 line)"></div><div class="rate-row edit" style="display:block"><input id="rn_by" style="width:100%;margin-bottom:6px" onchange="fldChanged(this)" value="${escHtml(getBy(p))}" placeholder="Brand line (e.g. VG CHEATS FF)"><input id="rn_file" style="width:100%;margin-bottom:6px" onchange="fldChanged(this)" value="${escHtml(getPfile(p))}" placeholder="Update file link (https://...)"><select id="rn_dev" style="width:100%;padding:9px;margin-bottom:6px;border-radius:8px;border:1px solid #334;background:#0a0f2a;color:#fff" onchange="fldChanged(this)"><option${getDev(p)==='ANDROID'?' selected':''}>ANDROID</option><option${getDev(p)==='IOS'?' selected':''}>IOS</option><option${getDev(p)==='PC'?' selected':''}>PC</option></select><textarea id="rf_feat" style="width:100%;background:#0a0f2a;border:1px solid #334;color:#fff;border-radius:8px;padding:9px" rows="3" onchange="fldChanged(this)" placeholder="Features — one per line">${escHtml(getFeat(p).join('\n'))}</textarea><label class="mswitch"><input type="checkbox" id="rn_maint"${isMaint(p)?' checked':''} onchange="toggleMaint(this)"> 🛠 Maintenance mode (panel band dikhega)</label><input id="rn_mmsg" style="width:100%;margin-top:6px" onchange="setMaintMsg(this)" value="${String(getInfo(p.id).maintMsg||'').replace(/"/g,'&quot;')}" placeholder="Maintenance text (e.g. UPDATE COMING SOON)"><label style="font-size:.8rem;color:#9ab;text-align:left;display:block;margin-top:10px">🔑 Panel API — key generate ke liye (khaali = global KeyAuth)</label><select id="rn_apiprov" style="width:100%;padding:9px;margin-bottom:6px;border-radius:8px;border:1px solid #334;background:#0a0f2a;color:#fff" onchange="fldChanged(this)"><option value="">— Global (Site Settings) —</option><option value="keyauth"${getInfo(p.id).apiProv==='keyauth'?' selected':''}>KeyAuth</option><option value="authlx"${getInfo(p.id).apiProv==='authlx'?' selected':''}>AuthLX</option><option value="genzauth"${getInfo(p.id).apiProv==='genzauth'?' selected':''}>GenzAuth</option><option value="custom"${getInfo(p.id).apiProv==='custom'?' selected':''}>Custom URL</option></select><input id="rn_apikey" type="password" style="width:100%;margin-bottom:6px" onchange="fldChanged(this)" value="${String(getInfo(p.id).apiKey||'').replace(/"/g,'&quot;')}" placeholder="Seller / API Key (is panel ke liye)"><input id="rn_apiapp" style="width:100%;margin-bottom:6px" onchange="fldChanged(this)" value="${String(getInfo(p.id).apiApp||'').replace(/"/g,'&quot;')}" placeholder="App ID (AuthLX / GenzAuth ke liye)"><input id="rn_apiurl" style="width:100%" onchange="fldChanged(this)" value="${String(getInfo(p.id).apiUrl||'').replace(/"/g,'&quot;')}" placeholder="Custom Generate URL — {DAYS} {COUNT} {APP} {KEY}"></div>`+box.innerHTML;
+  box.innerHTML=`<div class="rate-row edit" style="display:block"><input id="rn_name" style="width:100%;margin-bottom:6px" onchange="fldChanged(this)" value="${escHtml(getName(p))}" placeholder="Panel name"><input id="rn_desc" style="width:100%" onchange="fldChanged(this)" value="${escHtml(getDesc(p))}" placeholder="Detail (1 line)"></div><div class="rate-row edit" style="display:block"><input id="rn_by" style="width:100%;margin-bottom:6px" onchange="fldChanged(this)" value="${escHtml(getBy(p))}" placeholder="Brand line (e.g. VG CHEATS FF)"><input id="rn_file" style="width:100%;margin-bottom:6px" onchange="fldChanged(this)" value="${escHtml(getPfile(p))}" placeholder="Update file link (https://...)"><select id="rn_dev" style="width:100%;padding:9px;margin-bottom:6px;border-radius:8px;border:1px solid #334;background:#0a0f2a;color:#fff" onchange="fldChanged(this)"><option${getDev(p)==='ANDROID'?' selected':''}>ANDROID</option><option${getDev(p)==='IOS'?' selected':''}>IOS</option><option${getDev(p)==='PC'?' selected':''}>PC</option></select><textarea id="rf_feat" style="width:100%;background:#0a0f2a;border:1px solid #334;color:#fff;border-radius:8px;padding:9px" rows="3" onchange="fldChanged(this)" placeholder="Features — one per line">${escHtml(getFeat(p).join('\n'))}</textarea><label class="mswitch"><input type="checkbox" id="rn_maint"${isMaint(p)?' checked':''} onchange="toggleMaint(this)"> 🛠 Maintenance mode (panel will show as closed)</label><input id="rn_mmsg" style="width:100%;margin-top:6px" onchange="setMaintMsg(this)" value="${String(getInfo(p.id).maintMsg||'').replace(/"/g,'&quot;')}" placeholder="Maintenance text (e.g. UPDATE COMING SOON)"><label style="font-size:.8rem;color:#9ab;text-align:left;display:block;margin-top:10px">🔑 Panel API — for key generation (empty = global KeyAuth)</label><select id="rn_apiprov" style="width:100%;padding:9px;margin-bottom:6px;border-radius:8px;border:1px solid #334;background:#0a0f2a;color:#fff" onchange="fldChanged(this)"><option value="">— Global (Site Settings) —</option><option value="keyauth"${getInfo(p.id).apiProv==='keyauth'?' selected':''}>KeyAuth</option><option value="authlx"${getInfo(p.id).apiProv==='authlx'?' selected':''}>AuthLX</option><option value="genzauth"${getInfo(p.id).apiProv==='genzauth'?' selected':''}>GenzAuth</option><option value="custom"${getInfo(p.id).apiProv==='custom'?' selected':''}>Custom URL</option></select><input id="rn_apikey" type="password" style="width:100%;margin-bottom:6px" onchange="fldChanged(this)" value="${String(getInfo(p.id).apiKey||'').replace(/"/g,'&quot;')}" placeholder="Seller / API Key (for this panel)"><input id="rn_apiapp" style="width:100%;margin-bottom:6px" onchange="fldChanged(this)" value="${String(getInfo(p.id).apiApp||'').replace(/"/g,'&quot;')}" placeholder="App ID (for AuthLX / GenzAuth)"><input id="rn_apiurl" style="width:100%" onchange="fldChanged(this)" value="${String(getInfo(p.id).apiUrl||'').replace(/"/g,'&quot;')}" placeholder="Custom Generate URL — {DAYS} {COUNT} {APP} {KEY}"></div>`+box.innerHTML;
  }
  const eb=document.getElementById('rateEditBtn');
  eb.style.display=canEdit()?'':'none';
- eb.innerText=rateEdit?'👁 Dekho':'✏ Edit Price';
+ eb.innerText=rateEdit?'👁 View':'✏ Edit Price';
  document.getElementById('rateEditBar').style.display=rateEdit?'flex':'none';
  const vr=document.getElementById('videoEditRow');
  vr.style.display=rateEdit?'block':'none';
@@ -2432,12 +2432,12 @@ function saveMedia(){
   all[ratePid]={tg:document.getElementById('turl').value.trim(),dc:document.getElementById('durl').value.trim()};
   localStorage.setItem('vg_links',JSON.stringify(all));
   cloudSet('vg_links');
-  const err=c?verifyPanelSave(ratePid,c):'Form nahi mila — modal dobara kholo.';
+  const err=c?verifyPanelSave(ratePid,c):'Form not found — reopen the modal.';
   const tw=c?twinWarn(ratePid):'';
   rateEdit=false;closeRates();renderProducts();
   const derr=c?verifyCardDom(ratePid,c):'';
   try{if(c)saveLine('saved '+ratePid+' @ '+new Date().toLocaleTimeString()+' • by:['+(c.by||'-')+'] • maint:'+(c.maint?'ON':'off'));}catch(e){}
-  if(err)msgBox('⚠ '+err);else if(derr)msgBox('⚠ Card verify: '+derr);else if(tw)msgBox(tw+'\n\n(Brand/maintenance save ho gaya hai — sahi card par dekho ya duplicate hatao.)');else showToast('✅ All changes saved');
+  if(err)msgBox('⚠ '+err);else if(derr)msgBox('⚠ Card verify: '+derr);else if(tw)msgBox(tw+'\n\n(Brand/maintenance is saved — check the right card or remove the duplicate.)');else showToast('✅ All changes saved');
   showSavedProof(c?c.rates:null);
  }catch(e){msgBox('Save error: '+((e&&e.message)||e));}
 }
@@ -2474,22 +2474,22 @@ function delRate(i){
  const r=c?c.rates.slice():getRates(p).slice();
  r.splice(i,1);saveRates(ratePid,r);shiftPools(ratePid,i);
  if(c)saveInfo(ratePid,c.name,c.desc,c.by,c.features,c.pfile,c.device,c.maint,c.maintMsg,c.apiProv,c.apiKey,c.apiApp,c.apiUrl);
- try{if(JSON.stringify(getRates(p))!==JSON.stringify(r))showToast('⚠ Save blocked — browser storage ON karo');}catch(e){}
+ try{if(JSON.stringify(getRates(p))!==JSON.stringify(r))showToast('⚠ Save blocked — turn browser storage ON');}catch(e){}
  drawRates();renderProducts();
 }
 function verifyPanelSave(pid,c){
  try{
   const p=findPanel(pid);if(!p)return 'Panel not found after save!';
-  if(JSON.stringify(getRates(p))!==JSON.stringify(c.rates))return 'Rates save nahi hui — browser storage ON karo';
+  if(JSON.stringify(getRates(p))!==JSON.stringify(c.rates))return 'Rates not saved — turn browser storage ON';
   const inf=getInfo(pid);
-  if((inf.by||'')!==(c.by||''))return 'Brand save nahi hua — browser storage ON karo';
-  if(!!inf.maint!==!!c.maint)return 'Maintenance save nahi hua — browser storage ON karo';
+  if((inf.by||'')!==(c.by||''))return 'Brand not saved — turn browser storage ON';
+  if(!!inf.maint!==!!c.maint)return 'Maintenance not saved — turn browser storage ON';
   return '';
  }catch(e){return 'Verify error: '+((e&&e.message)||e);}
 }
 function saveRateEdit(){
  try{
-  const c=collectRateForm();if(!c){msgBox('Form nahi mila — modal dobara kholo.');return;}
+  const c=collectRateForm();if(!c){msgBox('Form not found — reopen the modal.');return;}
   saveRates(ratePid,c.rates);saveInfo(ratePid,c.name,c.desc,c.by,c.features,c.pfile,c.device,c.maint,c.maintMsg,c.apiProv,c.apiKey,c.apiApp,c.apiUrl);
   try{
    saveVideo(ratePid,document.getElementById('vurl').value.trim());
@@ -2504,7 +2504,7 @@ function saveRateEdit(){
   rateEdit=false;closeRates();renderProducts();
   const derr=verifyCardDom(ratePid,c);
   try{saveLine('saved '+ratePid+' @ '+new Date().toLocaleTimeString()+' • by:['+(c.by||'-')+'] • maint:'+(c.maint?'ON':'off'));}catch(e){}
-  if(err)msgBox('⚠ '+err);else if(derr)msgBox('⚠ Card verify: '+derr);else if(tw)msgBox(tw+'\n\n(Brand/maintenance save ho gaya hai — sahi card par dekho ya duplicate hatao.)');else showToast('Price list saved ✅');
+  if(err)msgBox('⚠ '+err);else if(derr)msgBox('⚠ Card verify: '+derr);else if(tw)msgBox(tw+'\n\n(Brand/maintenance is saved — check the right card or remove the duplicate.)');else showToast('Price list saved ✅');
   showSavedProof(c.rates);
  }catch(e){msgBox('Save error: '+((e&&e.message)||e));}
 }
@@ -2903,7 +2903,7 @@ function genKeyAuth(){
  let n=parseInt(document.getElementById('keyAmount').value)||0;
  if(n<1||n>200){msgBox('Enter count from 1 to 200');return;}
  if(cfg.prov==='keyauth'){
-  if(!cfg.key){msgBox(cfg.custom?'Is panel me Seller Key khaali hai — Edit panel me API Key dalo.':'Add KeyAuth Seller Key in Site Settings first (ya is panel me alag key dalo).');return;}
+  if(!cfg.key){msgBox(cfg.custom?'Seller Key is empty for this panel — add the API Key in Edit panel.':'Add KeyAuth Seller Key in Site Settings first (or add a separate key for this panel).');return;}
   showToast('⏳ Generating via KeyAuth...');
   const url='https://keyauth.win/api/seller/?sellerkey='+encodeURIComponent(cfg.key)+'&type=add&expiry='+days+'&mask=XXXXXX-XXXXXX&level=1&amount='+n+'&format=json';
   fetch(url).then(r=>r.json()).then(j=>{
@@ -2913,11 +2913,11 @@ function genKeyAuth(){
   return;
  }
  let tpl=(cfg.url||'').trim();
- if(!tpl){msgBox(anm+' ke liye Generate URL chahiye.\nEdit panel → Panel API me "Custom URL" field me apne provider dashboard wala generate link paste karo.\nPlaceholders: {DAYS} {COUNT} {APP} {KEY}');return;}
+ if(!tpl){msgBox(anm+' needs a Generate URL.\nEdit panel → paste the generate link from your provider dashboard in the "Custom URL" field of Panel API.\nPlaceholders: {DAYS} {COUNT} {APP} {KEY}');return;}
  tpl=tpl.split('{DAYS}').join(encodeURIComponent(days)).split('{COUNT}').join(encodeURIComponent(n)).split('{APP}').join(encodeURIComponent(cfg.app)).split('{KEY}').join(encodeURIComponent(cfg.key));
  showToast('⏳ Generating via '+anm+'...');
  const hopt={};if(cfg.key)hopt['X-API-Key']=cfg.key;
- fetch(tpl,{headers:hopt}).then(r=>r.json()).then(j=>genKeysDone(collectGenKeys(j),days,anm)).catch(()=>msgBox(anm+' connection failed. URL ya key check karo.'));
+ fetch(tpl,{headers:hopt}).then(r=>r.json()).then(j=>genKeysDone(collectGenKeys(j),days,anm)).catch(()=>msgBox(anm+' connection failed. Check URL or key.'));
 }
 /* kisi bhi provider ka response — keys nikaalo (tolerant) */
 function collectGenKeys(j){
@@ -2944,7 +2944,7 @@ function genKeysDone(list,days,anm){
   try{drawRates();}catch(e){}
   showToast('✅ '+list.length+' fresh keys added ('+days+' days, '+anm+')!');
  }else{
-  msgBox(anm+': response me keys nahi mili.');
+  msgBox(anm+': no keys found in response.');
  }
 }
 /* ===== KEYAUTH IMPORT (licenses + users JSON) ===== */
@@ -3130,7 +3130,7 @@ function savePanel(){
  closePanelForm();renderProducts();
  try{
   const ok=loadCustoms().some(x=>String(x.id)===nid);
-  if(!ok)msgBox('⚠ Panel list me save nahi hua — browser storage ON karo, phir dobara banao.');
+  if(!ok)msgBox('⚠ Panel list not saved — turn browser storage ON, then create again.');
   else showToast('✅ New panel added');
  }catch(e){showToast('✅ New panel added');}
 }
@@ -3190,7 +3190,7 @@ function drawUsers(){
   shown++;
   box.innerHTML+=`<div class="urow"><span><b>${x.u}</b> ${x.role==='admin'?'🛡 Admin':x.role==='reseller'?'🤝 Reseller':'👤 Normal'}${isNew?'<b style="color:#ffd83d"> 🆕 NEW</b>':''} ${x.blocked?'<b style="color:#ff3d81">⛔ BLOCKED</b>':''}<br><span class="off">${x.off||0}% OFF</span> <span style="color:#0f9">₹${(function(){try{return getBal(x.u);}catch(e){return 0;}})().toLocaleString('en-IN')}</span> <span style="color:#778">| pass: ${x.p}${x.email?'<br>✉ '+x.email:''}${x.ts?'<br><span style="color:#778">joined '+new Date(x.ts).toLocaleDateString('en-IN')+'</span>':''}</span></span><span class="ops"><button style="background:#1a2456;color:#fff" onclick="editRole(${i})" title="Change role">🔄</button><button style="background:#1a2456;color:#fff" onclick="openPacc(${i})" title="Free panels">🎛</button><button style="background:#1a2456;color:#fff" onclick="editOff(${i})">Edit %</button><button style="background:#1a2456;color:#fff" onclick="editBal(${i})" title="Wallet">💰</button><button style="background:#1a2456;color:#fff" onclick="editPass(${i})">🔑</button><button style="background:#1a2456;color:#fff" onclick="resetFreeIdx(${i})" title="Reset free-key claim">🎁</button><button style="background:${x.blocked?'#00c853':'#ff9d00'};color:#fff" onclick="toggleBlock(${i})">${x.blocked?'▶ Unblock':'⏸ Block'}</button><button style="background:#ff3d81;color:#fff" onclick="delUser(${i})">✖</button></span></div>`;
  });
- if(!shown)box.innerHTML+='<p style="color:#9ab;text-align:center">Is list me koi nahi hai.</p>';
+ if(!shown)box.innerHTML+='<p style="color:#9ab;text-align:center">Nobody in this list.</p>';
 }
 function addUser(){
  const n=document.getElementById('nu_name').value.trim(),pw=document.getElementById('nu_pass').value.trim();
@@ -3230,7 +3230,7 @@ function savePacc(){
 }
 function exportUsers(){
  const j=JSON.stringify(loadUsers());
- if(navigator.clipboard)navigator.clipboard.writeText(j).then(()=>showToast('📤 IDs copied! Dusre device par Import me paste karo'));
+ if(navigator.clipboard)navigator.clipboard.writeText(j).then(()=>showToast('📤 IDs copied! Paste in Import on the other device'));
  else msgBox(j);
 }
 function toggleImport(){
@@ -3240,7 +3240,7 @@ function toggleImport(){
 function doImport(){
  let arr=[];
  try{arr=JSON.parse(document.getElementById('impArea').value.trim());}catch(e){arr=null;}
- if(!Array.isArray(arr)){msgBox('Wrong data! Export wala text paste karo.');return;}
+ if(!Array.isArray(arr)){msgBox('Wrong data! Paste the Export text.');return;}
  const cur=loadUsers();
  let added=0,skipped=0;
  arr.forEach(x=>{
@@ -3252,7 +3252,7 @@ function doImport(){
  saveUsers(cur);
  document.getElementById('impArea').value='';
  toggleImport();drawUsers();
- showToast('✅ '+added+' IDs imported'+(skipped?' ('+skipped+' pehle se the)':''));
+ showToast('✅ '+added+' IDs imported'+(skipped?' ('+skipped+' already existed)':''));
 }
 async function editRole(i){
  const arr=loadUsers();
@@ -3284,15 +3284,15 @@ async function delUser(i){
 async function testCloud(){
  const line=document.getElementById('cloudLine');
  const set=t=>{if(line)line.innerText=t;};
- if(!DB){set('Cloud: NOT connected ('+(window._cloudErr||window._cloudState||'off')+')');msgBox('Cloud OFF: '+(window._cloudErr||'config/library missing. Nayi file deploy karo!'));return;}
+ if(!DB){set('Cloud: NOT connected ('+(window._cloudErr||window._cloudState||'off')+')');msgBox('Cloud OFF: '+(window._cloudErr||'config/library missing. Deploy the new file!'));return;}
  set('Cloud: testing...');
  try{
   const t='t'+Date.now();
   await DB.ref('vgcheats/_ping').set(t);
   const s=await DB.ref('vgcheats/_ping').once('value');
   if(s.val()===t){set('Cloud: ✅ WORKING');showToast('✅ Cloud sync working!');}
-  else{set('Cloud: ❌ read mismatch');msgBox('Write ok but readback failed. Rules check karo.');}
- }catch(e){set('Cloud: ❌ '+(e.code||'error'));msgBox('Cloud error: '+((e&&e.message)||e)+'\n\nRules me read/write true + Publish karo.');}
+  else{set('Cloud: ❌ read mismatch');msgBox('Write ok but readback failed. Check the Rules.');}
+ }catch(e){set('Cloud: ❌ '+(e.code||'error'));msgBox('Cloud error: '+((e&&e.message)||e)+'\n\nSet read/write true in Rules + Publish.');}
 }
 async function toggleBlock(i){
  const arr=loadUsers();
@@ -3504,7 +3504,7 @@ function paintGlobalMaint(){
   const b=document.getElementById('globalMaint');if(!b)return;
   if(siteMaint()){
    b.style.display='';
-   b.innerHTML='<b>🛠 SHOP UNDER MAINTENANCE</b><span>'+escHtml(siteMaintMsg())+'</span>'+(isOwner()?'<span style="color:#00ff9d">OWNER PREVIEW — tum kharid sakte ho</span>':'');
+   b.innerHTML='<b>🛠 SHOP UNDER MAINTENANCE</b><span>'+escHtml(siteMaintMsg())+'</span>'+(isOwner()?'<span style="color:#00ff9d">OWNER PREVIEW — you can still buy</span>':'');
   }else b.style.display='none';
  }catch(e){}
 }
@@ -3813,7 +3813,7 @@ function assembleFx(el){
  document.addEventListener('keydown',e=>{
   if(e.key==='F12'||((e.ctrlKey||e.metaKey)&&e.shiftKey&&(e.key==='I'||e.key==='J'||e.key==='C'))||((e.ctrlKey||e.metaKey)&&e.key==='U')){e.preventDefault();}
  });
- try{console.log('%cSTOP! Ye area sirf Owner ke liye hai.','color:red;font-size:20px');}catch(e){}
+ try{console.log('%cSTOP! This area is for the Owner only.','color:red;font-size:20px');}catch(e){}
 })();
 /* ===== DEVIL TOUCH BURST (login bg — phone par OFF) ===== */
 (function(){
@@ -3962,7 +3962,7 @@ function vgStorageBadge(){
   if(!b){b=document.createElement('div');b.id='storeDot';document.body.appendChild(b);}
   b.innerText='build version 1.0';
   b.style.cssText='position:fixed;left:8px;bottom:8px;z-index:60;font-size:10px;letter-spacing:1px;padding:5px 10px;border-radius:12px;color:'+(ok?'#00ff9d':'#ff5e7a')+';background:rgba(0,0,0,.65);border:1px solid '+(ok?'rgba(0,255,157,.4)':'rgba(255,61,94,.5)')+';pointer-events:none';
-  if(!ok)setTimeout(()=>{try{msgBox('⚠ Browser STORAGE BLOCKED hai!\n\nIsliye Save kaam nahi kar raha — refresh par sab mit jata hai.\n\nFix:\n1) Chrome browser use karo\n2) Private/Incognito mode band karo\n3) Site settings me Cookies/Storage ON karo\n4) UC Mini / file-viewer app mat use karo');}catch(e){}},900);
+  if(!ok)setTimeout(()=>{try{msgBox('⚠ Browser STORAGE BLOCKED!\n\nThat is why Save does not work — everything is wiped on refresh.\n\nFix:\n1) Use Chrome browser\n2) Turn off Private/Incognito mode\n3) Turn ON Cookies/Storage in Site settings\n4) Do not use UC Mini / file-viewer apps');}catch(e){}},900);
  }catch(e){}
 }
 try{vgStorageBadge();}catch(e){}
