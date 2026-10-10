@@ -2093,7 +2093,8 @@ async function doLogin(){
 }
 /* ===== GOOGLE LOGIN (free) ===== */
 function finishGoogleLogin(em,displayName){
- if(!em){msgBox('Email not found');return;}
+ try{
+ if(!em){window._vgGgl=0;msgBox('Email not found');return;}
  let oe='';
  try{oe=(localStorage.getItem('vg_owner_email')||'').toLowerCase().trim();}catch(e){}
  if(oe&&em===oe||isOwnerEmail(em)){
@@ -2116,13 +2117,42 @@ function finishGoogleLogin(em,displayName){
  const card=document.getElementById('loginCard');
   try{saveSession();}catch(e){}
  card.classList.add('spinning');
+ window._vgGgl=0;
  setTimeout(enterShop,900);
+ }catch(e){window._vgGgl=0;msgBox('Google login error: '+((e&&e.message)||e));}
+}
+function googleNeedsRedirect(){
+ try{
+  if(window.matchMedia&&matchMedia('(pointer:coarse)').matches)return true;
+  const ua=navigator.userAgent||'';
+  if(/Android|iPhone|iPad|iPod|Mobile/i.test(ua))return true;
+  if(Math.min(screen.width||9999,innerWidth||9999)<760&&('ontouchstart' in window))return true;
+ }catch(e){}
+ return false;
 }
 function googleLogin(){
  if(!GOOGLE_ON){msgBox('Google login needs Firebase config (see top of file).\nTotally FREE — no card needed. Send me the config.');return;}
+ window._vgGgl=Date.now();
+ if(googleNeedsRedirect()){
+  try{
+   showToast('🔄 Taking you to the Google page...');
+   firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+  }catch(e){window._vgGgl=0;msgBox('Google login failed: '+((e&&e.message)||e));}
+  return;
+ }
+ let done=false;
+ const to=setTimeout(()=>{
+  if(done)return;done=true;window._vgGgl=0;
+  try{
+   showToast('🔄 Popup is stuck — taking you to the Google page...');
+   firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+  }catch(e){msgBox('Google login is stuck. Allow popups for this site and try again.');}
+ },45000);
  firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(res=>{
+  if(done)return;done=true;clearTimeout(to);
   finishGoogleLogin(((res.user&&res.user.email)||'').toLowerCase().trim(),res.user&&res.user.displayName);
  }).catch(e=>{
+  if(done)return;done=true;clearTimeout(to);window._vgGgl=0;
   const code=(e&&e.code)||'';
   if(code==='auth/popup-blocked'||code==='auth/popup-closed-by-user'||code==='auth/cancelled-popup-request'){
    try{
@@ -2142,10 +2172,11 @@ function googleRedirectBack(){
  try{
   if(!GOOGLE_ON||typeof firebase==='undefined'||!firebase.auth)return;
   firebase.auth().getRedirectResult().then(res=>{
-   if(res&&res.user&&res.user.email)finishGoogleLogin(String(res.user.email).toLowerCase().trim(),res.user.displayName);
+   if(res&&res.user&&res.user.email){window._vgGgl=0;finishGoogleLogin(String(res.user.email).toLowerCase().trim(),res.user.displayName);}
   }).catch(()=>{});
  }catch(e){}
 }
+try{document.addEventListener('visibilitychange',()=>{try{if(!document.hidden&&window._vgGgl)googleRedirectBack();}catch(e){}});}catch(e){}
 function saveOwnerEmail(){
  const v=document.getElementById('o_email').value.trim().toLowerCase();
  if(!v||!v.includes('@')){msgBox('Please enter a valid Gmail');return;}
